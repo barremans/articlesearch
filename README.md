@@ -1,7 +1,7 @@
 # articlesearch
 # 📦 Artikelzoeker
 
-![Versie](https://img.shields.io/badge/versie-2.6-blue.svg)
+![Versie](https://img.shields.io/badge/versie-2.5-blue.svg)
 ![Status](https://img.shields.io/badge/status-actief-brightgreen.svg)
 ![Laatste update](https://img.shields.io/badge/laatste%20update-mei%202025-lightgrey.svg)
 
