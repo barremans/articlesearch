@@ -1,234 +1,352 @@
 # 📦 Artikelzoeker – Help
 
-**Versie:** 2.7  
+**Versie:** 2.8.0
+
 **Laatste update:** mei 2025
 
-Deze applicatie laat je toe om artikels op te zoeken op basis van zoektermen. Resultaten worden overzichtelijk weergegeven, met detailinformatie via dubbelklik, sneltoets of rechtermuisklik. Werkt offline via Windows `.exe` (PyInstaller).
+Deze applicatie laat je toe om artikels op te zoeken op basis van zoektermen. Resultaten worden overzichtelijk weergegeven, met detailinformatie via dubbelklik, sneltoets of rechtermuisklik. Werkt enkel **ONLINE** via een Windows `.exe` (gemaakt met PyInstaller).
 
+
+<!-- De afbeeldingen (badges) moeten zich bevinden in assets/badges/ en alleen met bestandsnaam worden aangeroepen -->
+<!--
+![Zoeken](Zoeken-AND_OR-lightblue.png) ![Detailweergave](detail.png) ![Label Generatie](label.png) ![Afbeelding Upload](afbeelding.png) ![Auto-Update](auto_update.png)
+
+![Version](version.png) ![Last Update](last_update.png) ![Platform](platform.png) ![Python](python.png) ![PySide6](pyside6.png)
+-->
 ---
 
 ## 🔎 Zoekfunctionaliteit
 
-- Voer een **zoekterm** in
-- Kies een **zoekmodus**:  
-  - `AND` – alle termen moeten voorkomen  
-  - `OR` – minstens één term
-- Kies of je **voorraad**, **reguliere artikelen** of **beide** wil zien via `Toon voorraad` dropdown:
-  - `R` = Regulier
-  - `S` = Voorraad
-  - `B` = Beide
-- Start zoeken via **Zoeken-knop** of `Ctrl+Enter`
-- Resultaten verschijnen in een **tabel** met contextmenu
-- Eerste rij wordt automatisch geselecteerd
+1.  **Voer een zoekterm in**
+
+2.  **Kies een zoekmodus:**
+
+- `AND` – alle woorden moeten voorkomen
+
+- `OR` – minstens één woord
+
+3.  **Kies welk type artikelen je wil zien** via de dropdown **Toon voorraad**:
+
+- `R` = Reguliere artikelen
+
+- `S` = Voorraad-weergave
+
+- `B` = Beide
+
+4.  **Start de zoekopdracht** met de knop **Zoeken** of `Ctrl + Enter`
+
+5.  Resultaten verschijnen in een **tabel** met contextmenu
+
+6.  De eerste rij wordt automatisch geselecteerd
 
 ---
 
 ## ✳️ Zoektermen en prefixen
 
-### 🔹 Geen prefix  
-Zoekt op **intern artikelnummer (ItemCode)**  
-*Voorbeeld:* `40.3.3.679`
+### Geen prefix
 
-### 🔹 `*` prefix  
+Zoekt op **intern artikelnummer (ItemCode)**
+
+Voorbeeld: 41.1.1
+
+### `*` prefix
+
 Zoekt in:
+
 - Itemnaam (SAP)
+
 - Lange omschrijving (`U_LO`)
+
 - Productnaam (WMS)
-- Foreign name (`FRGNNAME`)  
-*Voorbeeld:* `*bocht 90°`
 
-### 🔹 `/` prefix  
-Zoekt op **leveranciersreferentie (SuppCatNum)**  
-*Voorbeeld:* `/2102010900`
+- Foreign name (`FRGNNAME`)
 
-### 🔹 `-` prefix  
+Voorbeeld: \*bocht
+
+### `/` prefix
+
+Zoekt op **leveranciersreferentie (SuppCatNum)**
+
+Voorbeeld: /2109009
+
+### `-` prefix
+
 Zoekt op een **exact woord** in:
+
 - Artikelnaam (SAP)
+
 - Productnaam
-- Foreign name  
-*Voorbeeld:* `-T-stuk`
+
+- Foreign name
+
+Voorbeeld: -T-stuk
 
 ---
 
 ## 🧾 Resultaten
 
-De kolommen in de resultaten **wisselen automatisch** afhankelijk van de `Toon voorraad` instelling:
+De kolommen in de resultaten **aanpassen zich automatisch** aan de instelling “Toon voorraad”:
 
-### 🔸 `R` of `B` → Reguliere artikelen
+### `R` of `B` → Reguliere artikelen
 
-| Kolom        | Beschrijving                     |
-|--------------|----------------------------------|
-| `ItemCode`   | Interne artikelcode              |
-| `ItemName`   | Artikelbeschrijving (SAP)        |
-| `SuppCatNum` | Leveranciersreferentie           |
+| Kolom | Beschrijving |
 
-### 🔸 `S` → Voorraadweergave
+|----------------|------------------------------------|
 
-| Kolom               | Beschrijving                    |
+| `ItemCode `| Interne artikelcode |
+
+| `ItemName` | Artikelbeschrijving (SAP) |
+
+| `SuppCatNum` | Leveranciersreferentie |
+
+### `S` → Voorraadweergave
+
+| Kolom | Beschrijving |
+
 |---------------------|---------------------------------|
-| `ItemCode`          | Artikelcode                     |
-| `ItemName`          | Artikelnaam                     |
-| `SUPPLIERIDPRODUCT` | Leveranciersreferentie          |
-| `QUANTITY`          | Aantal op voorraad              |
-| `WHSNAME`           | Magazijn                        |
-| `LOCNAME`           | Locatie                         |
-| `QTYMININV`         | Minimum voorraad                |
-| `QTYMAXINV`         | Maximum voorraad                |
-| `SUPPLIERNAME`      | Leveranciernaam                 |
-| `PRICESUPPLIER`     | Inkoopprijs leverancier         |
-| `NOTE`              | Opmerkingen                     |
+
+| `ItemCode` | Artikelcode |
+
+| `ItemName` | Artikelnaam |
+
+| `SUPPLIERIDPRODUCT` | Leveranciersreferentie |
+
+| `QUANTITY` | Aantal op voorraad |
+
+| `WHSNAME` | Magazijn |
+
+| `LOCNAME` | Locatie |
+
+| `QTYMININV` | Minimum voorraad |
+
+| `QTYMAXINV` | Maximum voorraad |
+
+| `SUPPLIERNAME` | Leveranciernaam |
+
+| `PRICESUPPLIER` | Inkoopprijs leverancier |
+
+| `NOTE` | Opmerkingen |
 
 ---
 
 ## 📋 Rijacties
 
-- **Dubbelklik op een rij** → opent detailvenster  
-- **`Ctrl+O`** → opent ook geselecteerde rij in detailvenster  
-- **Rechtermuisklik** →  
-  - 📋 Rij kopiëren  
-  - 🔍 Detail tonen  
-  - 🏷️ Label genereren
+- **Dubbelklik op een rij** → opent detailvenster
+
+- **`Ctrl + O`** → opent geselecteerde rij in detailvenster
+
+- **Rechtermuisklik op een rij** → toont contextmenu met:
+
+- 📋 **Rij kopiëren**
+
+- 🔍 **Detail tonen**
+
+- 🏷️ **Label genereren**
 
 ---
 
 ## 🏷️ Label genereren
 
-- `Ctrl+L` of via contextmenu op rij  
-- Label bevat artikelgegevens en wordt als PDF geopend
+- Sneltoets: `Ctrl + L`
+
+- Of via contextmenu op een geselecteerde rij
+
+- Het label bevat artikelgegevens en wordt als PDF geopend
 
 ---
 
 ## ⚙️ Label-instellingen
 
-Menu **Instellingen > Label-instellingen...**
+Via **Instellingen > Label-instellingen…**
 
-Instelbaar:
-- Afmetingen, barcodepositie, teksten en lettergroottes
+Instelbare opties:
+
+- Afmetingen en positie van barcode
+
+- Teksten en lettergroottes
+
 - Wijzigingen worden automatisch toegepast en opgeslagen
 
 ---
 
 ## 🪪 Detailinformatie
 
-Tabs met info, kopieerbaar via dubbelklik:
+Tabs met detaildata; dubbelklik op cellen in de tab om de hele rij te kopiëren:
 
-| Tab            | Beschrijving                            | Sneltoets |
-|----------------|------------------------------------------|-----------|
-| 📦 LISA        | Voorraad uit LISA                        | `Alt+L`   |
-| 🏢 SAP         | SAP-voorraad (incl. vrije stock)         | `Alt+S`   |
-| 💰 Aankoop     | Inkoopgegevens                           | `Alt+A`   |
-| 💸 Verkoop     | Verkoopinformatie                        | `Alt+V`   |
-| 🚚 Logistiek   | Technische info (excl. 'frozenFor' etc.) | `Alt+G`   |
-| 📄 Laatste aankoop | Recente leveringen                  | `Alt+R`   |
-| 🖼️ Afbeelding  | Geüploade afbeelding + uploadfunctie     | `Alt+F`   |
+| Tab | Beschrijving | Sneltoets |
+
+|-------------------------|---------------------------------------------|------------|
+
+| 📦 LISA | Voorraad uit LISA | `Alt + L` |
+
+| 🏢 SAP | SAP-voorraad (inclusief vrije voorraad) | `Alt + S` |
+
+| 💰 Aankoop | Inkoopgegevens | `Alt + A` |
+
+| 💸 Verkoop | Verkoopinformatie | `Alt + V` |
+
+| 🚚 Logistiek | Logistieke en technische info (excl. sommige velden) | `Alt + G` |
+
+| 📄 Laatste aankoop | Recente leveringen | `Alt + R` |
+
+| 🖼️ Afbeelding | Geüploade afbeeldingen + uploadfunctionaliteit | `Alt + F` |
 
 ---
 
 ## 🖼 Afbeelding uploaden
 
-- Via tab **Afbeelding**  
-- Selecteer lokaal bestand  
-- Voeg beschrijving en leveranciersdata toe  
-- Bestand wordt als PNG geüpload via OITMI API
+1. Ga naar de tab **Afbeelding** in het detailvenster
+
+2. Klik op **Upload nieuwe aanpassingen**
+
+3. Vul de velden in (beschrijving, artikel-ID, vendor-data, weblink)
+
+4. Selecteer een lokaal afbeeldingsbestand (PNG, JPG, etc.) of geef een URL
+
+5. De afbeelding wordt automatisch omgezet naar PNG Base64 en geüpload via de OITMI API
+
+6. Na een geslaagde upload verschijnt de vernieuwde afbeelding meteen in de tab
 
 ---
 
-## 🎹 Sneltoetsen
+## 🎹 Globale sneltoetsen
 
-| Toets         | Actie                                      |
-|---------------|---------------------------------------------|
-| `Ctrl+Enter`  | Zoek uitvoeren                             |
-| `Ctrl+L`      | Genereer label van geselecteerde rij       |
-| `Ctrl+O`      | Open geselecteerde rij (detailvenster)     |
-| `Ctrl+S`      | Label-instellingen opslaan                 |
-| `F1`          | Toon helpvenster                           |
-| `Delete`      | Zoekveld + tabel leegmaken + focus input   |
-| `Esc`         | Sluit detail- of uploadvenster             |
-| `Alt+B`       | Open menu **Bestand**                      |
-| `Alt+X`       | Selecteer **Afsluiten** in Bestand-menu    |
-| `Alt+I`       | Open menu **Instellingen**                 |
-| `Alt+K`       | Kies omgeving (test/live)                  |
-| `Alt+W`       | Instellingen wijzigen                      |
-| `Alt+L`       | Label-instellingen / tab 📦 LISA           |
-| `Alt+S`       | Tab 🏢 SAP                                 |
-| `Alt+A`       | Tab 💰 Aankoop                             |
-| `Alt+V`       | Tab 💸 Verkoop                             |
-| `Alt+G`       | Tab 🚚 Logistiek                           |
-| `Alt+R`       | Menu **Rapporteren** / tab 📄 Laatste      |
-| `Alt+M`       | Bug of feature melden                      |
-| `Alt+H`       | Open menu **Help**                         |
-| `Alt+E`       | Toon helpvenster                           |
-| `Alt+O`       | Toon over-venster                          |
-| `Alt+F`       | Tab 🖼️ Afbeelding                          |
+| Toets | Actie |
+
+|----------------|------------------------------------------------------|
+
+| `Ctrl + Enter` | Zoekopdracht uitvoeren |
+
+| `Ctrl + L` | Genereer label van geselecteerde rij |
+
+| `Ctrl + O` | Open geselecteerde rij in detailvenster |
+
+| `Ctrl + S` | Label-instellingen opslaan |
+
+| `F1` | Open helpvenster |
+
+| `Delete` | Maak zoekveld en tabel leeg en focus input |
+
+| `Esc` | Sluit detail- of uploadvenster |
+
+| `Alt + B` | Open menu **Bestand** |
+
+| `Alt + X` | Selecteer **Afsluiten** in **Bestand**-menu |
+
+| `Alt + I` | Open menu **Instellingen** |
+
+| `Alt + K` | Kies omgeving (test/live) |
+
+| `Alt + W` | Open **Instellingen wijzigen…** |
+
+| `Alt + L` | Label-instellingen in menu / tab 📦 LISA |
+
+| `Alt + S` | Tab 🏢 SAP |
+
+| `Alt + A` | Tab 💰 Aankoop |
+
+| `Alt + V` | Tab 💸 Verkoop |
+
+| `Alt + G` | Tab 🚚 Logistiek |
+
+| `Alt + R` | Menu **Rapporteren** / tab 📄 Laatste aankoop |
+
+| `Alt + M` | Bug of feature melden |
+
+| `Alt + H` | Open menu **Help** |
+
+| `Alt + E` | Toon helpvenster |
+
+| `Alt + O` | Toon **Over…**-venster |
+
+| `Alt + F` | Tab 🖼️ Afbeelding |
 
 ---
 
 ## ⚙️ Instellingen wijzigen
 
-Via **Instellingen > Instellingen wijzigen...**
+Via **Instellingen > Instellingen wijzigen…**
 
-- Omgeving kiezen: `live` of `test`
-- Voorraadtype: `R`, `S`, of `B`
-- Toon detailvenster als modal (blokkering)
-- Instellingen worden bewaard in `settings.json`
+- **Omgeving kiezen:** `live` of `test`
+
+- **Voorraadtype:** `R`, `S` of `B`
+
+- **Detailvenster als modal tonen:** ja/nee
+
+- Alle instellingen worden bewaard in `settings.json`
 
 ---
 
 ## 🔄 Bijwerken
 
-De applicatie controleert automatisch of er een nieuwere versie beschikbaar is.
+De applicatie controleert automatisch op nieuwe versies via de GitHub-API.
 
-- Als er een update is, wordt de knop **Update nu** geactiveerd in het `? > Over...` venster
-- Klikken opent het nieuwste ZIP-bestand in je browser
+- Als er een nieuwe versie beschikbaar is, ontvang je een melding in het venster **Help > Over…**
+
+- Klik op **Update nu** om de nieuwste `.exe` in je browser te openen
+
+- Je installeert gewoon over de bestaande versie; instellingen blijven bewaard
 
 ---
 
 ## 🛠 Installatie & gebruik
 
-- Applicatie draait als `.exe` (Windows)
-- Gemaakt via PyInstaller
-- Bestanden in project:
-  - `main.py`, `ui_main.py`, `ui_detail.py`, `test_oitmi_upload.py`
-  - `label_generator.py`, `label_settings_dialog.py`, `label_settings.py`
-  - `help.md`, `settings.json`, `requirements.txt`
-  - `assets/`, `css/`, `logs/`, `dist/`
-- Logging: `logs/app.log`
+- De applicatie draait op Windows als een standalone `.exe` (gemaakt met PyInstaller)
+
+- **Bestandsstructuur:**
+
+- `main.py`, `ui_main.py`, `ui_detail.py`, …
+
+- `test_oitmi_upload.py` (uploader)
+
+- `data_request.py`, `stock_info.py`
+
+- `updater.py`, `version.py`
+
+- `label/label_generator.py`, `label/label_settings_dialog.py`
+
+- `help.md`, `settings.json`, `requirements.txt`
+
+- Mappen: `assets/`, `assets/css/`, `logs/`, `label/`, `dist/`
+
+- **Logging:** alle logmeldingen vind je in `logs/app.log`
 
 ---
 
 ## 📁 Exporteer & installeer
 
-- Gebruik `build_installer.bat` om build + zip te maken
-- Kopieer ZIP naar andere pc/USB
-- Installeer via `install_and_run.bat`
-- Doelmap = `C:\SearchArticle`
+- Gebruik `build_installer.bat` om de applicatie te bouwen en een Inno Setup-installer te maken
+
+- Na de build vind je de standalone `.exe` in de map `dist/ArticleSearch_%VERSIE%/`
+
+- Je kunt het installatieprogramma (`ArticleSearchSetup_%VERSIE%.exe`) rechtstreeks uitvoeren op andere PC’s of vanaf een USB-stick
+
+- Standaard installatiepad: `C:\ArticleSearch`
 
 ---
 
 ## ℹ️ Feedback
 
-> Voor vragen of feedback, contacteer de ontwikkelaar.
+> Voor vragen of opmerkingen kun je contact opnemen met de ontwikkelaar.
 
 ---
 
-## 🐞 Bug of Feature melden
+## 🐞 Bug of feature melden
 
-Je kan fouten of verbetersuggesties rechtstreeks doorgeven via het menu **Rapporteren > Bug of feature melden...**
+Via het menu **Rapporteren > Bug of feature melden…** kun je een melding maken:
 
-### 🔧 Types meldingen
+1.  **Type melding**
 
-- **Bugmelding** → opent een GitHub Issue
-- **Feature-aanvraag** → opent een Pull Request in de repo
+- Bug
 
-### 📋 Invoervelden
+- Feature-aanvraag
 
-- Naam van melder
-- Type melding (bug of feature)
-- Beschrijving
+2.  **Beschrijving** van het probleem of de wens
 
-Na verzending krijg je een bevestiging met de link naar GitHub
+Na verzenden wordt er een melding aangemaakt op GitHub.
 
-### 🎯 Bestandsstructuur
+- **Bugmeldingen** worden opgeslagen onder `bugs/bug-xxxx.md`
 
-- Bugmeldingen: `bugs/bug-xxxx.md`
-- Features: `features/feature-xxxx.md` + PR naar `main`
+- **Feature-aanvragen** komen onder `features/feature-xxxx.md` en leiden tot een pull request naar `main`
+
+---
