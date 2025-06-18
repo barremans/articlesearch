@@ -1,0 +1,258 @@
+/* ================================================
+   detail.qss – Styling voor DetailWindow (ui_detail.py)
+   ================================================ */
+
+/* ----------------------------------------------
+   1. Basisinstellingen voor DetailWindow (QDialog)
+   ---------------------------------------------- */
+DetailWindow, DetailWindow QWidget {
+    background-color: #ffffff;
+    font-family: "Segoe UI", Verdana, Arial, sans-serif;
+    font-size: 11px;
+    color: #333333;
+}
+
+/* ----------------------------------------------
+   2. Titellabel bovenaan (“Artikelcode: …”)
+   ---------------------------------------------- */
+DetailWindow > QLabel {
+    font-size: 12px;
+    font-weight: bold;
+    color: #333333;
+    margin: 8px 0px;
+}
+
+/* ----------------------------------------------
+   3. QTabWidget-containers en omlijsting
+   ---------------------------------------------- */
+QTabWidget {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+}
+
+/* ----------------------------------------------
+   4. Tabs (QTabBar::tab)
+   ---------------------------------------------- */
+QTabBar::tab {
+    background: #f0f0f0;
+    border: 1px solid #cccccc;
+    border-bottom: none;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 6px 12px;
+    margin-right: -1px;
+    font-size: 11px;
+    color: #333333;
+}
+
+QTabBar::tab:selected {
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-bottom: 1px solid #ffffff;
+    color: #333333;
+    font-weight: bold;
+}
+
+QTabBar::tab:hover {
+    background: #e8e8e8;
+}
+
+/* QTabWidget achtergrond achter de tabbladen */
+QTabBar {
+    qproperty-drawBase: 0;
+    background-color: transparent;
+    margin-left: 8px;
+}
+
+/* ----------------------------------------------
+   5. Inhoud van elk Tab-pagina (QWidget)
+   ---------------------------------------------- */
+QTabWidget > QWidget {
+    background-color: #ffffff;
+    border-top: 1px solid #cccccc;
+    padding: 8px;
+}
+
+/* ----------------------------------------------
+   6. Tabellen binnen DetailWindow (QTableWidget)
+   ---------------------------------------------- */
+DetailWindow QTableWidget {
+    border: 1px solid #cccccc;
+    gridline-color: #dddddd;
+    selection-background-color: #e6f2ff;
+    selection-color: #333333;
+    font-size: 11px;
+    background-color: #f9f9f9;
+}
+
+/* Items binnen tabel */
+DetailWindow QTableWidget::item {
+    padding: 4px;
+    font-size: 11px;
+    color: #333333;
+}
+
+/* Header-secties */
+DetailWindow QHeaderView::section {
+    background-color: #f0f0f0;
+    border: 1px solid #cccccc;
+    padding: 4px;
+    font-weight: bold;
+    color: #333333;
+    font-size: 11px;
+}
+
+/* Corner button in hoek linkboven */
+DetailWindow QTableCornerButton::section {
+    background-color: #f0f0f0;
+    border: 1px solid #cccccc;
+}
+
+/* “Geen data” melding in tabel – rode tekst */
+DetailWindow QTableWidget::item:selected {
+    background: #ffefef;
+    color: #cc0000;
+}
+
+/* ----------------------------------------------
+   7. Upload‐knop (“📤 Upload nieuwe aanpassingen”)
+   ---------------------------------------------- */
+DetailWindow QPushButton {
+    padding: 6px 12px;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    color: #333333;
+    font-size: 11px;
+}
+
+DetailWindow QPushButton:hover {
+    background-color: #e6e6e6;
+}
+
+DetailWindow QPushButton:pressed {
+    background-color: #d4d4d4;
+}
+
+DetailWindow QPushButton:disabled {
+    background-color: #eeeeee;
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+}
+
+/* ----------------------------------------------
+   8. ScrollArea rondom afbeeldingen (QScrollArea)
+   ---------------------------------------------- */
+DetailWindow QScrollArea {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+/* Container in ScrollArea */
+DetailWindow QScrollArea > QWidget {
+    background-color: #ffffff;
+}
+
+/* ----------------------------------------------
+   9. Afbeeldings-labels (QLabel met pixmap)
+   ---------------------------------------------- */
+DetailWindow QLabel {
+    font-size: 11px;
+    color: #333333;
+}
+
+/* Labelen die een pixmap tonen (afbeelding) */
+DetailWindow QLabel[pixmap] {
+    border: 1px solid #cccccc;
+    border-radius: 2px;
+    padding: 2px;
+    background-color: #ffffff;
+}
+
+/* Foutmelding‐label in image-tab */
+DetailWindow QLabel#errorLabel {
+    font-size: 11px;
+    color: #cc0000;
+    padding: 4px;
+}
+
+/* ----------------------------------------------
+   10. Links in image-tab (QLabel met openExternalLinks)
+   ---------------------------------------------- */
+DetailWindow QLabel[openExternalLinks] {
+    font-size: 11px;
+    color: #0066cc;
+    text-decoration: none;
+}
+
+DetailWindow QLabel[openExternalLinks]:hover {
+    text-decoration: underline;
+}
+
+/* ----------------------------------------------
+   11. Focus-outline voor child‐widgets
+   ---------------------------------------------- */
+DetailWindow QWidget:focus {
+    outline: 1px dotted #66afe9;
+}
+
+/* ----------------------------------------------
+   12. Child‐windows (ImageUploader)
+   ---------------------------------------------- */
+ImageUploader, ImageUploader QWidget {
+    background-color: #ffffff;
+    font-family: "Segoe UI", Verdana, Arial, sans-serif;
+    font-size: 11px;
+    color: #333333;
+}
+
+/* ----------------------------------------------
+   13. Scrollbars voor tabellen en afbeeldingen
+   ---------------------------------------------- */
+DetailWindow QScrollBar:vertical {
+    background: #f0f0f0;
+    width: 12px;
+    margin: 0px;
+}
+
+DetailWindow QScrollBar::handle:vertical {
+    background: #cccccc;
+    min-height: 20px;
+    border-radius: 4px;
+}
+
+DetailWindow QScrollBar::add-line:vertical,
+DetailWindow QScrollBar::sub-line:vertical {
+    background: none;
+    height: 0px;
+}
+
+DetailWindow QScrollBar:horizontal {
+    background: #f0f0f0;
+    height: 12px;
+    margin: 0px;
+}
+
+DetailWindow QScrollBar::handle:horizontal {
+    background: #cccccc;
+    min-width: 20px;
+    border-radius: 4px;
+}
+
+DetailWindow QScrollBar::add-line:horizontal,
+DetailWindow QScrollBar::sub-line:horizontal {
+    background: none;
+    width: 0px;
+}
+
+/* ----------------------------------------------
+   14. Foutdialogs (QMessageBox binnen DetailWindow)
+   ---------------------------------------------- */
+DetailWindow QMessageBox {
+    background-color: #f9f9f9;
+    font-size: 11px;
+    color: #333333;
+}

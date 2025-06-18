@@ -1,0 +1,610 @@
+/* ==========================================
+   1. Globale Letter- en Kleureninstellingen
+   ========================================== */
+/* Gebruik consistente font-familie en standaardgrootte overal */
+* {
+    font-family: "Segoe UI", Verdana, Arial, sans-serif;
+    font-size: 11px;
+    color: #333333;
+}
+
+/* Preloader/spinner (als je die gebruikt) */
+QMovie, QLabel#loading_spinner {
+    background: transparent;
+}
+
+/* ===========================================
+   2. Base-kleuren zonder variabelen
+   =========================================== */
+ /* Lichtste achtergrond */
+ /*    #ffffff  */
+/* Donkerdere achtergrond voor statusbalk / headers */
+ /*   #f0f0f0 */  
+/* Net iets lichter dan #ffffff, bv. voor dialogs */
+ /*    #f9f9f9  */
+/* Border-kleur */
+ /*    #cccccc  */
+/* Accent-kleur (voor focus, progressbars, checkboxes) */
+ /*    #66afe9  */
+/* Gedimde tekst */
+ /*    #555555  */
+/* Disabled tekstkleur */
+ /*    #aaaaaa  */
+
+/* =========================
+   3. ToolTips (Globaal)
+   ========================= */
+QToolTip {
+    background-color: #ffffe1;
+    color: #000000;
+    border: 1px solid #cccccc;
+    padding: 4px;
+    border-radius: 3px;
+    font-size: 10px;
+}
+
+/* ============================
+   4. Hoofdvenster (QMainWindow)
+   ============================ */
+QMainWindow {
+    background-color: #9d1d06; /* lichte achtergrond */
+}
+
+/* ====================================
+   5. Menubalk en Menu’s (QMenuBar/QMenu)
+   ==================================== */
+QMenuBar {
+    background-color: #b1b1b1;
+    border-bottom: 1px solid #cccccc;
+    font-size: 12px;
+}
+
+QMenuBar::item {
+    color: #333333;
+    padding: 4px 10px;
+    background: transparent;
+}
+
+QMenuBar::item:selected {
+    background-color: #e0e0e0;
+    color: #333333;
+}
+
+QMenu {
+    background-color: #ffffff;
+    border: 1px solid #aaa;
+    font-size: 11px;
+}
+
+QMenu::item {
+    color: #333333;
+    padding: 4px 10px;
+}
+
+QMenu::item:selected {
+    background-color: #e0e0e0;
+    color: #333333;
+}
+
+/* ===============================
+   6. Statusbalk (QStatusBar)
+   =============================== */
+QStatusBar {
+    background-color: #f0f0f0;
+    border-top: 1px solid #cccccc;
+    font-size: 10px;
+    color: #555555;
+}
+
+/* ==============================
+   7. Dialogvensters (QDialog/MessageBox)
+   ============================== */
+QDialog, QMessageBox {
+    background-color: #f9f9f9;
+    font-size: 11px;
+    color: #333333;
+    border: none;
+}
+
+/* ================================
+   8. Knoppen (QPushButton/QDialog QPushButton)
+   ================================ */
+QPushButton {
+    padding: 6px 12px;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    color: #333333;
+    font-size: 11px;
+}
+
+QPushButton:hover {
+    background-color: #e6e6e6;
+}
+
+QPushButton:pressed {
+    background-color: #d4d4d4;
+}
+
+QPushButton:focus {
+    outline: none;
+    border: 1px solid #66afe9; /* accentkleur */
+}
+
+QPushButton:disabled {
+    background-color: #eeeeee;
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+}
+
+/* Specifieke update-knop in About-dialog */
+#update_btn {
+    background-color: #d9edf7;
+    border: 1px solid #bce8f1;
+    color: #31708f;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+#update_btn:disabled {
+    background-color: #eeeeee;
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+}
+
+/* =============================================
+   9. Labels & Tekstvelden (QLabel/QTextBrowser)
+   ============================================= */
+QLabel {
+    font-size: 11px;
+    color: #333333;
+}
+
+QLabel[objectName="bigHeader"] {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333333;
+}
+
+QLabel[objectName="smallDim"] {
+    font-size: 10px;
+    color: #555555;
+}
+
+QTextBrowser {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    padding: 4px;
+    font-size: 11px;
+    color: #333333;
+}
+
+/* ==================================
+   10. Invoervelden (QLineEdit/QTextEdit)
+   ================================== */
+QLineEdit, QTextEdit {
+    padding: 4px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 11px;
+}
+
+QLineEdit[readOnly="true"], QTextEdit[readOnly="true"] {
+    background-color: #f5f5f5;
+    color: #aaaaaa;
+}
+
+QLineEdit:focus, QTextEdit:focus {
+    border: 1px solid #66afe9;
+    outline: none;
+}
+
+/* Placeholdertekst lichter maken */
+QLineEdit[placeholderText] {
+    color: #999999;
+}
+
+/* ===================================
+   11. ComboBox & Drop-downmenu’s
+   =================================== */
+QComboBox {
+    padding: 4px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 11px;
+}
+
+QComboBox:focus {
+    border: 1px solid #66afe9;
+    outline: none;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 16px;
+    border-left: 1px solid #cccccc;
+}
+
+QComboBox::down-arrow {
+    image: url(:/icons/arrow-down.png);
+    width: 12px;
+    height: 12px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    selection-background-color: #e6f2ff;
+    selection-color: #333333;
+    font-size: 11px;
+}
+
+/* Disabled state */
+QComboBox:disabled {
+    background-color: #f5f5f5;
+    color: #aaaaaa;
+}
+
+/* ==========================
+   12. Checkbox & Radiobutton
+   ========================== */
+QCheckBox, QRadioButton {
+    spacing: 4px;
+    color: #333333;
+    font-size: 11px;
+}
+
+/* CheckBox indicator */
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QCheckBox::indicator:unchecked, QRadioButton::indicator:unchecked {
+    border: 1px solid #cccccc;
+    background-color: #ffffff;
+    border-radius: 2px;
+}
+
+QCheckBox::indicator:checked, QRadioButton::indicator:checked {
+    border: 1px solid #66afe9;
+    background-color: #66afe9;
+    image: url(:/icons/checkmark.png);
+}
+
+/* ===============================
+   13. TableWidget & Headers (QTableWidget/QHeaderView)
+   =============================== */
+QTableWidget {
+    border: 1px solid #cccccc;
+    gridline-color: #dddddd;
+    selection-background-color: #e6f2ff;
+    selection-color: #333333;
+    font-size: 11px;
+}
+
+/* Items binnen tabel */
+QTableWidget::item {
+    padding: 4px;
+    font-size: 11px;
+}
+
+/* Header secties */
+QHeaderView::section {
+    background-color: #f0f0f0;
+    border: 1px solid #cccccc;
+    padding: 4px;
+    font-weight: bold;
+    color: #333333;
+    font-size: 11px;
+}
+
+/* Hoekstuk in hoek linkboven */
+QTableCornerButton::section {
+    background-color: #f0f0f0;
+    border: 1px solid #cccccc;
+}
+
+/* ===================
+   14. Scroll Bars
+   =================== */
+QScrollBar:vertical {
+    background: #f0f0f0;
+    width: 12px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: #cccccc;
+    min-height: 20px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    background: none;
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    background: #f0f0f0;
+    height: 12px;
+    margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #cccccc;
+    min-width: 20px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    background: none;
+    width: 0px;
+}
+
+/* ========================
+   15. InputDialog & QInputWidget
+   ======================== */
+QInputDialog {
+    background-color: #f9f9f9;
+    font-size: 11px;
+}
+
+QInputDialog QLabel {
+    color: #333333;
+    font-size: 11px;
+}
+
+/* ==================================
+   16. ProgressBar (QProgressBar) – optioneel
+   ================================== */
+QProgressBar {
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+    text-align: center;
+    color: #333333;
+    font-size: 11px;
+}
+
+QProgressBar::chunk {
+    background-color: #66afe9;
+    width: 10px;
+    margin: 0.5px;
+    border-radius: 3px;
+}
+
+/* =============================
+   17. SpinBox & DoubleSpinBox
+   ============================= */
+QSpinBox, QDoubleSpinBox {
+    padding: 4px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 11px;
+}
+
+QSpinBox:focus, QDoubleSpinBox:focus {
+    border: 1px solid #66afe9;
+    outline: none;
+}
+
+QSpinBox::up-button, QDoubleSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    width: 16px;
+    border-left: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+}
+
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    width: 16px;
+    border-left: 1px solid #cccccc;
+    border-top: 1px solid #cccccc;
+}
+
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {
+    image: url(:/icons/arrow-up.png);
+    width: 8px;
+    height: 8px;
+}
+
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {
+    image: url(:/icons/arrow-down.png);
+    width: 8px;
+    height: 8px;
+}
+
+/* ============================
+   18. Date/Time Editors (QDateEdit/QTimeEdit)
+   ============================ */
+QDateEdit, QTimeEdit {
+    padding: 4px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 11px;
+}
+
+QDateEdit:focus, QTimeEdit:focus {
+    border: 1px solid #66afe9;
+    outline: none;
+}
+
+QDateEdit::drop-down, QTimeEdit::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 16px;
+    border-left: 1px solid #cccccc;
+}
+
+QDateEdit::down-arrow, QTimeEdit::down-arrow {
+    image: url(:/icons/calendar.png);
+    width: 12px;
+    height: 12px;
+}
+
+/* ==========================
+   19. TabWidget (QTabWidget/QTabBar)
+   ========================== */
+QTabWidget {
+    background-color: #ffffff;
+}
+
+QTabBar::tab {
+    background: #f0f0f0;
+    border: 1px solid #cccccc;
+    padding: 6px 12px;
+    margin-right: -1px;
+    font-size: 11px;
+    color: #333333;
+}
+
+QTabBar::tab:selected {
+    background: #ffffff;
+    border-bottom: 2px solid #66afe9;
+    color: #333333;
+}
+
+QTabBar::tab:hover {
+    background: #e8e8e8;
+}
+
+/* =========================
+   20. GroupBox & Frames (QGroupBox/QFrame)
+   ========================= */
+QGroupBox {
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    margin-top: 16px;
+    font-size: 11px;
+    color: #333333;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 3px;
+    color: #333333;
+    font-weight: bold;
+}
+
+QFrame {
+    border: 1px solid #cccccc;
+    background-color: #ffffff;
+}
+
+/* ======================
+   21. Splitter (QSplitter)
+   ====================== */
+QSplitter::handle {
+    background: #f0f0f0;
+    border: 1px solid #cccccc;
+}
+
+/* ==========================
+   22. ScrollArea (QScrollArea)
+   ========================== */
+QScrollArea {
+    background-color: #ffffff;
+    border: none;
+}
+
+/* ==========================
+   23. TreeView/ListView (optie)
+   ========================== */
+QTreeView, QListView {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    font-size: 11px;
+    color: #333333;
+}
+
+QTreeView::item:selected, QListView::item:selected {
+    background-color: #e6f2ff;
+    color: #333333;
+}
+
+/* ==========================
+   24. ToolBar & ToolButton (indien van toepassing)
+   ========================== */
+QToolBar {
+    background: #f0f0f0;
+    spacing: 4px;
+    border: 1px solid #cccccc;
+}
+
+QToolButton {
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    padding: 4px;
+    margin: 2px;
+    color: #333333;
+    font-size: 11px;
+}
+
+QToolButton:hover {
+    background: #e6e6e6;
+}
+
+QToolButton:pressed {
+    background: #d4d4d4;
+}
+
+QToolButton:disabled {
+    background: #f5f5f5;
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+}
+
+/* =============================
+   25. Overige Widget States
+   ============================= */
+/* Disabled tekst voor algemene widgets */
+*:disabled {
+    color: #aaaaaa;
+}
+
+/* Focus state voor containers (optioneel) */
+QWidget:focus {
+    outline: 1px dotted #66afe9;
+}
+
+/* Selection voor tekst in QTextEdit/QTextBrowser */
+QTextEdit, QTextBrowser {
+    selection-background-color: #cce6ff;
+    selection-color: #333333;
+}
+
+/* ======================================================
+   26. Eventuele Applicatie-specifieke ObjectNamen (ID’s)
+   ====================================================== */
+/* Specifieke labels uit ui_main.py kun je benoemen met #objectName */
+QLabel#result_count_label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #444444;
+}
+
+QLineEdit#input_field {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+}
+
+/* ==========================================
+   27. Overige lintjes en final checks
+   ========================================== */
+/* Als je in de toekomst nog extra widgets toevoegt (bv. QCalendarWidget,
+   QDialogButtonBox, enz.), dien je die apart in de QSS op te nemen. */

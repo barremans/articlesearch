@@ -1,0 +1,45 @@
+{
+  "default_search_type": "Project",
+  "environment": "live",
+  "show_stock": "S",
+  "detail_modal": false,
+  "tab_order": [
+    "install",
+    "vta",
+    "vta_cert",
+    "art"
+  ],
+  "label_settings": {
+    "LABEL_WIDTH": 85.0,
+    "LABEL_HEIGHT": 25.0,
+    "BARCODE_TOP": 12.0,
+    "BARCODE_LEFT": 25.0,
+    "BARCODE_WIDTH_SCALE": 0.15,
+    "BARCODE_HEIGHT_SCALE": 0.2,
+    "ART_TOP": 13.0,
+    "ART_LEFT": 40.0,
+    "DESCRIPTION_TOP": 10.0,
+    "DESCRIPTION_LEFT": 5.0,
+    "DESCRIPTION_WIDTH": 60.0,
+    "DATE_TOP": 3.0,
+    "DATE_LEFT": 5.0,
+    "INBOUND_TOP": 3.0,
+    "INBOUND_LEFT": 50.0,
+    "SUPPLIER_TOP": 6.0,
+    "SUPPLIER_LEFT": 5.0,
+    "FONT_SIZE_ART": 7.0,
+    "FONT_SIZE_DESCRIPTION": 9.0,
+    "FONT_SIZE_SUPPLIER": 7.0,
+    "FONT_SIZE_INBOUND": 7.0,
+    "FONT_SIZE_DATE": 7.0
+  },
+  "main_qss_path": "",
+  "detail_qss_path": "",
+  "upload_qss_path": "",
+  "project_tab_order": [
+    "art",
+    "install",
+    "vta",
+    "vta_cert"
+  ]
+}

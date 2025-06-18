@@ -1,0 +1,256 @@
+ 
+--- Build gestart op 16/05/2025  8:16:40.66 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250516-0816.zip 
+--- Einde build op 16/05/2025  8:18:38.89 --- 
+ 
+--- Build gestart op 16/05/2025  8:20:52.13 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250516-0820.zip 
+--- Einde build op 16/05/2025  8:22:08.48 --- 
+ 
+--- Build gestart op 16/05/2025  8:24:43.63 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250516-0824.zip 
+--- Einde build op 16/05/2025  8:26:59.88 --- 
+ 
+--- Build gestart op 16/05/2025  8:40:34.83 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250516-0840.zip 
+--- Einde build op 16/05/2025  8:43:36.30 --- 
+ 
+--- Build gestart op 16/05/2025  9:50:28.34 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250516-0950.zip 
+--- Einde build op 16/05/2025  9:53:33.41 --- 
+ 
+--- Build gestart op 16/05/2025 10:32:18.94 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250516-1032.zip 
+--- Einde build op 16/05/2025 10:35:24.52 --- 
+ 
+--- Build gestart op 16/05/2025 10:50:19.88 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250516-1050.zip 
+--- Einde build op 16/05/2025 10:53:16.42 --- 
+ 
+--- Build gestart op 18/05/2025 13:28:52.04 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250518-1328.zip 
+--- Einde build op 18/05/2025 13:30:40.14 --- 
+ 
+--- Build gestart op 18/05/2025 13:31:10.64 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250518-1331.zip 
+--- Einde build op 18/05/2025 13:32:02.04 --- 
+ 
+--- Build gestart op 19/05/2025  9:49:44.91 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250519-0949.zip 
+--- Einde build op 19/05/2025  9:52:01.19 --- 
+ 
+--- Build gestart op 19/05/2025  9:55:56.29 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250519-0955.zip 
+--- Einde build op 19/05/2025  9:59:05.15 --- 
+ 
+--- Build gestart op 19/05/2025 10:20:58.19 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250519-1020.zip 
+--- Einde build op 19/05/2025 10:23:25.15 --- 
+ 
+--- Build gestart op 19/05/2025 10:46:38.37 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250519-1046.zip 
+--- Einde build op 19/05/2025 10:48:40.48 --- 
+ 
+--- Build gestart op 19/05/2025 10:58:48.07 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250519-1058.zip 
+--- Einde build op 19/05/2025 11:01:37.53 --- 
+ 
+--- Build gestart op 19/05/2025 11:57:07.79 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250519-1156.zip 
+--- Einde build op 19/05/2025 12:00:07.22 --- 
+ 
+--- Build gestart op 25/05/2025 18:31:41.48 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250525-1831.zip 
+--- Einde build op 25/05/2025 18:33:58.38 --- 
+ 
+--- Build gestart op 25/05/2025 18:34:17.81 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250525-1834.zip 
+--- Einde build op 25/05/2025 18:36:48.32 --- 
+ 
+--- Build gestart op 28/05/2025 10:27:15.88 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250528-1027.zip 
+--- Einde build op 28/05/2025 10:29:30.23 --- 
+ 
+--- Build gestart op 28/05/2025 10:30:20.98 --- 
+[1] Pip packages geverifieerd. 
+[INFO] Assets gekopieerd. 
+[INFO] ZIP-archief aangemaakt: dist\ArticleSearch_20250528-1030.zip 
+--- Einde build op 28/05/2025 10:33:18.92 --- 
+ 
+--- Build gestart op 29/05/2025 10:45:04.65 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 29/05/2025 10:57:07.34 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 29/05/2025 11:05:04.43 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  8:03:08.14 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  8:10:56.01 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  8:20:43.53 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  8:25:56.54 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  8:33:07.24 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  8:47:33.05 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  8:54:10.41 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  9:01:10.93 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  9:07:10.31 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  9:13:32.39 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025  9:26:26.36 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025 14:51:18.44 --- 
+--- Build voltooid --- 
+ 
+--- Build gestart op 30/05/2025 14:55:37.21 --- 
+--- Build voltooid --- 
+ 
+--- Build gestart op 30/05/2025 14:57:55.97 --- 
+ 
+--- Build gestart op 30/05/2025 15:00:36.53 --- 
+ 
+--- Build gestart op 30/05/2025 15:03:57.69 --- 
+ 
+--- Build gestart op 30/05/2025 15:06:29.08 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025 15:09:39.42 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025 15:12:35.68 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/05/2025 15:14:25.83 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 01/06/2025  9:33:27.65 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 01/06/2025 17:30:01.53 --- 
+ 
+--- Build gestart op 01/06/2025 17:35:36.55 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 14/06/2025 18:39:12.83 --- 
+❌ Fout tijdens build met PyInstaller. 
+ 
+--- Build gestart op 14/06/2025 18:41:54.28 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 14/06/2025 18:49:47.10 --- 
+Alle assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  8:31:49.55 --- 
+❌ Kon uitvoermap niet hernoemen. 
+ 
+--- Build gestart op 16/06/2025  8:34:14.95 --- 
+✅ Assets toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  8:40:05.61 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  8:49:45.21 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  8:54:53.99 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  8:59:43.51 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  9:06:29.98 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  9:08:56.09 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  9:26:32.72 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  9:41:38.47 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025  9:49:27.13 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 16/06/2025 11:27:04.63 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 17/06/2025 11:38:22.57 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 17/06/2025 11:49:33.01 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 17/06/2025 12:10:34.80 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 17/06/2025 12:24:59.37 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 17/06/2025 13:01:34.86 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 17/06/2025 13:16:50.37 --- 
+ 
+--- Build gestart op 17/06/2025 13:26:00.49 --- 
+✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 17/06/2025 13:32:56.07 --- 
+✅ Assets en metadata toegevoegd. 

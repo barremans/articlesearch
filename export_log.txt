@@ -1,0 +1,6 @@
+Laatste export: 22/05/2025 17:12:03.06 
+Bronmap: C:\SearchArticle 
+Bestemming: d:\export_SearchArticle_20250522-1710 
+Virtuele omgeving meegenomen: C:\SearchArticle\venv 
+requirements.txt aanwezig: 
+  JA 
