@@ -2,3 +2,7 @@ venv/
 dist/
 *.exe
 *.zip
+venv/
+dist/
+*.exe
+*.zip
