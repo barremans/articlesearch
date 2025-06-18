@@ -157,18 +157,28 @@ class ProjectWindow(QDialog):
             installations_table.setItem(i, 4, make_cell(item.get("In magazijn")))
             installations_table.setItem(i, 5, make_cell(item.get("Bevestigd")))
             installations_table.setItem(i, 6, make_cell(item.get("In bestelling")))
-            installations_table.setItem(i, 7, make_cell(item.get("Besteld op document")))
+            
+            #installations_table.setItem(i, 7, make_cell(item.get("Besteld op document")))
+                # → kolom 7 = "Doc." met data uit "In bestelling" en koppeling naar POR
+            doc_text = str(item.get("Besteld op document", ""))  # ← juiste veld!
+            cell_item = make_cell(doc_text)
+            cell_item.setData(Qt.UserRole, item.get("POR", {}))  # ← koppel POR
+            installations_table.setItem(i, 7, cell_item)
+
             installations_table.setItem(i, 8, make_cell(item.get("Aantal")))
             installations_table.setItem(i, 9, make_cell(item.get("Bevestigde Leverdatum")))
             installations_table.setItem(i, 10, make_cell(item.get("Picked")))
             installations_table.setItem(i, 11, make_cell(item.get("Status")))
             installations_table.setItem(i, 12, make_cell(item.get("Projectleider")))
             installations_table.setItem(i, 13, make_cell(item.get("RealLocation")))
+            
+        # Koppel dubbelklik aan POR-functie
+        self.installations_table = installations_table
+        self.installations_table.cellDoubleClicked.connect(self._handle_install_cell_click)            
 
         installations_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         installations_layout.addWidget(installations_table)
         installations_layout.addWidget(QLabel(f"Aantal rijen: {installations_table.rowCount()}"))
-        #tabs.addTab(installations_tab, "Installaties")
         
         
         # Stel kolombreedte-gedrag in
@@ -271,13 +281,7 @@ class ProjectWindow(QDialog):
             if key in tab_map:
                 tabs.addTab(tab_map[key][0], tab_map[key][1])
 
-
-
-
                 layout.addWidget(tabs)
-
-
-
 
     def _add_truncated_text(self, layout, label, full_text, max_length=50):
         full_text = str(full_text or "")
@@ -464,34 +468,72 @@ class ProjectWindow(QDialog):
         por = item.data(Qt.UserRole)
         if por:
             self._show_por_dialog(por)
+            
+    def _handle_install_cell_click(self, row, column):
+        if column != 7:
+            return
+        item = self.installations_table.item(row, column)
+        if item is None:
+            return
+        por = item.data(Qt.UserRole)
+        if por:
+            self._show_por_dialog(por)
+            
+            
 
     def _show_por_dialog(self, por):
         dlg = QDialog(self)
         dlg.setWindowTitle(f"Aankoopdocument {por.get('DocNum')}")
-        dlg.resize(800, 400)
+        dlg.resize(1000, 400)
         layout = QVBoxLayout(dlg)
 
         layout.addWidget(QLabel(
             f"<b>Leverancier:</b> {por.get('CardName')}<br>"
             f"<b>CardCode:</b> {por.get('CardCode')}<br>"
-            f"<b>DocEntry:</b> {por.get('DocEntry')}<br>"
+            f"<b>Comments:</b> {por.get('Comments')}<br>"
             f"<b>DocNum:</b> {por.get('DocNum')}"
         ))
 
         lines = por.get("POR1", [])
         table = QTableWidget()
         table.setRowCount(len(lines))
-        table.setColumnCount(5)
-        table.setHorizontalHeaderLabels(["Line", "ItemCode", "Omschrijving", "Aantal", "Project"])
+        table.setColumnCount(6)
+        table.setHorizontalHeaderLabels(["Line", "ItemCode", "Omschrijving", "Aantal", "Suppl.Art.", "S/N"])
 
         for r, line in enumerate(lines):
-            table.setItem(r, 0, QTableWidgetItem(str(line.get("LineNum"))))
-            table.setItem(r, 1, QTableWidgetItem(str(line.get("ItemCode"))))
-            table.setItem(r, 2, QTableWidgetItem(str(line.get("Dscription"))))
-            table.setItem(r, 3, QTableWidgetItem(str(line.get("Quantity"))))
-            table.setItem(r, 4, QTableWidgetItem(str(line.get("Project"))))
+            def make_item(key):
+                val = str(line.get(key, ""))
+                item = QTableWidgetItem(val)
+                item.setToolTip(val)
+                return item
 
-        table.horizontalHeader().setStretchLastSection(True)
+        for r, line in enumerate(lines):
+            table.setItem(r, 0, make_item("LineNum"))
+            table.setItem(r, 1, make_item("ItemCode"))
+            table.setItem(r, 2, make_item("Dscription"))
+            table.setItem(r, 3, make_item("Quantity"))
+            table.setItem(r, 4, make_item("VendorNum"))
+            table.setItem(r, 5, make_item("SerialNum"))
+
+
+        # Kolomgedrag: 'Omschrijving' flexibel, rest vast
+        header = table.horizontalHeader()
+        for i in range(table.columnCount()):
+            header.setSectionResizeMode(i, QHeaderView.Interactive)
+
+        # Alleen 'Omschrijving' mee laten schalen
+        header.setSectionResizeMode(2, QHeaderView.Stretch)
+
+        # Minimum breedte forceren via initiële waarde
+        table.setColumnWidth(2, 300)
+
+        # Vaste breedtes voor andere kolommen
+        table.setColumnWidth(0, 50)    # Line
+        table.setColumnWidth(1, 100)   # ItemCode
+        table.setColumnWidth(3, 70)    # Aantal
+        table.setColumnWidth(4, 120)   # Suppl.Art.
+        table.setColumnWidth(5, 100)   # S/N
+
         layout.addWidget(table)
 
         close_btn = QPushButton("Sluit")

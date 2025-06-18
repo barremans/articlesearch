@@ -4,8 +4,8 @@
   "show_stock": "S",
   "detail_modal": false,
   "tab_order": [
-    "install",
     "vta",
+    "install",
     "vta_cert",
     "art"
   ],
