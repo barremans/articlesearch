@@ -87,6 +87,14 @@ class MainWindow(QMainWindow):
         self.detail_windows = []
         self.upload_windows = []
         self.project_window = None
+        # Voeg update-knop toe bij init zodat check_for_update() niet faalt
+        self.setStatusBar(QStatusBar(self))
+        # ❗ Vertraagde updatecheck zodat QMessageBox correct toont
+        QTimer.singleShot(1000, lambda: check_for_update(__version__, self))
+        self.update_btn = QPushButton("Update nu")
+        self.update_btn.setEnabled(False)
+        self.update_btn.clicked.connect(lambda: download_latest_release(self))
+
 
         self.setWindowTitle("Artikelzoeker")
         icon_path = os.path.join(os.path.dirname(__file__), "assets", "stocks.png")
@@ -125,7 +133,12 @@ class MainWindow(QMainWindow):
         self.input_field.installEventFilter(self)
         self.setStatusBar(QStatusBar(self))
 
-        check_for_update(__version__, self, self._enable_update_button)
+        #check_for_update(__version__, self, self._enable_update_button)
+        #check_for_update(__version__, self)
+        #QTimer.singleShot(1000, lambda: check_for_update(__version__, self))
+
+
+
 
     def _enable_update_button(self, is_update_available: bool):
         if hasattr(self, 'update_btn') and self.update_btn:
@@ -291,16 +304,28 @@ class MainWindow(QMainWindow):
                 return
 
         if is_project:
-            # JSON in apart venster
-            self.project_window = ProjectWindow(data, parent=self)
-            self.project_window.show()
-            self.detail_windows.append(self.project_window)  # zorgt dat hij mee beweegt
+            if isinstance(data, dict) and "error" in data:
+                QMessageBox.warning(self, "Projectzoeking mislukt", f"❌ {data['error']}")
+            elif isinstance(data, list):
+                try:
+                    self.project_window = ProjectWindow(data, parent=self)
+                    self.project_window.show()
+                    self.detail_windows.append(self.project_window)
+                except Exception as e:
+                    QMessageBox.warning(
+                        self,
+                        "Fout bij tonen projectgegevens",
+                        f"❌ Ongeldige projectdata of formaat:\n{e}"
+                    )
+            else:
+                QMessageBox.warning(self, "Geen data", "❌ Geen geldige projectresultaten ontvangen.")
         else:
             self.populate_table(data)
 
         # stop spinner
         self.loading_movie.stop()
         self.loading_spinner.hide()
+
 
     def populate_table(self, data: list):
         show_stock = load_show_stock()
@@ -483,7 +508,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self, "Detail Fout", str(e))
 
-        QTimer.singleShot(0, lambda: self.input_field.setFocus(Qt.FocusReason.ActiveWindowFocusReason))
+        #QTimer.singleShot(0, lambda: self.input_field.setFocus(Qt.FocusReason.ActiveWindowFocusReason))
 
     def _open_selected_row(self):
         selected_items = self.table.selectedItems()
@@ -827,7 +852,6 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(dialog)
 
         layout.addWidget(QLabel("Artikelzoeker – zoektool voor artikels"))
-
         version_label = QLabel(f"Versie: {__version__}")
         version_label.setStyleSheet("color: gray;")
         layout.addWidget(version_label)
@@ -837,8 +861,12 @@ class MainWindow(QMainWindow):
         self.update_btn.clicked.connect(lambda: download_latest_release(dialog))
         layout.addWidget(self.update_btn)
 
+        # ✅ Updatecontrole met knop activatie via callback
+        check_for_update(__version__, dialog, lambda ok: self.update_btn.setEnabled(ok))
+
         dialog.setLayout(layout)
         dialog.exec()
+
 
     def _show_bug_report_dialog(self):
         dialog = BugDialog(self)
@@ -865,3 +893,8 @@ class MainWindow(QMainWindow):
         self.mode_select.setVisible(not is_project)
         self.stock_label.setVisible(not is_project)
         self.show_stock_select.setVisible(not is_project)
+
+        # Leeg de zoekinput en focus erop
+        self.input_field.clear()
+        self.input_field.setFocus()
+

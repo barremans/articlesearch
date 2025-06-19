@@ -1,8 +1,11 @@
-#updater.py
+
+#updater.pyimport requests
 import requests
 import webbrowser
 from PySide6.QtWidgets import QMessageBox
 from packaging.version import parse as parse_version
+
+
 
 # 🔧 GitHub configuratie
 OWNER = "barremans"
@@ -17,8 +20,6 @@ VERSION_API_URL = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{RELEAS
 
 # 🔐 GitHub token (alleen nodig voor private repo's)
 TOKEN = "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"
-#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
-#"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"
 
 HEADERS = {
     "Accept": "application/vnd.github.v3.raw",
@@ -26,9 +27,6 @@ HEADERS = {
 }
 
 def extract_version_from_filename(name: str):
-    """
-    Extracteert versienummer uit bestandsnaam zoals ArticleSearchSetup_2.8.0.exe
-    """
     parts = name.rstrip(".exe").split("_")
     if len(parts) >= 2:
         try:
@@ -38,10 +36,6 @@ def extract_version_from_filename(name: str):
     return None
 
 def check_for_update(current_version: str, parent=None, callback=None):
-    """
-    Vergelijkt lokale versie met remote version.txt op GitHub
-    Toont melding als een update beschikbaar is
-    """
     try:
         response = requests.get(VERSION_API_URL, headers=HEADERS, timeout=5)
         if response.status_code != 200:
@@ -55,23 +49,23 @@ def check_for_update(current_version: str, parent=None, callback=None):
         is_update_available = parse_version(latest) > parse_version(current_version)
 
         if callback:
+            # 👉 alleen knop activeren
             callback(is_update_available)
         elif is_update_available:
+            # 👉 alleen popup tonen als geen callback
             QMessageBox.information(
                 parent,
                 "Nieuwe versie beschikbaar",
                 f"Je gebruikt versie {current_version}, maar versie {latest} is beschikbaar.\n"
-                "Klik op 'Bijwerken' in het menu om de nieuwste versie te downloaden."
+                "Klik op 'Update nu' in het menu om de nieuwste versie te downloaden."
             )
     except Exception as e:
         print(f"[update-check] Mislukt: {e}")
         if callback:
             callback(False)
 
+
 def download_latest_release(parent=None):
-    """
-    Zoekt de nieuwste .exe release op basis van versienummer en opent deze in de browser
-    """
     try:
         response = requests.get(CONTENTS_API_URL, headers=HEADERS, timeout=5)
         if response.status_code != 200:
@@ -90,7 +84,6 @@ def download_latest_release(parent=None):
             QMessageBox.warning(parent, "Geen update gevonden", "Er is geen .exe-bestand met een geldige versie gevonden.")
             return
 
-        # Sorteer op versie (hoogste eerst)
         versioned_files.sort(reverse=True, key=lambda x: x[0])
         latest_url = versioned_files[0][1]
 

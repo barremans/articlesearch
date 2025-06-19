@@ -1,1 +1,1 @@
-__version__ = "3.0.10"  # Pas dit manueel aan bij elke release
+__version__ = "4.0.1"  # Pas dit manueel aan bij elke release

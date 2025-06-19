@@ -12,7 +12,7 @@ from PySide6.QtGui import QPixmap, QGuiApplication, QShortcut, QKeySequence, QIc
 from PySide6.QtCore import Qt
 from settings import load_detail_modal, load_detail_qss_path
 
-
+# from oitmi_upload import ImageUploader
 
 def safe_base64_decode(data: bytes) -> bytes:
     try:
@@ -172,7 +172,7 @@ class DetailWindow(QDialog):
         self._add_tab("📄 Laatste aankoop", data, headers)
 
     def _add_image_tab(self):
-        images = self.detail_data.get("IMG", [])
+        images = self.detail_data.get("DIG", [])
         tab = QWidget()
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(10, 10, 10, 10)
@@ -238,29 +238,33 @@ class DetailWindow(QDialog):
         self.tabs.addTab(tab, "🖼️ Afbeelding")
 
     def _open_image_uploader(self):
-        from test_oitmi_upload import ImageUploader
+        from oitmi_upload import ImageUploader, safe_base64_cleanup  # ← extra functie
 
-        # Pak de eerste afbeelding uit self.detail_data (als die bestaat), anders lege dict
-        img_data = self.detail_data.get("IMG", [{}])[0]
-        image_blob = img_data.get("OITMI_IMAGE", "")
+        images = self.detail_data.get("DIG", [])
+        img_data = images[0] if images and isinstance(images[0], dict) else {}
+
+        raw_blob = img_data.get("OITMI_IMAGE", "")
+        cleaned_blob = safe_base64_cleanup(raw_blob) if raw_blob else ""
 
         uploader = ImageUploader(
             parent=self,
-            item_code=img_data.get("ID", self.item_code),
+            item_code=img_data.get("OITMI_ITRMID", self.item_code),
             description=img_data.get("OITMI_DESCRIPTION", ""),
             vendor_id=img_data.get("OITMI_VENDORID", ""),
             vendor_name=img_data.get("OITMI_VENDORNAME", ""),
             weblink=img_data.get("OITMI_WEBLINK", ""),
-            original_blob=image_blob,
+            original_blob=cleaned_blob,
             oitmi_id=str(img_data.get("OITMI_ID", "")),
             oitmi_type=img_data.get("OITMI_TYPE", "IMG")
         )
-        uploader.show()
 
-        # Zodra upload succesvol is, vuurt ImageUploader.uploadSuccess; koppel dat:
         uploader.uploadSuccess.connect(self._on_uploader_closed)
-
+        uploader.show()
+        uploader.raise_()
+        uploader.activateWindow()
         self.child_windows.append(uploader)
+
+
 
     def _copy_table_row_to_clipboard(self, table, index):
         row = index.row()

@@ -1,39 +1,25 @@
-# oitmi_upload.py
-# oitmi_upload.py
+# test_oitmi_upload.py
 import sys
 import json
 import base64
 import requests
 from io import BytesIO
 from PIL import Image
-from oitmi_token import get_auth_header
+#from oitmi_upload import upload_image_data  # ← wordt nu NIET gebruikt
 from PySide6.QtWidgets import (
-    QApplication, QDialog, QVBoxLayout, QLabel,
+    QApplication, QWidget, QVBoxLayout, QLabel,
     QLineEdit, QPushButton, QTextEdit, QSpinBox, QMessageBox,
     QFileDialog, QComboBox
 )
+import time
 from PySide6.QtCore import Signal
 
-def safe_base64_cleanup(raw_b64: str) -> str:
-    """Converteert dubbele base64(PNG-bytes) naar correcte base64(PNG-bytes)"""
-    try:
-        first_decode = base64.b64decode(raw_b64)
-        if first_decode.startswith(b"\x89PNG\r\n\x1a\n"):
-            return base64.b64encode(first_decode).decode("utf-8")
-        # Probeer 2e decode
-        second_decode = base64.b64decode(first_decode)
-        if second_decode.startswith(b"\x89PNG\r\n\x1a\n"):
-            return base64.b64encode(second_decode).decode("utf-8")
-    except Exception as e:
-        print("safe_base64_cleanup: decode failed:", e)
-    return raw_b64.strip()
 
-class ImageUploader(QDialog):
+class ImageUploader(QWidget):
     uploadSuccess = Signal()
-
     def __init__(
         self,
-        parent=None,
+        parent=None,  # ← dit toevoegen
         item_code="",
         description="",
         vendor_id="",
@@ -44,11 +30,10 @@ class ImageUploader(QDialog):
         oitmi_type="IMG"
     ):
         super().__init__(parent)
-        self.setWindowTitle("OITMI Upload")
-        self.setModal(True)
-        self.setFixedSize(650, 800)
+        self.setWindowTitle("OITMI Upload Tester")
+        self.setMinimumWidth(600)
 
-        self.original_blob = original_blob.strip()
+        self.original_blob = original_blob
         self.oitmi_id = str(oitmi_id)
         self.oitmi_type = oitmi_type
 
@@ -104,13 +89,11 @@ class ImageUploader(QDialog):
         self.output_text.setReadOnly(True)
         layout.addWidget(self.output_text)
 
-        self.api_button = QPushButton("Stuur naar API")
+        self.api_button = QPushButton("Stuur naar API (TESTMODE)")
         self.api_button.clicked.connect(self.send_to_api)
         layout.addWidget(self.api_button)
 
         self.setLayout(layout)
-        
-            
 
     def convert_image(self):
         try:
@@ -126,7 +109,9 @@ class ImageUploader(QDialog):
             output = BytesIO()
             resized_image.save(output, format="PNG")
             self.output_text.setPlainText(base64.b64encode(output.getvalue()).decode("utf-8"))
+            print("[OK] PNG-header OK voor verzending.")
         except Exception as e:
+            print("[ERROR] Base64 decode error voor verzending:", e)
             QMessageBox.critical(self, "Fout", f"Afbeelding kon niet worden verwerkt:\n{e}")
 
     def upload_from_file(self):
@@ -142,68 +127,57 @@ class ImageUploader(QDialog):
             output = BytesIO()
             resized_image.save(output, format="PNG")
             self.output_text.setPlainText(base64.b64encode(output.getvalue()).decode("utf-8"))
+            print("[OK] PNG-bestand succesvol omgezet.")
         except Exception as e:
+            print("[ERROR] Fout bij verwerken bestand:", e)
             QMessageBox.critical(self, "Fout", f"Fout bij verwerken bestand:\n{e}")
 
     def send_to_api(self):
-        blob_input = self.output_text.toPlainText().strip()
-        raw_blob = blob_input if blob_input else self.original_blob
-        blob = safe_base64_cleanup(raw_blob)
-
-        if not blob:
-            QMessageBox.critical(self, "Fout", "Geen afbeelding beschikbaar om te versturen.")
-            return
-
-        try:
-            decoded = base64.b64decode(blob)
-            if not decoded.startswith(b'\x89PNG\r\n\x1a\n'):
-                print("PNG-header afwijkend of ongeldig.")
-        except Exception as e:
-            print("Fout bij PNG-validatie:", e)
+        base64_data = self.output_text.toPlainText().strip()
+        blob = base64_data if base64_data else self.original_blob.strip()
 
         payload = {
-            "DESCR": self.descr_input.text().strip(),
-            "ID": self.id_input.text().strip(),
-            "TYPE": self.type_input.currentText(),
-            "VENDORID": self.vendorid_input.text().strip(),
-            "WEBLINK": self.weblink_input.text().strip(),
-            "VENDORNAME": self.vendorname_input.text().strip(),
-            "BLOB": blob
+            "OITMI_DESCRIPTION": self.descr_input.text().strip(),
+            "OITMI_ITRMID": self.id_input.text().strip(),
+            "OITMI_TYPE": self.type_input.currentText(),
+            "OITMI_VENDORID": self.vendorid_input.text().strip(),
+            "OITMI_WEBLINK": self.weblink_input.text().strip(),
+            "OITMI_VENDORNAME": self.vendorname_input.text().strip(),
+            "OITMI_IMAGE": blob,
+            "OITMI_ID": self.oitmi_id_input.text().strip()
         }
 
-        oitmi_id = self.oitmi_id_input.text().strip()
-        if oitmi_id:
-            payload["OITMI_ID"] = oitmi_id
-
-        missing = [k for k in ["DESCR", "ID", "TYPE", "VENDORID", "WEBLINK", "VENDORNAME", "BLOB"] if not payload.get(k)]
+        required_keys = [
+            "OITMI_DESCRIPTION", "OITMI_ITRMID", "OITMI_TYPE",
+            "OITMI_VENDORID", "OITMI_WEBLINK", "OITMI_VENDORNAME", "OITMI_IMAGE"
+        ]
+        missing = [k for k in required_keys if not payload.get(k)]
         if missing:
             QMessageBox.warning(self, "Ontbrekende velden", f"Volgende velden zijn verplicht:\n{', '.join(missing)}")
             return
 
-        try:
-            actie = "UPDATE" if oitmi_id else "CREATE"
-            endpoint = "U" if actie == "UPDATE" else "A"
-            url = f"https://api.cgk-group.com/api/import/OITMI/{endpoint}/dbname/SBOCGKLIVE"
-            headers = get_auth_header()
-            headers["Content-Type"] = "application/json"
+        # Debug output zonder emoji's
+        print("\n--- DEBUG: API REQUEST ---")
+        actie = "UPDATE" if payload["OITMI_ID"] else "CREATE"
+        endpoint = "U" if payload["OITMI_ID"] else "A"
+        url = f"https://api.cgk-group.com/api/import/OITMI/{endpoint}/dbname/SBOCGKLIVE"
+        headers = {"Authorization": "Bearer <token>", "Content-Type": "application/json"}
 
-            print("\n--- DEBUG API CALL ---")
-            print("URL:", url)
-            print("Payload:")
-            print(json.dumps(payload, indent=2))
-            print("--- END DEBUG ---\n")
+        print(f"Actie: {actie}")
+        print(f"URL: {url}")
+        print("Headers:")
+        print(json.dumps(headers, indent=2))
+        print("Payload:")
+        print(json.dumps(payload, indent=2))
+        print("[TESTMODE] Geen API-call uitgevoerd.")
+        QMessageBox.information(self, "DEBUG", "API-call is gesimuleerd.\nCheck console voor details.")
+        self.uploadSuccess.emit()
+        self.close()
 
-            response = requests.post(url, headers=headers, json=payload, timeout=20, verify=False)
-            response.raise_for_status()
-            QMessageBox.information(self, "Upload geslaagd", f"{actie} succesvol uitgevoerd.")
-            self.uploadSuccess.emit()
-            self.accept()
-        except Exception as e:
-            QMessageBox.critical(self, "API-fout", f"Upload mislukt:\n{e}")
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ImageUploader()
-    window.exec()
+    window.show()
     sys.exit(app.exec())
