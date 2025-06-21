@@ -1,5 +1,10 @@
 # 📝 Changelog
 
+## [v4.O.2] – 2025-06-21
+- max and min size on detail en project venster
+- dubbel klik op itemcode of omschrijving opent detail venster
+
+
 ## [v1.4.1] – 2025-06-14
 - ➕ Toegevoegd: verzamelknop, leeg-knop en “Selecteer alles” bij Project ART-tab
 - 📋 Verzamelde rijen kunnen worden gekopieerd naar klembord in TSV + HTML

@@ -197,6 +197,7 @@ class MainWindow(QMainWindow):
         self.search_button.clicked.connect(self.perform_search)
 
         self.table = QTableWidget()
+        self.table.itemDoubleClicked.connect(self.handle_row_double_click)
         self.collect_button  = QPushButton("Voeg toe aan lijst")
         self.clear_collected_button = QPushButton("Leeg lijst")
         self.show_list_button = QPushButton("Toon lijst")

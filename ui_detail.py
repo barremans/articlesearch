@@ -31,12 +31,14 @@ class DetailWindow(QDialog):
         self.setWindowFlags(
             Qt.Dialog
             | Qt.WindowStaysOnTopHint
-            | Qt.CustomizeWindowHint
-            | Qt.WindowTitleHint
+            | Qt.WindowMinimizeButtonHint
+            | Qt.WindowMaximizeButtonHint
             | Qt.WindowCloseButtonHint
         )
         # Optioneel: geef een vaste grootte (hier 800×600) zodat user niet kan resizen
-        self.setFixedSize(1400, 800)
+        #self.setFixedSize(1400, 800)
+        self.resize(1400, 800)
+
         
         self.item_code = item_code
         self.detail_data = detail_data or {}

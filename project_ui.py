@@ -17,13 +17,16 @@ class ProjectWindow(QDialog):
         super().__init__(parent)
         self.setWindowTitle("📁 Project Info")
         self.setWindowFlags(
-            Qt.Dialog
-            | Qt.WindowStaysOnTopHint
-            | Qt.CustomizeWindowHint
-            | Qt.WindowTitleHint
-            | Qt.WindowCloseButtonHint
+            Qt.Window |
+                Qt.WindowCloseButtonHint |
+                Qt.WindowMinimizeButtonHint |
+                Qt.WindowMaximizeButtonHint |
+                Qt.WindowStaysOnTopHint  # optioneel
         )
-        self.setFixedSize(1400, 800)
+        #self.setFixedSize(1400, 800)
+        self.resize(1200, 800)                  # standaard grootte
+        self.setMinimumSize(1000, 600)          # minimale afmetingen
+        #self.setMaximumSize(1920, 1200)         # optioneel: maximale afmetingen
         self._center_window()
         self.child_windows = []
 

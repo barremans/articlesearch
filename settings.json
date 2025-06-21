@@ -1,7 +1,7 @@
 {
   "default_search_type": "Standaard",
   "environment": "live",
-  "show_stock": "S",
+  "show_stock": "R",
   "detail_modal": false,
   "tab_order": [
     "vta",
