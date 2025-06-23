@@ -6,3 +6,4 @@ venv/
 dist/
 *.exe
 *.zip
+/Lib
