@@ -1,6 +1,6 @@
 # 📝 Changelog
 
-## [v4.O.2] – 2025-06-21
+## [v4.2.1] – 2025-06-21
 - max and min size on detail en project venster
 - dubbel klik op itemcode of omschrijving opent detail venster
 
