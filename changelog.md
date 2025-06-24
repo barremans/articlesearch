@@ -1,9 +1,13 @@
 # 📝 Changelog
 
-## [v4.2.1] – 2025-06-21
-- max and min size on detail en project venster
-- dubbel klik op itemcode of omschrijving opent detail venster
+## [v4.2.2] – 2025-06-24
+- ➕ Toegevoegd: kolommen **MD_SupplNbr** en **MD_Suppl** aan *PRJ Art.*-tab (VTA)
+- 📋 Deze tonen respectievelijk het masterdata leveranciersnummer en -naam per artikel
+- 🔄 Gegevens worden opgehaald uit `LART[0]` binnen elk VTA-item
 
+## [v4.2.1] – 2025-06-21
+- 📏 Max en min size ingesteld op detail- en projectvenster
+- 🖱️ Dubbelklik op itemcode of omschrijving opent detailvenster
 
 ## [v1.4.1] – 2025-06-14
 - ➕ Toegevoegd: verzamelknop, leeg-knop en “Selecteer alles” bij Project ART-tab
