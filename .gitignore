@@ -1,9 +1,17 @@
+# Virtuele omgevingen
 venv/
+Lib/
+*.dll
+
+# Build output
 dist/
 *.exe
 *.zip
-venv/
-dist/
-*.exe
-*.zip
-Lib
+
+# __pycache__ en tijdelijke Python-bestanden
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE-specifiek (optioneel, maar handig als je met VS Code werkt)
+#.vscode/

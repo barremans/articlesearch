@@ -73,7 +73,7 @@ class ProjectWindow(QDialog):
         self.art_table = QTableWidget()
         self.art_table.setColumnCount(8)
         self.art_table.setHorizontalHeaderLabels([
-            "", "Relatie", "CardName", "SuppCatNum", "Artikel", "Omschrijving", "Aantal", "Prijs"
+            "", "Relatie", "CardName", "PU_SuppNbr", "Artikel", "Omschrijving", "Aantal", "Prijs"
         ])
         self.art_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.art_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -130,9 +130,9 @@ class ProjectWindow(QDialog):
 
         vta_sorted = sorted(vta_data, key=lambda x: x.get("U_U_Certified", "N"), reverse=True)
         self.vta_table.setRowCount(len(vta_sorted))
-        self.vta_table.setColumnCount(8)
+        self.vta_table.setColumnCount(10)
         self.vta_table.setHorizontalHeaderLabels([
-            "", "Artikelnummer", "SupplNbr", "PrefSuppl", "Gecert.", "Omschrijving", "Leverancier", "PurchNbr"
+            "", "Artikelnummer", "SupplNbr", "PrefSuppl", "Gecert.", "Omschrijving", "Leverancier", "PurchNbr","MD_SuppNbr", "MD_Suppl"
         ])
        
         # Installations-tab
@@ -214,7 +214,13 @@ class ProjectWindow(QDialog):
             docnum = por.get("DocNum", "")
             cell_item = make_cell(docnum)
             cell_item.setData(Qt.UserRole, por)  # ← sla het POR-object op in de cel
-            self.vta_table.setItem(r, 7, cell_item)   
+            self.vta_table.setItem(r, 7, cell_item)
+            # Voeg SuppCatNum en CardName toe (via item["LART"][0])
+            lart = (item.get("LART") or [{}])[0]  # veilig ophalen
+            self.vta_table.setItem(r, 8, make_cell(lart.get("SuppCatNum")))
+            self.vta_table.setItem(r, 9, make_cell(lart.get("CardName")))
+            self.vta_table.setColumnWidth(8, 100)  # SuppCatNum
+            self.vta_table.setColumnWidth(9, 150)  # CardName   
             
         self.vta_table.cellClicked.connect(self._handle_vta_cell_click)
 

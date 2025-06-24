@@ -127,6 +127,22 @@ De kolommen in de resultaten **aanpassen zich automatisch** aan de instelling â€
 
 | `NOTE` | Opmerkingen |
 
+### Projectmodus (`Project` zoektype)
+
+| Kolom         | Beschrijving                                                                 |
+|---------------|------------------------------------------------------------------------------|
+| `Artikelnummer` | Artikelcode in projectcontext                                               |
+| `SupplNbr`    | Leveranciersreferentie uit projectgegevens                                   |
+| `PrefSuppl`   | Voorkeursleverancier                                                         |
+| `Gecert.`     | Gecertificeerd artikel (Y/N)                                                 |
+| `Omschrijving`| Artikel- of serviceomschrijving                                              |
+| `Leverancier` | Leverancier uit het projectdocument                                          |
+| `PurchNbr`    | Documentnummer van gekoppelde bestelling                                     |
+| `MD_SupplNbr` | Masterdata leveranciersnummer uit `LART`                                     |
+| `MD_Suppl`    | Masterdata leverancier (naam) uit `LART`                                     |
+
+> De kolommen `MD_SupplNbr` en `MD_Suppl` worden opgehaald uit het veld `LART[0]` van elk artikel en g
+
 ---
 
 ## ðŸ“‹ Rijacties
