@@ -1,5 +1,10 @@
 # 📝 Changelog
 
+## [v4.2.3] – 2025-06-25
+- 📋 Verbeterd: kopieerfunctie van verzamellijst (ART/VTA) exporteert nu ook **Outlook- en Word-compatibele HTML-tabellen**
+- 🧾 HTML bevat nette randen, padding, Arial-lettertype en correcte encoding
+- 📤 Geoptimaliseerd voor plakken in e-mails, Word-documenten en browsers
+
 ## [v4.2.2] – 2025-06-24
 - ➕ Toegevoegd: kolommen **MD_SupplNbr** en **MD_Suppl** aan *PRJ Art.*-tab (VTA)
 - 📋 Deze tonen respectievelijk het masterdata leveranciersnummer en -naam per artikel
