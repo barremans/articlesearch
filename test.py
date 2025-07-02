@@ -1,14 +1,46 @@
-# test.py
+# test_po_request.py
+
 import requests
+import json
+from atp_token import get_auth_header
+from config import API_ENVIRONMENTS, ENVIRONMENT
 
-TOKEN = "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"
-url = "https://api.github.com/repos/barremans/articlesearch/contents/releases/latest/version.txt?ref=main"
+def main():
+    DEBUG = True
 
-headers = {
-    "Authorization": f"token {TOKEN}",
-    "Accept": "application/vnd.github.v3.raw"
-}
+    # Haal juiste config ID op
+    config_id = API_ENVIRONMENTS[ENVIRONMENT]["po_configP_id"]
 
-resp = requests.get(url, headers=headers)
-print(resp.status_code)
-print(resp.text)
+    # API URL
+    url = "https://api.cgk-group.com/api/datarequest"
+
+    # Payload zoals je doorgaf
+    payload = {
+        "ConfigurationID": config_id,
+        "MultiKey": {
+            "@po": "241204456",
+            "@status": "c"
+        }
+    }
+
+    headers = get_auth_header()
+
+    try:
+        response = requests.post(url, headers=headers, json=payload, verify=False)
+        response.raise_for_status()
+        data = response.json()
+
+        if DEBUG:
+            print("---------- RAW JSON DATA ----------")
+            print(json.dumps(data, indent=4, ensure_ascii=False))
+
+        if data.get("IsError"):
+            print(f"API Error: {data.get('ErrorMessage')}")
+        else:
+            print("Data succesvol opgehaald.")
+
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+
+if __name__ == "__main__":
+    main()

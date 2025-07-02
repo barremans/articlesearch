@@ -19,7 +19,9 @@ API_ENVIRONMENTS = {
         "data_config_id": "9423TC", # Article Search
         "stock_config_id": "6DIRXZ", #StockInfo
         "stock_configP_id": "WEZ7CY",  #ZStockInfoP
-        "project_configP_id": "AXF4GX"  #Project data
+        "project_configP_id": "AXF4GX", #Project data
+        "atp_configP_id": "1IZDVW",  #Atp data
+        "po_configP_id": "3EGOKM",  #Purchase order data
     }
 }
 
@@ -70,7 +72,19 @@ API_CLIENTS = {
             "client_id": "Project",
             "client_secret": "OTE4YmZjMjUtZjE5ZC00YzQ5LTlhN2YtNWQ2MTYwYjQ2ZGVh"
         }
-    }        
+    },
+        "Atp": {
+        "live": {
+            "client_id": "AtpWhs",
+            "client_secret": "YmFmYzEzYWEtNmRmNS00Nzg4LThiMGUtM2VjYjdjNmRiZDAw"
+        }
+    },
+        "Po": {
+        "live": {
+            "client_id": "PurchaseOrder",
+            "client_secret": "ZTViM2FiZGYtMGNmMy00ZjY1LThjYjctZWY5MmE0NjdjMzc1"
+        }
+    }             
 #end
 }
 

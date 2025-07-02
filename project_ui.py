@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QApplication, QScrollArea, QHeaderView
 )
 from PySide6.QtCore import Qt, QMimeData
+from ui_po import PoWidget
 
 from settings import load_tab_order
 
@@ -127,12 +128,13 @@ class ProjectWindow(QDialog):
         vta_tab = QWidget()
         vta_layout = QVBoxLayout(vta_tab)
         self.vta_table = QTableWidget()
+        self.vta_table.cellDoubleClicked.connect(self._open_po_from_vta)
 
         vta_sorted = sorted(vta_data, key=lambda x: x.get("U_U_Certified", "N"), reverse=True)
         self.vta_table.setRowCount(len(vta_sorted))
-        self.vta_table.setColumnCount(10)
+        self.vta_table.setColumnCount(9)
         self.vta_table.setHorizontalHeaderLabels([
-            "", "Artikelnummer", "SupplNbr", "PrefSuppl", "Gecert.", "Omschrijving", "Leverancier", "PurchNbr","MD_SuppNbr", "MD_Suppl"
+            "", "Artikelnummer", "VendorNbr", "Gecert.", "Omschrijving", "Leverancier", "PurchNbr","SupplNbr", "PrefSuppl"
         ])
        
         # Installations-tab
@@ -205,20 +207,25 @@ class ProjectWindow(QDialog):
             cb.setFocusPolicy(Qt.NoFocus)
             self.vta_table.setCellWidget(r, 0, cb)
             self.vta_table.setItem(r, 1, make_cell(item.get("Artikelnummer")))
-            self.vta_table.setItem(r, 2, make_cell(item.get("SupplNbr")))
-            self.vta_table.setItem(r, 3, make_cell(item.get("PrefSuppl")))
-            self.vta_table.setItem(r, 4, make_cell(item.get("U_U_Certified", "N")))
-            self.vta_table.setItem(r, 5, make_cell(item.get("Artikel-/serviceomschrijving")))
-            self.vta_table.setItem(r, 6, make_cell(item.get("Leverancier")))
+                # Haal VendorNum uit item["POR"]["POR1"][0]["VendorNum"]
+            por = item.get("POR", {})
+            por1_list = por.get("POR1") or [{}]
+            suppl_nbr = por1_list[0].get("VendorNum", "")
+            self.vta_table.setItem(r, 2, make_cell(suppl_nbr))
+            #self.vta_table.setItem(r, 2, make_cell(item.get("SupplNbr"))) 
+            #self.vta_table.setItem(r, 3, make_cell(item.get("PrefSuppl")))
+            self.vta_table.setItem(r, 3, make_cell(item.get("U_U_Certified", "N")))
+            self.vta_table.setItem(r, 4, make_cell(item.get("Artikel-/serviceomschrijving")))
+            self.vta_table.setItem(r, 5, make_cell(item.get("Leverancier")))
             por = item.get("POR", {})
             docnum = por.get("DocNum", "")
             cell_item = make_cell(docnum)
             cell_item.setData(Qt.UserRole, por)  # ← sla het POR-object op in de cel
-            self.vta_table.setItem(r, 7, cell_item)
+            self.vta_table.setItem(r, 6, cell_item)
             # Voeg SuppCatNum en CardName toe (via item["LART"][0])
             lart = (item.get("LART") or [{}])[0]  # veilig ophalen
-            self.vta_table.setItem(r, 8, make_cell(lart.get("SuppCatNum")))
-            self.vta_table.setItem(r, 9, make_cell(lart.get("CardName")))
+            self.vta_table.setItem(r, 7, make_cell(lart.get("SuppCatNum")))
+            self.vta_table.setItem(r, 8, make_cell(lart.get("CardName")))
             self.vta_table.setColumnWidth(8, 100)  # SuppCatNum
             self.vta_table.setColumnWidth(9, 150)  # CardName   
             
@@ -424,6 +431,7 @@ class ProjectWindow(QDialog):
         dialog.exec()
 
     def _copy_to_clipboard(self, lines, headers):
+        '''
         md = QMimeData()
         md.setText("\n".join(lines))
         html = ["<table border='1'><tr>"]
@@ -435,6 +443,28 @@ class ProjectWindow(QDialog):
         md.setHtml("".join(html))
         QApplication.clipboard().setMimeData(md)
         QMessageBox.information(self, "Klembord", "Gekopieerd naar klembord (tekst + tabel).")
+        '''
+        md = QMimeData()
+        md.setText("\n".join(lines))  # plain text fallback
+
+        # HTML-tabel met Outlook/Word-compatibele stijl
+        html = [
+            "<html><head><meta charset='utf-8'></head><body>",
+            "<table border='1' cellspacing='0' cellpadding='4' style='border-collapse:collapse;font-family:Arial,sans-serif;font-size:10pt;'>",
+            "<thead><tr>"
+        ]
+        html += [f"<th style='background-color:#f0f0f0;border:1px solid #000;'>{h}</th>" for h in headers]
+        html.append("</tr></thead><tbody>")
+        for row in lines:
+            html.append("<tr>" + "".join(
+                f"<td style='border:1px solid #000;'>{cell}</td>" for cell in row.split("\t")
+            ) + "</tr>")
+        html.append("</tbody></table></body></html>")
+
+        md.setHtml("".join(html))
+        QApplication.clipboard().setMimeData(md)
+        QMessageBox.information(self, "Klembord", "Gekopieerd als tabel (Outlook & Word compatibel).")
+
 
     def _center_window(self):
         frame_geometry = self.frameGeometry()
@@ -488,6 +518,33 @@ class ProjectWindow(QDialog):
         if por:
             self._show_por_dialog(por)
             
+    def _open_po_from_vta(self, row, column):
+        # Check of het de juiste kolom is ("PurchNbr"), dat is kolom 6
+        if column != 6:
+            return
+
+        item = self.vta_table.item(row, column)
+        if not item:
+            return
+
+        po_number = item.text().strip()
+        if not po_number:
+            return
+
+        # Maak een nieuw PoWidget-venster
+        self.po_widget = PoWidget()
+        self.po_widget.po_input.setText(po_number)
+        self.po_widget.load_data()
+
+        # Zorg dat het altijd vooraan komt
+        self.po_widget.setWindowFlags(self.po_widget.windowFlags() | Qt.WindowStaysOnTopHint)
+
+        self.po_widget.show()
+        self.po_widget.raise_()
+        self.po_widget.activateWindow()
+
+        # Voeg toe aan child windows voor automatische repositionering
+        self.child_windows.append(self.po_widget)
             
 
     def _show_por_dialog(self, por):

@@ -1,7 +1,7 @@
 {
   "default_search_type": "Standaard",
   "environment": "live",
-  "show_stock": "R",
+  "show_stock": "S",
   "detail_modal": false,
   "tab_order": [
     "vta",
@@ -32,6 +32,126 @@
     "FONT_SIZE_SUPPLIER": 7.0,
     "FONT_SIZE_INBOUND": 7.0,
     "FONT_SIZE_DATE": 7.0
+  },
+  "field_labels": {
+    "logistics": {
+      "TrnspName": "Transportwijze",
+      "LeadTime": "Levertijd (dagen)",
+      "MinOrdrQty": "Minimum bestelhoeveelheid",
+      "MinLevel": "Min. art.voorraad",
+      "MaxLevel": "Max. art.voorraad",
+      "OnHand": "Op voorraad",
+      "IsCommited": "Gereserveerd",
+      "OnOrder": "In bestelling",
+      "DefaultWhs": "Standaard magazijn",
+      "PreferredSupp": "Voorkeursleverancier",
+      "CardName": "Leverancier naam",
+      "SuppCatNum": "Artikelnummer leverancier",
+      "Counted": "Getelde hoeveelheid"
+    },
+    "po_por1": {
+      "LineNum": "Regel",
+      "ItemCode": "Artikelcode",
+      "VendorNum": "VendorNr",
+      "Dscription": "Omschrijving",
+      "Quantity": "Aantal",
+      "Price": "Prijs",
+      "WhsName": "Magazijn",
+      "DocDate": "Datum",
+      "ShipDate": "Verzenddatum"
+    },
+    "po_go": {
+      "GO_DocNum": "GO Nr",
+      "GO_Date": "Datum",
+      "GOL_ItemCode": "Artikelcode",
+      "VendorNum": "VendorNr",
+      "GOL_Dscription": "Omschrijving",
+      "GOL_Quantity": "Aantal",
+      "GOL_OpenQty": "Open qty",
+      "GOL_LineStatus": "Status"
+    },
+    "last_purch": {
+      "DocNum": "DocNr",
+      "DocDate": "Datum",
+      "ItemCode": "Art.Nr.",
+      "Dscription": "Omschrijving",
+      "Quantity": "Aantal",
+      "ShipDate": "Leverdatum",
+      "VendorNum": "Vendor nr.",
+      "BaseCard": "BaseCard",
+      "CardName": "Leverancier",
+      "WhsName": "Magazijn"
+    },
+    "purchase": {
+      "Price": "Prijs",
+      "Currency": "Munt",
+      "BuyUnitMsr": "Koop eenh.",
+      "NumInBuy": "Aantal/koop",
+      "PurPackMsr": "Pak-eenh.",
+      "PurPackUn": "Pak-un.",
+      "LastPurPrc": "Laatste prijs"
+    },
+    "lisa": {
+      "LOCNAME": "Locatie",
+      "WHSNAME": "Magazijn",
+      "QUANTITY": "Beschikbaar",
+      "QTYRESERVED": "Gereserveerd",
+      "QTYMININV": "Min.Whs",
+      "QTYMAXINV": "Max.Whs"
+    },
+    "sap": {
+      "WhsName": "Magazijn",
+      "OnHand": "Beschikbaar",
+      "IsCommited": "Gereserveerd",
+      "OnOrder": "Besteld",
+      "MinStock": "Min.Whs",
+      "MaxStock": "Max.Whs",
+      "VrijeStock": "Vrij"
+    },
+    "sales": {
+      "Price": "Prijs",
+      "Currency": "Munt",
+      "SalUnitMsr": "Verkoop eenh.",
+      "NumInSale": "Aantal/verkoop",
+      "SalPackMsr": "Pak-eenh.",
+      "SalPackUn": "Pak-un."
+    },
+    "ui_texts_main": {
+      "label_search_term": "Zoekterm:",
+      "label_search_type": "Search-type:",
+      "label_mode": "Zoekmodus:",
+      "label_show_stock": "Toon voorraad:",
+      "button_search": "Zoeken",
+      "button_collect": "Voeg toe aan lijst",
+      "button_clear": "Leeg lijst",
+      "button_show_list": "Toon lijst",
+      "checkbox_select_all": "Selecteer alles",
+      "label_results": "Resultaten:",
+      "label_result_count": "Aantal resultaten: {count}",
+      "dialog_no_rows_title": "Geen data",
+      "dialog_no_rows_text": "Er staan geen rijen om te verzamelen.",
+      "dialog_nothing_checked": "Vink eerst \u00e9\u00e9n of meerdere vakjes aan om toe te voegen.",
+      "dialog_list_already_empty": "De lijst is al leeg.",
+      "info_list_cleared": "De verzamelde rijen zijn verwijderd en alle vakjes zijn uitgevinkt.",
+      "COLUMN_HEADERS_S": {
+        "ItemCode": "Art.Nr.",
+        "ItemName": "Omschrijving",
+        "SUPPLIERIDPRODUCT": "Vendor Nr.",
+        "QUANTITY": "Qty",
+        "WHSNAME": "Magazijn",
+        "LOCNAME": "Loc.",
+        "QTYMININV": "Min.Whs",
+        "QTYMAXINV": "Max.Whs",
+        "SUPPLIERNAME": "Leverancier",
+        "PRICESUPPLIER": "Prijs",
+        "NOTE": "Opmerking"
+      },
+      "COLUMN_HEADERS_DEFAULT": {
+        "ItemCode": "Art.Nr.",
+        "ItemName": "Omschrijving",
+        "SuppCatNum": "Vendor Nr."
+      }
+    }
   },
   "main_qss_path": "",
   "detail_qss_path": "",

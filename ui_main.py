@@ -35,6 +35,11 @@ from bug_report_dialog import BugDialog
 # import van je nieuwe JSON-viewer voor project searches
 from project_ui import ProjectWindow
 
+from settings import load_column_headers_s, load_column_headers_default
+
+# Dynamische kolomheaders laden uit settings
+COLUMN_HEADERS_S = load_column_headers_s()
+COLUMN_HEADERS_DEFAULT = load_column_headers_default()
 
 class FileEditorDialog(QDialog):
     def __init__(self, parent: QWidget, file_path: str):
@@ -131,14 +136,7 @@ class MainWindow(QMainWindow):
 
         self.installEventFilter(self)
         self.input_field.installEventFilter(self)
-        self.setStatusBar(QStatusBar(self))
-
-        #check_for_update(__version__, self, self._enable_update_button)
-        #check_for_update(__version__, self)
-        #QTimer.singleShot(1000, lambda: check_for_update(__version__, self))
-
-
-
+        # self.setStatusBar(QStatusBar(self))
 
     def _enable_update_button(self, is_update_available: bool):
         if hasattr(self, 'update_btn') and self.update_btn:
@@ -330,23 +328,21 @@ class MainWindow(QMainWindow):
 
     def populate_table(self, data: list):
         show_stock = load_show_stock()
-        if show_stock == "S":
-            originele_columns = [
-                "ItemCode", "ItemName", "SUPPLIERIDPRODUCT", "QUANTITY",
-                "WHSNAME", "LOCNAME", "QTYMININV", "QTYMAXINV",
-                "SUPPLIERNAME", "PRICESUPPLIER", "NOTE"
-            ]
-        else:
-            originele_columns = ["ItemCode", "ItemName", "SuppCatNum"]
 
-        columns = ["Selectie"] + originele_columns
+        if show_stock == "S":
+            originele_columns = list(COLUMN_HEADERS_S.keys())
+            header_labels = ["Selectie"] + list(COLUMN_HEADERS_S.values())
+        else:
+            originele_columns = list(COLUMN_HEADERS_DEFAULT.keys())
+            header_labels = ["Selectie"] + list(COLUMN_HEADERS_DEFAULT.values())
+
         self.table.setRowCount(len(data))
-        self.table.setColumnCount(len(columns))
-        self.table.setHorizontalHeaderLabels(columns)
+        self.table.setColumnCount(len(header_labels))
+        self.table.setHorizontalHeaderLabels(header_labels)
 
         header = self.table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        for idx in range(1, len(columns)):
+        for idx in range(1, len(header_labels)):
             mode = QHeaderView.Stretch if idx == 2 else QHeaderView.ResizeToContents
             header.setSectionResizeMode(idx, mode)
 
@@ -364,6 +360,7 @@ class MainWindow(QMainWindow):
         self.result_count_label.setText(f"Aantal resultaten: {len(data)}")
         if data:
             self.table.selectRow(0)
+
 
     def collect_selected_rows(self):
         aantal_rijen = self.table.rowCount()
@@ -395,25 +392,18 @@ class MainWindow(QMainWindow):
         self.show_collected_dialog()
 
     def show_collected_dialog(self):
-        from settings import load_show_stock
         from PySide6.QtCore import QMimeData
 
         dialog = QDialog(self)
         dialog.setWindowTitle("Verzamelde rijen")
         dialog.resize(800, 400)
 
-        # Bepaal kolomnamen volgens de voorraad-keuze
         show_stock = load_show_stock()
         if show_stock == "S":
-            headers = [
-                "Art.Nr.", "Desc.", "Vendor Nr.", "Qty",
-                "Whs.", "LOCNAME", "QTYMIN", "QTYMAX",
-                "Suppl", "Price Suppl", "NOTE"
-            ]
+            headers = list(COLUMN_HEADERS_S.values())
         else:
-            headers = ["Art.Nr.", "Desc.", "Vendor Nr."]
+            headers = list(COLUMN_HEADERS_DEFAULT.values())
 
-        # Tabel opbouwen
         table = QTableWidget()
         table.setColumnCount(len(headers))
         table.setHorizontalHeaderLabels(headers)
@@ -430,34 +420,40 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(dialog)
         layout.addWidget(table)
 
-        # Kopieer geselecteerde (of alle) rijen als TSV én HTML-tabel
         def copy_selection_to_clipboard():
             md = QMimeData()
             sel_rows = [idx.row() for idx in table.selectionModel().selectedRows()]
             if not sel_rows:
                 sel_rows = list(range(table.rowCount()))
 
-            # Maak TSV
             tsv_lines = ["\t".join(headers)]
             for r in sel_rows:
                 tsv_lines.append("\t".join(table.item(r, c).text() for c in range(table.columnCount())))
             md.setText("\n".join(tsv_lines))
 
-            # Maak HTML
-            html = ["<table border='1' cellspacing='0' cellpadding='2'>"]
-            html.append("<tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr>")
+            html = [
+                "<html><head><meta charset='utf-8'></head><body>",
+                "<table border='1' cellspacing='0' cellpadding='4' "
+                "style='border-collapse:collapse; font-family:Arial,sans-serif; font-size:10pt;'>",
+                "<thead><tr>"
+            ]
+            html += [
+                f"<th style='background-color:#f0f0f0; border:1px solid #000; padding:4px;'>{h}</th>"
+                for h in headers
+            ]
+            html.append("</tr></thead><tbody>")
             for r in sel_rows:
-                html.append(
-                    "<tr>" +
-                    "".join(f"<td>{table.item(r, c).text()}</td>" for c in range(table.columnCount())) +
-                    "</tr>"
-                )
-            html.append("</table>")
+                html.append("<tr>")
+                for c in range(table.columnCount()):
+                    val = table.item(r, c).text()
+                    html.append(f"<td style='border:1px solid #000; padding:4px;'>{val}</td>")
+                html.append("</tr>")
+            html.append("</tbody></table></body></html>")
+
             md.setHtml("".join(html))
-
             QApplication.clipboard().setMimeData(md)
+            QMessageBox.information(dialog, "Klembord", "Gekopieerd als tabel (Outlook & Word compatibel).")
 
-        # Knoppen
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
         copy_btn = QPushButton("Alles kopiëren")

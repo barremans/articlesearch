@@ -15,7 +15,6 @@ a = Analysis(
     datas=[
         ('docs/help.md', 'docs'),                 # 📘 Helpbestand
         ('docs/changelog.md', 'docs'),            # 📄 Changelog
-        ('settings.json', '.'),                   # ⚙️ App-instellingen
         ('requirements.txt', '.'),                # 📦 Requirements
         ('version.py', '.'),                      # 🔢 Versie info
         ('updater.py', '.'),                      # 🔄 Updater module
