@@ -1,8 +1,8 @@
 # 📦 Artikelzoeker – Help
 
-**Versie:** 5.0.0
+**Versie:** 5.0.1
 
-**Laatste update:** juni 2025
+**Laatste update:** juli 2025
 
 Deze applicatie laat je toe om artikels op te zoeken op basis van zoektermen. Resultaten worden overzichtelijk weergegeven, met detailinformatie via dubbelklik, sneltoets of rechtermuisklik. Werkt enkel **ONLINE** via een Windows `.exe` (gemaakt met PyInstaller).
 
@@ -10,17 +10,17 @@ Deze applicatie laat je toe om artikels op te zoeken op basis van zoektermen. Re
 
 ## 🔎 Zoekfunctionaliteit
 
-1.  **Voer een zoekterm in**
-2.  **Kies een zoekmodus:**
-    - `AND` – alle woorden moeten voorkomen
-    - `OR` – minstens één woord
-3.  **Kies welk type artikelen je wil zien** via de dropdown **Toon voorraad**:
-    - `R` = Reguliere artikelen
-    - `S` = Voorraad-weergave
-    - `B` = Beide
-4.  **Start de zoekopdracht** met de knop **Zoeken** of `Ctrl + Enter`
-5.  Resultaten verschijnen in een **tabel** met contextmenu
-6.  De eerste rij wordt automatisch geselecteerd
+1. **Voer een zoekterm in**
+2. **Kies een zoekmodus:**
+   - `AND` – alle woorden moeten voorkomen
+   - `OR` – minstens één woord
+3. **Kies welk type artikelen je wil zien** via de dropdown **Toon voorraad**:
+   - `R` = Reguliere artikelen
+   - `S` = Voorraad-weergave
+   - `B` = Beide
+4. **Start de zoekopdracht** met de knop **Zoeken** of `Ctrl + Enter`
+5. Resultaten verschijnen in een **tabel** met contextmenu
+6. De eerste rij wordt automatisch geselecteerd
 
 ---
 
@@ -59,27 +59,27 @@ De kolommen in de resultaten **passen zich automatisch aan** aan de instelling �
 
 ### `R` of `B` → Reguliere artikelen
 
-| Kolom      | Beschrijving               |
-|-------------|---------------------------|
-| `ItemCode` | Interne artikelcode       |
-| `ItemName` | Artikelbeschrijving (SAP) |
-| `SuppCatNum` | Leveranciersreferentie  |
+| Kolom        | Beschrijving               |
+|---------------|---------------------------|
+| `ItemCode`    | Interne artikelcode       |
+| `ItemName`    | Artikelbeschrijving (SAP) |
+| `SuppCatNum`  | Leveranciersreferentie    |
 
 ### `S` → Voorraadweergave
 
-| Kolom            | Beschrijving           |
-|------------------|------------------------|
-| `ItemCode`       | Artikelcode           |
-| `ItemName`       | Artikelnaam          |
+| Kolom              | Beschrijving           |
+|--------------------|------------------------|
+| `ItemCode`         | Artikelcode            |
+| `ItemName`         | Artikelnaam           |
 | `SUPPLIERIDPRODUCT` | Leveranciersreferentie |
-| `QUANTITY`      | Aantal op voorraad    |
-| `WHSNAME`       | Magazijn             |
-| `LOCNAME`       | Locatie             |
-| `QTYMININV`    | Minimum voorraad   |
-| `QTYMAXINV`    | Maximum voorraad  |
-| `SUPPLIERNAME` | Leveranciernaam   |
+| `QUANTITY`        | Aantal op voorraad     |
+| `WHSNAME`         | Magazijn             |
+| `LOCNAME`         | Locatie              |
+| `QTYMININV`      | Minimum voorraad    |
+| `QTYMAXINV`      | Maximum voorraad   |
+| `SUPPLIERNAME`   | Leveranciernaam    |
 | `PRICESUPPLIER` | Inkoopprijs leverancier |
-| `NOTE`         | Opmerkingen        |
+| `NOTE`           | Opmerkingen         |
 
 ### Projectmodus (`Project` zoektype)
 
@@ -128,22 +128,21 @@ Instelbare opties:
 
 ## 🪪 Detailinformatie
 
-De detailweergave is opgesplitst in **aparte tab-modules**, elk met aanpasbare kolomkoppen.  
+De detailweergave is opgesplitst in **aparte tab-modules**, elk met aanpasbare kolomkoppen via mapping dictionaries in `settings.json`.  
 Dubbelklik op een cel kopieert de hele rij naar het klembord.
 
 | Tab             | Beschrijving                                     | Sneltoets |
 |-----------------|-------------------------------------------------|-----------|
 | 📦 LISA         | Voorraad uit LISA                               | `Alt + L` |
 | 🏢 SAP          | SAP-voorraad (inclusief vrije voorraad)        | `Alt + S` |
-| 💰 Aankoop      | Inkoopgegevens                                  | `Alt + A` |
-| 💸 Verkoop      | Verkoopinformatie                               | `Alt + V` |
+| 💰 Aankoop      | Inkoopgegevens (inclusief `ui_po.py`)          | `Alt + A` |
+| 💸 Verkoop      | Verkoopinformatie (`ui_so.py`)                | `Alt + V` |
 | 🚚 Logistiek    | Logistieke en technische info                  | `Alt + G` |
-| 📄 Laatste aankoop | Recente leveringen                        | `Alt + R` |
+| 📄 Laatste aankoop | Recente leveringen                         | `Alt + R` |
 | 🖼️ Afbeelding  | Geüploade afbeeldingen + uploadfunctie         | `Alt + F` |
 | ⚡ ATP          | Beschikbaarheidsplanning (ATP)                | `Alt + T` |
 
-
-> De headers van alle tabellen kunnen centraal aangepast worden via mapping dictionaries.
+> `ui_po.py` en `ui_so.py` maken nu gebruik van dynamische header mappings en verbeterde sneltoetsen.
 
 ---
 
@@ -162,9 +161,9 @@ Dubbelklik op een cel kopieert de hele rij naar het klembord.
 
 - Kies een magazijn in de dropdown
 - Klik op **Data ophalen** → laadt verkoop- en aankooporders
-- Tabel toont orderregels, klantinformatie, besteld/ bevestigd, beschikbaarheden
+- Tabel toont orderregels, klantinformatie, besteld/bevestigd, beschikbaarheden
 - Onderaan zie je een teller met aantal verkoop- en aankooporders
-- Beschikbaarheidskolom eerste en laatste rij worden **vet** weergegeven
+- Beschikbaarheidskolommen worden **vet** weergegeven
 - Aankoopregels krijgen een lichtgroene achtergrond
 
 ---
@@ -173,20 +172,21 @@ Dubbelklik op een cel kopieert de hele rij naar het klembord.
 
 | Toets          | Actie                                 |
 |----------------|---------------------------------------|
-| `Ctrl + Enter` | Zoekopdracht uitvoeren              |
+| `Ctrl + Enter` | Zoekopdracht of data ophalen       |
 | `Ctrl + L`     | Genereer label van geselecteerde rij |
 | `Ctrl + O`     | Open geselecteerde rij in detailvenster |
 | `Ctrl + S`     | Label-instellingen opslaan          |
 | `F1`           | Open helpvenster                    |
 | `Delete`       | Maak zoekveld en tabel leeg         |
-| `Esc`          | Sluit detail- of uploadvenster    |
+| `Esc`          | Sluit detail-, upload- of PO/SO-venster |
 | `Alt + L`      | Tab 📦 LISA                        |
 | `Alt + S`      | Tab 🏢 SAP                         |
-| `Alt + A`      | Tab 💰 Aankoop                     |
+| `Alt + A`      | Tab 💰 Aankoop (of aankooporderlijnen) |
 | `Alt + V`      | Tab 💸 Verkoop                     |
 | `Alt + G`      | Tab 🚚 Logistiek                  |
 | `Alt + R`      | Tab 📄 Laatste aankoop            |
 | `Alt + F`      | Tab 🖼️ Afbeelding                |
+| `Alt + T`      | Tab ⚡ ATP                         |
 | `Alt + M`      | Bug of feature melden             |
 | `Alt + H`      | Open menu Help                    |
 | `Alt + E`      | Toon helpvenster                 |
@@ -202,6 +202,7 @@ Via **Instellingen > Instellingen wijzigen…**
 - **Voorraadtype:** `R`, `S` of `B`
 - **Detailvenster als modal tonen:** ja/nee
 - Alle instellingen worden bewaard in `settings.json`
+- Kolomheaders kunnen eenvoudig aangepast worden via mapping dictionaries
 
 ---
 
@@ -220,7 +221,7 @@ De applicatie controleert automatisch op nieuwe versies via de GitHub-API.
 - De applicatie draait op Windows als standalone `.exe` (PyInstaller)
 - **Bestandsstructuur:**
   - `main.py`, `ui_main.py`, `ui_detail.py`, …
-  - Aparte modules: `ui_lisa.py`, `ui_sap.py`, `ui_purchase.py`, `ui_sales.py`, `ui_return.py`, `ui_logistics.py`, `ui_atp.py`
+  - Aparte modules: `ui_lisa.py`, `ui_sap.py`, `ui_purchase.py`, `ui_sales.py`, `ui_return.py`, `ui_logistics.py`, `ui_atp.py`, `ui_po.py`, `ui_so.py`
   - `assets/`, `logs/`, `label/`, `docs/`
 - **Logging:** alle meldingen in `logs/app.log`
 
