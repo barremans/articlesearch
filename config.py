@@ -22,6 +22,7 @@ API_ENVIRONMENTS = {
         "project_configP_id": "AXF4GX", #Project data
         "atp_configP_id": "1IZDVW",  #Atp data
         "po_configP_id": "3EGOKM",  #Purchase order data
+        "so_configP_id": "C80TSJ"  #Sales order data
     }
 }
 
@@ -84,7 +85,13 @@ API_CLIENTS = {
             "client_id": "PurchaseOrder",
             "client_secret": "ZTViM2FiZGYtMGNmMy00ZjY1LThjYjctZWY5MmE0NjdjMzc1"
         }
-    }             
+    },
+        "So": {
+        "live": {
+            "client_id": "SalesOrder",
+            "client_secret": "YWRiMjcxZWMtZDhhOS00YzNjLWIwOGMtMjIzOTEwYjEwMjUx"
+        }
+    }                    
 #end
 }
 

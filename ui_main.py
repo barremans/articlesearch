@@ -31,6 +31,12 @@ from label.label_settings_dialog import LabelSettingsDialog
 from version import __version__
 from updater import check_for_update, download_latest_release
 from bug_report_dialog import BugDialog
+from github_cases import show_github_cases
+from file_editor_dialog import FileEditorDialog
+from help_dialogs import show_help_dialog
+from settings_dialog import show_settings_dialog
+
+
 
 # import van je nieuwe JSON-viewer voor project searches
 from project_ui import ProjectWindow
@@ -41,48 +47,6 @@ from settings import load_column_headers_s, load_column_headers_default
 COLUMN_HEADERS_S = load_column_headers_s()
 COLUMN_HEADERS_DEFAULT = load_column_headers_default()
 
-class FileEditorDialog(QDialog):
-    def __init__(self, parent: QWidget, file_path: str):
-        super().__init__(parent)
-        self.file_path = file_path
-        self.setWindowTitle(f"Bestand bewerken: {os.path.basename(file_path)}")
-        self.resize(700, 600)
-        layout = QVBoxLayout(self)
-
-        self.info_label = QLabel(f"<b>Bestand:</b> {file_path}")
-        layout.addWidget(self.info_label)
-
-        self.editor = QTextEdit()
-        layout.addWidget(self.editor, stretch=1)
-
-        self.save_btn = QPushButton("Save")
-        self.save_btn.clicked.connect(self._save_file)
-        btn_layout = QHBoxLayout()
-        btn_layout.addStretch()
-        btn_layout.addWidget(self.save_btn)
-        layout.addLayout(btn_layout)
-
-        self._load_file()
-
-    def _load_file(self):
-        try:
-            with open(self.file_path, "r", encoding="utf-8") as f:
-                content = f.read()
-        except Exception as e:
-            QMessageBox.warning(self, "Fout bij openen bestand", f"Kan bestand niet lezen:\n{e}")
-            self.close()
-            return
-        self.editor.setPlainText(content)
-
-    def _save_file(self):
-        new_content = self.editor.toPlainText()
-        try:
-            with open(self.file_path, "w", encoding="utf-8") as f:
-                f.write(new_content)
-            QMessageBox.information(self, "Opgeslagen", f"{os.path.basename(self.file_path)} is bewaard.")
-            self.accept()
-        except Exception as e:
-            QMessageBox.warning(self, "Fout bij opslaan", f"Kon bestand niet opslaan:\n{e}")
 
 
 class MainWindow(QMainWindow):
@@ -92,14 +56,12 @@ class MainWindow(QMainWindow):
         self.detail_windows = []
         self.upload_windows = []
         self.project_window = None
-        # Voeg update-knop toe bij init zodat check_for_update() niet faalt
         self.setStatusBar(QStatusBar(self))
-        # ❗ Vertraagde updatecheck zodat QMessageBox correct toont
+
         QTimer.singleShot(1000, lambda: check_for_update(__version__, self))
         self.update_btn = QPushButton("Update nu")
         self.update_btn.setEnabled(False)
         self.update_btn.clicked.connect(lambda: download_latest_release(self))
-
 
         self.setWindowTitle("Artikelzoeker")
         icon_path = os.path.join(os.path.dirname(__file__), "assets", "stocks.png")
@@ -131,12 +93,11 @@ class MainWindow(QMainWindow):
 
         QShortcut(QKeySequence("Ctrl+Return"), self).activated.connect(self.perform_search)
         QShortcut(QKeySequence("Ctrl+L"), self).activated.connect(self._generate_label)
-        QShortcut(QKeySequence("F1"), self).activated.connect(self._show_help_dialog)
+        QShortcut(QKeySequence("F1"), self).activated.connect(lambda: show_help_dialog(self))
         QShortcut(QKeySequence("Ctrl+O"), self).activated.connect(self._open_selected_row)
 
         self.installEventFilter(self)
         self.input_field.installEventFilter(self)
-        # self.setStatusBar(QStatusBar(self))
 
     def _enable_update_button(self, is_update_available: bool):
         if hasattr(self, 'update_btn') and self.update_btn:
@@ -149,7 +110,7 @@ class MainWindow(QMainWindow):
 
         settings_menu = menubar.addMenu("&Instellingen")
         settings_menu.addAction("⚙️ &Kies omgeving (test/live)").triggered.connect(self._choose_environment)
-        settings_menu.addAction("🛠️ &Instellingen wijzigen...").triggered.connect(self._show_settings_dialog)
+        settings_menu.addAction("🛠️ &Instellingen wijzigen...").triggered.connect(lambda: show_settings_dialog(self))
         settings_menu.addAction("🏷️ &Label-instellingen...").triggered.connect(self._show_label_settings_dialog)
         settings_menu.addSeparator()
         settings_menu.addAction("✏️ Bewerk style.qss").triggered.connect(self._open_style_qss_editor)
@@ -158,9 +119,12 @@ class MainWindow(QMainWindow):
 
         report_menu = menubar.addMenu("&Rapporteren")
         report_menu.addAction("🐞 &Bug of feature melden...").triggered.connect(self._show_bug_report_dialog)
+        report_menu.addSeparator()
+        report_menu.addAction("Show open cases").triggered.connect(lambda: show_github_cases(self))
+
 
         help_menu = menubar.addMenu("&Help")
-        help_menu.addAction("&Help").triggered.connect(self._show_help_dialog)
+        help_menu.addAction("&Help").triggered.connect(lambda: show_help_dialog(self))
         settings_menu.addSeparator()
         help_menu.addAction("&Over...").triggered.connect(self._show_about_dialog)
         help_menu.addAction("📄 &Changelog...").triggered.connect(self._show_changelog_dialog)
@@ -223,8 +187,6 @@ class MainWindow(QMainWindow):
         grid.setColumnStretch(1, 0)
         grid.setColumnStretch(2, 1)
 
-        #labels = ["Zoekterm:", "Search-type:", "Zoekmodus:", "Toon voorraad:"]
-        #lbl_objs = [QLabel(t) for t in labels]
         zoekterm_label = QLabel("Zoekterm:")
         search_type_label = QLabel("Search-type:")
 

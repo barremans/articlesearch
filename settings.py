@@ -109,14 +109,26 @@ DEFAULT_SETTINGS = {
             "MaxStock": "Max.Whs",
             "VrijeStock": "Vrij"
         },
-            "sales": {
+        "sales": {
             "Price": "Prijs",
             "Currency": "Munt",
             "SalUnitMsr": "Verkoop eenh.",
             "NumInSale": "Aantal/verkoop",
             "SalPackMsr": "Pak-eenh.",
             "SalPackUn": "Pak-un."
-        },        
+        },
+        "so_rd": {
+            "LineNum": "Regel",
+            "ItemCode": "Artikelcode",
+            "Dscription": "Omschrijving",
+            "Quantity": "Aantal",
+            "Price": "Prijs",
+            "DiscPrcnt": "Korting (%)",
+            "LineTotal": "Lijn totaal",
+            "WhsName": "Magazijn",
+            "ShipDate": "Verzenddatum",
+            "FreeTxt": "Vrije tekst"
+            },            
         "ui_texts_main": {
             "label_search_term": "Zoekterm:",
             "label_search_type": "Search-type:",

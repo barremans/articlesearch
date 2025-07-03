@@ -1,5 +1,4 @@
 # ui_po.py
-
 import sys
 import requests
 from PySide6.QtWidgets import (
@@ -7,6 +6,10 @@ from PySide6.QtWidgets import (
     QComboBox, QTextEdit, QMessageBox, QTableWidget, QTableWidgetItem,
     QHeaderView, QTabWidget
 )
+from PySide6.QtGui import QKeySequence
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QShortcut
+
 from atp_token import get_auth_header
 from config import API_ENVIRONMENTS, ENVIRONMENT
 from settings import load_field_labels
@@ -58,6 +61,24 @@ class PoWidget(QWidget):
         self.go_table = QTableWidget()
         go_layout.addWidget(self.go_table)
         self.tabs.addTab(self.go_tab, "Goederenontvangsten")
+
+        # --- Sneltoetsen toevoegen ---
+        QShortcut(QKeySequence(Qt.Key_PageUp), self).activated.connect(self._combo_previous)
+        QShortcut(QKeySequence(Qt.Key_PageDown), self).activated.connect(self._combo_next)
+        QShortcut(QKeySequence("Ctrl+Return"), self).activated.connect(self.load_data)
+        QShortcut(QKeySequence("Alt+A"), self).activated.connect(lambda: self.tabs.setCurrentWidget(self.por1_tab))
+        QShortcut(QKeySequence("Alt+G"), self).activated.connect(lambda: self.tabs.setCurrentWidget(self.go_tab))
+        QShortcut(QKeySequence(Qt.Key_Escape), self).activated.connect(self.close)
+
+    def _combo_previous(self):
+        current_index = self.status_combo.currentIndex()
+        if current_index > 0:
+            self.status_combo.setCurrentIndex(current_index - 1)
+
+    def _combo_next(self):
+        current_index = self.status_combo.currentIndex()
+        if current_index < self.status_combo.count() - 1:
+            self.status_combo.setCurrentIndex(current_index + 1)
 
     def load_data(self):
         po_number = self.po_input.text().strip()
@@ -116,15 +137,17 @@ class PoWidget(QWidget):
 
     def show_por1(self, por1_list):
         labels_map = load_field_labels("po_por1")
-        headers = [labels_map.get("LineNum", "Regel"),
-                   labels_map.get("ItemCode", "Artikelcode"),
-                   labels_map.get("VendorNum", "VendorNr"),
-                   labels_map.get("Dscription", "Omschrijving"),
-                   labels_map.get("Quantity", "Aantal"),
-                   labels_map.get("Price", "Prijs"),
-                   labels_map.get("WhsName", "Magazijn"),
-                   labels_map.get("DocDate", "Datum"),
-                   labels_map.get("ShipDate", "Verzenddatum")]
+        headers = [
+            labels_map.get("LineNum", "Regel"),
+            labels_map.get("ItemCode", "Artikelcode"),
+            labels_map.get("VendorNum", "VendorNr"),
+            labels_map.get("Dscription", "Omschrijving"),
+            labels_map.get("Quantity", "Aantal"),
+            labels_map.get("Price", "Prijs"),
+            labels_map.get("WhsName", "Magazijn"),
+            labels_map.get("DocDate", "Datum"),
+            labels_map.get("ShipDate", "Verzenddatum")
+        ]
 
         self.por1_table.setColumnCount(len(headers))
         self.por1_table.setHorizontalHeaderLabels(headers)
@@ -145,19 +168,30 @@ class PoWidget(QWidget):
             self.por1_table.setItem(row, 7, QTableWidgetItem(format_date(line.get("DocDate"))))
             self.por1_table.setItem(row, 8, QTableWidgetItem(format_date(line.get("ShipDate"))))
 
-        self.por1_table.resizeColumnsToContents()
+        self.por1_table.setColumnWidth(0, 60)
+        self.por1_table.setColumnWidth(1, 120)
+        self.por1_table.setColumnWidth(2, 100)
+        self.por1_table.setColumnWidth(3, 300)
+        self.por1_table.setColumnWidth(4, 70)
+        self.por1_table.setColumnWidth(5, 80)
+        self.por1_table.setColumnWidth(6, 100)
+        self.por1_table.setColumnWidth(7, 100)
+        self.por1_table.setColumnWidth(8, 120)
+
         self.por1_table.horizontalHeader().setStretchLastSection(True)
 
     def show_go(self, go_list):
         labels_map = load_field_labels("po_go")
-        headers = [labels_map.get("GO_DocNum", "GO Nr"),
-                   labels_map.get("GO_Date", "Datum"),
-                   labels_map.get("GOL_ItemCode", "Artikelcode"),
-                   labels_map.get("VendorNum", "VendorNr"),
-                   labels_map.get("GOL_Dscription", "Omschrijving"),
-                   labels_map.get("GOL_Quantity", "Aantal"),
-                   labels_map.get("GOL_OpenQty", "Open qty"),
-                   labels_map.get("GOL_LineStatus", "Status")]
+        headers = [
+            labels_map.get("GO_DocNum", "GO Nr"),
+            labels_map.get("GO_Date", "Datum"),
+            labels_map.get("GOL_ItemCode", "Artikelcode"),
+            labels_map.get("VendorNum", "VendorNr"),
+            labels_map.get("GOL_Dscription", "Omschrijving"),
+            labels_map.get("GOL_Quantity", "Aantal"),
+            labels_map.get("GOL_OpenQty", "Open qty"),
+            labels_map.get("GOL_LineStatus", "Status")
+        ]
 
         self.go_table.setColumnCount(len(headers))
         self.go_table.setHorizontalHeaderLabels(headers)
@@ -165,7 +199,7 @@ class PoWidget(QWidget):
 
         header_go = self.go_table.horizontalHeader()
         header_go.setSectionResizeMode(QHeaderView.Interactive)
-        header_go.setSectionResizeMode(3, QHeaderView.Stretch)
+        header_go.setSectionResizeMode(4, QHeaderView.Stretch)
 
         for row, go in enumerate(go_list):
             self.go_table.setItem(row, 0, QTableWidgetItem(str(go.get("GO_DocNum"))))
@@ -177,7 +211,15 @@ class PoWidget(QWidget):
             self.go_table.setItem(row, 6, QTableWidgetItem(str(go.get("GOL_OpenQty"))))
             self.go_table.setItem(row, 7, QTableWidgetItem(go.get("GOL_LineStatus", "")))
 
-        self.go_table.resizeColumnsToContents()
+        self.go_table.setColumnWidth(0, 80)
+        self.go_table.setColumnWidth(1, 100)
+        self.go_table.setColumnWidth(2, 120)
+        self.go_table.setColumnWidth(3, 100)
+        self.go_table.setColumnWidth(4, 300)
+        self.go_table.setColumnWidth(5, 80)
+        self.go_table.setColumnWidth(6, 90)
+        self.go_table.setColumnWidth(7, 100)
+
         self.go_table.horizontalHeader().setStretchLastSection(True)
 
 

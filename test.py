@@ -9,7 +9,7 @@ def main():
     DEBUG = True
 
     # Haal juiste config ID op
-    config_id = API_ENVIRONMENTS[ENVIRONMENT]["po_configP_id"]
+    config_id = API_ENVIRONMENTS[ENVIRONMENT]["so_configP_id"]
 
     # API URL
     url = "https://api.cgk-group.com/api/datarequest"
@@ -18,7 +18,7 @@ def main():
     payload = {
         "ConfigurationID": config_id,
         "MultiKey": {
-            "@po": "241204456",
+            "@so": "250201242",
             "@status": "c"
         }
     }

@@ -297,3 +297,8 @@ Alle assets en metadata toegevoegd.
  
 --- Build gestart op 30/06/2025 15:38:05.15 --- 
 ✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 03/07/2025 10:36:14.84 --- 
+ 
+--- Build gestart op 03/07/2025 11:38:55.13 --- 
+✅ Assets en metadata toegevoegd. 

@@ -1,7 +1,7 @@
 {
   "default_search_type": "Standaard",
   "environment": "live",
-  "show_stock": "S",
+  "show_stock": "B",
   "detail_modal": false,
   "tab_order": [
     "vta",
@@ -115,6 +115,18 @@
       "NumInSale": "Aantal/verkoop",
       "SalPackMsr": "Pak-eenh.",
       "SalPackUn": "Pak-un."
+    },
+    "so_rd": {
+      "LineNum": "Regel",
+      "ItemCode": "Artikelcode",
+      "Dscription": "Omschrijving",
+      "Quantity": "Aantal",
+      "Price": "Prijs",
+      "DiscPrcnt": "Korting (%)",
+      "LineTotal": "Lijn totaal",
+      "WhsName": "Magazijn",
+      "ShipDate": "Verzenddatum",
+      "FreeTxt": "Vrije tekst"
     },
     "ui_texts_main": {
       "label_search_term": "Zoekterm:",
