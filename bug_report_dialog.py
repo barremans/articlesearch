@@ -127,6 +127,10 @@ class BugDialog(QDialog):
         reporter = self.name_input.text().strip()
         report_type = self.type_select.currentText().strip()
 
+        if not reporter:
+            QMessageBox.warning(self, "Fout", "Je naam moet ingevuld zijn.")
+            return
+
         if not description:
             QMessageBox.warning(self, "Fout", "De beschrijving mag niet leeg zijn.")
             return
@@ -158,3 +162,4 @@ class BugDialog(QDialog):
             self.accept()
         except Exception as e:
             QMessageBox.critical(self, "GitHub Fout", str(e))
+

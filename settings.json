@@ -3,6 +3,7 @@
   "environment": "live",
   "show_stock": "B",
   "detail_modal": false,
+  "language": "NL",
   "tab_order": [
     "vta",
     "install",

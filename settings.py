@@ -9,6 +9,7 @@ DEFAULT_SETTINGS = {
     "environment": "live",
     "show_stock": "S",
     "detail_modal": False,
+    "language": "NL",
     "tab_order": ["vta", "install", "vta_cert", "art"],
     "label_settings": {
         "LABEL_WIDTH": 85.0,
@@ -182,6 +183,7 @@ def load_settings():
             data = json.load(f)
             merged = {**DEFAULT_SETTINGS, **data}
 
+            # Deep merge voor nested dicts
             if "label_settings" in data:
                 merged["label_settings"] = {
                     **DEFAULT_SETTINGS["label_settings"],
@@ -197,6 +199,13 @@ def load_settings():
             if "tab_order" not in merged:
                 merged["tab_order"] = DEFAULT_SETTINGS["tab_order"]
 
+            if "project_tab_order" not in merged:
+                merged["project_tab_order"] = DEFAULT_SETTINGS["project_tab_order"]
+
+            if "language" not in merged:
+                merged["language"] = DEFAULT_SETTINGS["language"]
+
+            # Zorg dat alle QSS paths aanwezig zijn
             for key in ("main_qss_path", "detail_qss_path", "upload_qss_path"):
                 if key not in merged:
                     merged[key] = DEFAULT_SETTINGS[key]
@@ -207,9 +216,18 @@ def load_settings():
         save_settings(DEFAULT_SETTINGS)
         return DEFAULT_SETTINGS.copy()
 
+
 def save_settings(settings: dict):
     with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
         json.dump(settings, f, indent=2)
+        
+def save_language(lang: str):
+    settings = load_settings()
+    settings["language"] = lang
+    save_settings(settings)        
+        
+def load_language() -> str:
+    return load_settings().get("language", DEFAULT_SETTINGS["language"])        
 
 def load_field_labels(context: str) -> dict:
     return load_settings().get("field_labels", {}).get(context, {})

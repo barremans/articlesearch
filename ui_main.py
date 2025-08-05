@@ -24,7 +24,8 @@ from settings import (
     load_show_stock, save_show_stock,
     load_detail_modal, save_detail_modal,
     load_main_qss_path, load_detail_qss_path, load_upload_qss_path,
-    load_default_search_type, save_default_search_type
+    load_default_search_type, save_default_search_type,
+    load_language
 )
 from label.label_generator import generate_label
 from label.label_settings_dialog import LabelSettingsDialog
@@ -35,6 +36,8 @@ from github_cases import show_github_cases
 from file_editor_dialog import FileEditorDialog
 from help_dialogs import show_help_dialog
 from settings_dialog import show_settings_dialog
+
+from translations import get_labels
 
 
 
@@ -52,6 +55,9 @@ COLUMN_HEADERS_DEFAULT = load_column_headers_default()
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        
+        labels = get_labels(load_language())
+        
         self.collected_data = []
         self.detail_windows = []
         self.upload_windows = []
@@ -59,7 +65,8 @@ class MainWindow(QMainWindow):
         self.setStatusBar(QStatusBar(self))
 
         QTimer.singleShot(1000, lambda: check_for_update(__version__, self))
-        self.update_btn = QPushButton("Update nu")
+        #self.update_btn = QPushButton("Update nu")
+        self.update_btn = QPushButton(labels["buttons"]["update_now"])
         self.update_btn.setEnabled(False)
         self.update_btn.clicked.connect(lambda: download_latest_release(self))
 
@@ -649,97 +656,6 @@ class MainWindow(QMainWindow):
         """Herkent na korte vertraging of het bestand dan wél bestaat."""
         if os.path.exists(path):
             self._on_qss_file_changed(path)
-
-    def _show_settings_dialog(self):
-        from settings import (
-            load_environment, save_environment,
-            load_show_stock, save_show_stock,
-            load_detail_modal, save_detail_modal,
-            load_default_search_type, save_default_search_type,
-            load_tab_order, save_tab_order
-        )
-        from PySide6.QtWidgets import QListWidget, QListWidgetItem
-
-        dialog = QDialog(self)
-        dialog.setWindowTitle("Instellingen")
-        dialog.resize(400, 500)
-
-        layout = QVBoxLayout(dialog)
-
-        # Omgeving
-        env = QComboBox()
-        env.addItems(["live", "test"])
-        env.setCurrentText(load_environment())
-
-        # Voorraad
-        stock = QComboBox()
-        stock.addItems(["R", "S", "B"])
-        stock.setCurrentText(load_show_stock())
-
-        # Detailweergave als modal
-        modal = QCheckBox("Toon detail als modal dialoog")
-        modal.setChecked(load_detail_modal())
-
-        # Zoektype
-        search_type_default = QComboBox()
-        search_type_default.addItems(["Standaard", "Project"])
-        search_type_default.setCurrentText(load_default_search_type())
-
-        # Tab-volgorde editor
-        tab_order_label = QLabel("Tab-volgorde (versleep om te herschikken):")
-        tab_order_list = QListWidget()
-        tab_order_list.setDragDropMode(QListWidget.InternalMove)
-        current_order = load_tab_order()
-        all_tabs = ["art", "install", "vta", "vta_cert"]
-
-        # Voeg alle aanwezige + ontbrekende tabs toe
-        seen = set()
-        for tab in current_order + [t for t in all_tabs if t not in current_order]:
-            if tab not in seen:
-                tab_order_list.addItem(QListWidgetItem(tab))
-                seen.add(tab)
-
-        # Saveknop
-        save = QPushButton("Opslaan")
-
-        def _save_config():
-            save_environment(env.currentText())
-            save_show_stock(stock.currentText())
-            save_detail_modal(modal.isChecked())
-            save_default_search_type(search_type_default.currentText())
-
-            new_order = [tab_order_list.item(i).text() for i in range(tab_order_list.count())]
-            save_tab_order(new_order)
-
-            QMessageBox.information(dialog, "Instellingen", "Instellingen opgeslagen.")
-            dialog.accept()
-
-        save.clicked.connect(_save_config)
-
-        # Layout samenstellen
-        layout.addWidget(QLabel("Omgeving:"))
-        layout.addWidget(env)
-        layout.addWidget(QLabel("Toon voorraad:"))
-        layout.addWidget(stock)
-        layout.addWidget(modal)
-        layout.addWidget(QLabel("Standaard zoektype:"))
-        layout.addWidget(search_type_default)
-        layout.addSpacing(10)
-        layout.addWidget(tab_order_label)
-        layout.addWidget(tab_order_list)
-        layout.addStretch()
-        layout.addWidget(save)
-
-        dialog.setLayout(layout)
-        dialog.exec()
-
-    def _save_config(self, dialog, env, stock, modal, search_type_default):
-        save_environment(env.currentText())
-        save_show_stock(stock.currentText())
-        save_detail_modal(modal.isChecked())
-        save_default_search_type(search_type_default.currentText())
-        QMessageBox.information(dialog, "Instellingen", "Instellingen opgeslagen.")
-        dialog.accept()
 
     def _show_changelog_dialog(self):
         dialog = QDialog(self)

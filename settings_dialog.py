@@ -7,7 +7,9 @@ from settings import (
     load_show_stock, save_show_stock,
     load_detail_modal, save_detail_modal,
     load_default_search_type, save_default_search_type,
-    load_tab_order, save_tab_order
+    load_tab_order, save_tab_order,
+    load_language, 
+    save_language
 )
 
 def show_settings_dialog(parent):
@@ -35,6 +37,13 @@ def show_settings_dialog(parent):
     search_type_default = QComboBox()
     search_type_default.addItems(["Standaard", "Project"])
     search_type_default.setCurrentText(load_default_search_type())
+    
+    # Taal
+    language_combo = QComboBox()
+    language_combo.addItem("Nederlands", "NL")
+    language_combo.addItem("English", "EN")
+    language_combo.setCurrentText("Nederlands" if load_language() == "NL" else "English")
+
 
     # Tab-volgorde
     tab_order_label = QLabel("Tab-volgorde (versleep om te herschikken):")
@@ -56,6 +65,7 @@ def show_settings_dialog(parent):
         save_show_stock(stock.currentText())
         save_detail_modal(modal.isChecked())
         save_default_search_type(search_type_default.currentText())
+        save_language(language_combo.currentData())
         new_order = [tab_order_list.item(i).text() for i in range(tab_order_list.count())]
         save_tab_order(new_order)
         QMessageBox.information(dialog, "Instellingen", "Instellingen opgeslagen.")
@@ -70,6 +80,8 @@ def show_settings_dialog(parent):
     layout.addWidget(modal)
     layout.addWidget(QLabel("Standaard zoektype:"))
     layout.addWidget(search_type_default)
+    layout.addWidget(QLabel("Taal:"))
+    layout.addWidget(language_combo)
     layout.addSpacing(10)
     layout.addWidget(tab_order_label)
     layout.addWidget(tab_order_list)
