@@ -1,0 +1,54 @@
+{
+  "inox": {
+    "pos": 6,
+    "neg": 2
+  },
+  "met hendel": {
+    "pos": 6,
+    "neg": 2
+  },
+  "M/M": {
+    "pos": 6,
+    "neg": 2
+  },
+  "schroefdraad": {
+    "pos": 6,
+    "neg": 2
+  },
+  "2-delig": {
+    "pos": 6,
+    "neg": 0
+  },
+  "flens": {
+    "pos": 0,
+    "neg": 2
+  },
+  "hendel": {
+    "pos": 0,
+    "neg": 2
+  },
+  "kogelafsluiter": {
+    "pos": 0,
+    "neg": 2
+  },
+  "verlijming": {
+    "pos": 0,
+    "neg": 2
+  },
+  "zonder hendel": {
+    "pos": 0,
+    "neg": 2
+  },
+  "PVC-U": {
+    "pos": 0,
+    "neg": 2
+  },
+  "3-delige afsluiter": {
+    "pos": 0,
+    "neg": 2
+  },
+  "bolkraan": {
+    "pos": 0,
+    "neg": 2
+  }
+}

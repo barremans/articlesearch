@@ -7,6 +7,8 @@ block_cipher = None
 
 # ✅ Voeg alle datafiles van reportlab toe (fonts, templates, etc.)
 reportlab_datas = collect_data_files('reportlab')
+transformers_datas = collect_data_files('transformers')
+sklearn_datas = collect_data_files('sklearn')
 
 a = Analysis(
     ['main.py'],
@@ -25,7 +27,7 @@ a = Analysis(
         ('logs/*', 'logs'),                       # 📝 Logbestanden
         ('label/*', 'label'),                     # 🏷️ Label functionaliteit
         ('docs/*', 'docs')                        # 📚 Markdown documentatie
-    ] + reportlab_datas,
+    ] + reportlab_datas + transformers_datas + sklearn_datas,
     hiddenimports=[
         'upload_dialog',
         'oitmi_upload',
@@ -56,6 +58,15 @@ a = Analysis(
         'reportlab.graphics',
         'reportlab.graphics.shapes',
         'reportlab.graphics.renderPDF',
+        'transformers',
+        'transformers.models.clip',
+        'transformers.models.clip.modeling_clip',
+        'transformers.models.clip.processing_clip',
+        'torch',
+        'numpy',
+        'sklearn',
+        'sklearn.metrics',
+        'sklearn.metrics.pairwise',
     ],
     hookspath=[],
     hooksconfig={},
