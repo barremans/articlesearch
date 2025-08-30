@@ -1,46 +1,57 @@
-# test_po_request.py
+# test_api.py
+# Run dit script in VS Code (Play-knop) om een JSON payload te posten naar de API
 
-import requests
 import json
-from atp_token import get_auth_header
+import requests
+import urllib3
+
+from auth import get_auth_header
 from config import API_ENVIRONMENTS, ENVIRONMENT
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
 def main():
-    DEBUG = True
+    env = API_ENVIRONMENTS[ENVIRONMENT]
+    base = env["base_url"]
+    url = f"{base}/api/datarequest"
 
-    # Haal juiste config ID op
-    config_id = API_ENVIRONMENTS[ENVIRONMENT]["so_configP_id"]
-
-    # API URL
-    url = "https://api.cgk-group.com/api/datarequest"
-
-    # Payload zoals je doorgaf
+    # >>>>>>>>>>>> PLAK HIER JE JSON PAYLOAD <<<<<<<<<<<<<<
     payload = {
-        "ConfigurationID": config_id,
-        "MultiKey": {
-            "@so": "250201242",
-            "@status": "c"
-        }
+    "ConfigurationID": "OLH3RP",
+        "MultiKey":{
+        "@key": "K05036"
     }
+}
+    # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     headers = get_auth_header()
+    headers.setdefault("Content-Type", "application/json")
+
+    print(f"[INFO] ENV={ENVIRONMENT}")
+    print(f"[INFO] URL={url}")
+    print(f"[INFO] Payload:\n{json.dumps(payload, indent=2, ensure_ascii=False)}")
 
     try:
-        response = requests.post(url, headers=headers, json=payload, verify=False)
-        response.raise_for_status()
-        data = response.json()
+        resp = requests.post(url, headers=headers, json=payload, verify=False, timeout=30)
+        print(f"[INFO] HTTP {resp.status_code}")
+        resp.raise_for_status()
 
-        if DEBUG:
-            print("---------- RAW JSON DATA ----------")
-            print(json.dumps(data, indent=4, ensure_ascii=False))
+        try:
+            data = resp.json()
+        except ValueError:
+            print(resp.text)
+            return
+
+        print("---------- RESPONSE ----------")
+        print(json.dumps(data, indent=2, ensure_ascii=False))
 
         if data.get("IsError"):
-            print(f"API Error: {data.get('ErrorMessage')}")
-        else:
-            print("Data succesvol opgehaald.")
+            print(f"[WARN] API Error {data.get('ErrorCode')}: {data.get('ErrorMessage')}")
 
     except requests.exceptions.RequestException as e:
-        print(f"Request error: {e}")
+        print(f"[ERROR] Netwerkfout: {e}")
+
 
 if __name__ == "__main__":
     main()

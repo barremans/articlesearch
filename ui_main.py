@@ -1,7 +1,7 @@
-# ui_main.py
-
+#ui_main.py
 import os
 import sys
+import logging
 import markdown
 
 from PySide6.QtWidgets import (
@@ -39,17 +39,26 @@ from settings_dialog import show_settings_dialog
 
 from translations import get_labels
 
-
-
-# import van je nieuwe JSON-viewer voor project searches
+# JSON-viewer voor project/BP (Project gebruikt dit venster)
 from project_ui import ProjectWindow
 
 from settings import load_column_headers_s, load_column_headers_default
+
+# ---- NIEUW: BP detailvenster
+from ui_bp import BpWindow
 
 # Dynamische kolomheaders laden uit settings
 COLUMN_HEADERS_S = load_column_headers_s()
 COLUMN_HEADERS_DEFAULT = load_column_headers_default()
 
+# Logging voor UI
+logger = logging.getLogger("ArticleSearch.UI")
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("[%(levelname)s] %(asctime)s - [ArticleSearch.UI] %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 
 class MainWindow(QMainWindow):
@@ -62,10 +71,10 @@ class MainWindow(QMainWindow):
         self.detail_windows = []
         self.upload_windows = []
         self.project_window = None
+        self.bp_windows = []  # <-- vensters bijhouden zodat ze open blijven
         self.setStatusBar(QStatusBar(self))
 
         QTimer.singleShot(1000, lambda: check_for_update(__version__, self))
-        #self.update_btn = QPushButton("Update nu")
         self.update_btn = QPushButton(labels["buttons"]["update_now"])
         self.update_btn.setEnabled(False)
         self.update_btn.clicked.connect(lambda: download_latest_release(self))
@@ -106,6 +115,8 @@ class MainWindow(QMainWindow):
         self.installEventFilter(self)
         self.input_field.installEventFilter(self)
 
+    # ---------------- UI OPBOUW ----------------
+
     def _enable_update_button(self, is_update_available: bool):
         if hasattr(self, 'update_btn') and self.update_btn:
             self.update_btn.setEnabled(is_update_available)
@@ -129,37 +140,34 @@ class MainWindow(QMainWindow):
         report_menu.addSeparator()
         report_menu.addAction("Show open cases").triggered.connect(lambda: show_github_cases(self))
 
-
         help_menu = menubar.addMenu("&Help")
         help_menu.addAction("&Help").triggered.connect(lambda: show_help_dialog(self))
         settings_menu.addSeparator()
         help_menu.addAction("&Over...").triggered.connect(self._show_about_dialog)
         help_menu.addAction("📄 &Changelog...").triggered.connect(self._show_changelog_dialog)
 
-
     def _create_main_layout(self):
         self.input_field = QLineEdit()
         self.input_field.setPlaceholderText(
-            "Geef zoekterm in… geen prefix= zoeken op art.nr., * omschrijving, - kernwoorden, / leverancier"
+            "Geef zoekterm in… geen prefix = zoeken op art.nr., * omschrijving, - kernwoorden, / leverancier"
         )
 
         self.search_type_select = QComboBox()
-        self.search_type_select.addItems(["Standaard", "Project"])
-        #self.search_type_select.setCurrentText("Standaard")
+        self.search_type_select.addItems(["Standaard", "Project", "BP"])
         self.search_type_select.setCurrentText(load_default_search_type())
         self.search_type_select.currentTextChanged.connect(self._toggle_fields_by_search_type)
-
         self.search_type_select.currentTextChanged.connect(self._update_input_tooltip)
-
 
         self.mode_label = QLabel("Zoekmodus:")
         self.mode_select = QComboBox()
         self.mode_select.addItems(["AND", "OR"])
 
+        # We hergebruiken deze rij:
+        # - Standaard: label = "Toon voorraad:", items = ["R","S","B"]
+        # - BP      : label = "Type:", items = ["", "C", "S"]
         self.stock_label = QLabel("Toon voorraad:")
         self.show_stock_select = QComboBox()
-        self.show_stock_select.addItems(["R", "S", "B"])
-        self.show_stock_select.setCurrentText(load_show_stock())
+        self._set_combo_items(self.show_stock_select, ["R", "S", "B"], current=load_show_stock())
         self.show_stock_select.currentTextChanged.connect(save_show_stock)
 
         self.search_button = QPushButton("Zoeken")
@@ -234,14 +242,17 @@ class MainWindow(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
 
-    def perform_search(self):
-        zoekterm     = self.input_field.text().strip()
-        mode         = self.mode_select.currentText()
-        is_project   = (self.search_type_select.currentText() == "Project")
-        self.result_count_label.setText("Aantal resultaten: 0")
+    # --------------- ZOEKACTIE & TABELLEN ----------------
 
+    def perform_search(self):
+        zoekterm   = self.input_field.text().strip()
+        mode       = self.mode_select.currentText()
+        searchtype = self.search_type_select.currentText()
+
+        self.result_count_label.setText("Aantal resultaten: 0")
         if not zoekterm:
             self.table.setRowCount(0)
+            self.table.setColumnCount(0)
             return
 
         # start spinner
@@ -249,28 +260,38 @@ class MainWindow(QMainWindow):
         self.loading_movie.start()
         QApplication.processEvents()
 
+        is_project = (searchtype == "Project")
+        is_bp      = (searchtype == "BP")
+        request_kind = "project" if is_project else ("bp" if is_bp else "data")
+
+        # Voor BP gebruiken we dezelfde combobox voor Type
+        bp_type = self.show_stock_select.currentText() if is_bp else ""
+
+        logger.info(f"Zoekactie: type={searchtype} | kind={request_kind} | term='{zoekterm}' | mode='{mode}' | bp_type='{bp_type}'")
+
         try:
             data = send_data_request(
                 zoekterm,
                 mode,
                 project_search=is_project,
-                is_closed=""
+                is_closed="",
+                kind=request_kind,
+                bp_type=bp_type
             )
         except Exception as e:
-            if is_project:
-                # bij project altijd JSON-venster, ook op error
-                data = {"error": str(e)}
-            else:
-                # standaard: fout in tabel en return
-                self.table.setRowCount(0)
-                self.table.setColumnCount(1)
-                self.table.setHorizontalHeaderLabels(["Fout"])
-                self.table.insertRow(0)
-                self.table.setItem(0, 0, QTableWidgetItem(str(e)))
-                self.loading_movie.stop()
-                self.loading_spinner.hide()
-                return
+            err_msg = str(e)
+            # Fout zichtbaar in tabel
+            self.table.clearSelection()
+            self.table.setRowCount(0)
+            self.table.setColumnCount(1)
+            self.table.setHorizontalHeaderLabels(["Fout"])
+            self.table.insertRow(0)
+            self.table.setItem(0, 0, QTableWidgetItem(err_msg))
+            self.loading_movie.stop()
+            self.loading_spinner.hide()
+            return
 
+        # Render
         if is_project:
             if isinstance(data, dict) and "error" in data:
                 QMessageBox.warning(self, "Projectzoeking mislukt", f"❌ {data['error']}")
@@ -287,6 +308,8 @@ class MainWindow(QMainWindow):
                     )
             else:
                 QMessageBox.warning(self, "Geen data", "❌ Geen geldige projectresultaten ontvangen.")
+        elif is_bp:
+            self.populate_bp_table(data)
         else:
             self.populate_table(data)
 
@@ -294,8 +317,8 @@ class MainWindow(QMainWindow):
         self.loading_movie.stop()
         self.loading_spinner.hide()
 
-
     def populate_table(self, data: list):
+        """Standaard artikelweergave met dynamische kolomdefinities uit settings."""
         show_stock = load_show_stock()
 
         if show_stock == "S":
@@ -330,6 +353,54 @@ class MainWindow(QMainWindow):
         if data:
             self.table.selectRow(0)
 
+    def populate_bp_table(self, data: list):
+        """BP-weergave: alleen CardCode, CardName, FederalTaxID, ContactPerson."""
+        header_labels = ["Selectie", "CardCode", "CardName", "FederalTaxID", "ContactPerson"]
+
+        self.table.setRowCount(len(data))
+        self.table.setColumnCount(len(header_labels))
+        self.table.setHorizontalHeaderLabels(header_labels)
+
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        for idx in range(1, len(header_labels)):
+            mode = QHeaderView.Stretch if header_labels[idx] == "CardName" else QHeaderView.ResizeToContents
+            header.setSectionResizeMode(idx, mode)
+
+        def extract_contact_person(item: dict) -> str:
+            cp = item.get("ContactPerson") or item.get("Contactperson")
+            if cp:
+                return str(cp)
+            emps = item.get("ContactEmployees") or []
+            if isinstance(emps, list) and emps:
+                for ce in emps:
+                    if (ce.get("Active") == "Y") and ce.get("Name"):
+                        return str(ce["Name"])
+                if emps[0].get("Name"):
+                    return str(emps[0]["Name"])
+            return ""
+
+        for row, item in enumerate(data):
+            checkbox = QCheckBox()
+            checkbox.setFocusPolicy(Qt.NoFocus)
+            self.table.setCellWidget(row, 0, checkbox)
+
+            card_code  = str(item.get("CardCode", "") or "")
+            card_name  = str(item.get("CardName", "") or "")
+            federal_id = str(item.get("FederalTaxID") or item.get("FedralTaxID") or "")
+            contact    = extract_contact_person(item)
+
+            values = [card_code, card_name, federal_id, contact]
+            for col_offset, val in enumerate(values, start=1):
+                cell = QTableWidgetItem(val)
+                cell.setToolTip(val)
+                self.table.setItem(row, col_offset, cell)
+
+        self.result_count_label.setText(f"Aantal resultaten: {len(data)}")
+        if data:
+            self.table.selectRow(0)
+
+    # --------------- VERZAMEL / DIALOGEN ----------------
 
     def collect_selected_rows(self):
         aantal_rijen = self.table.rowCount()
@@ -361,17 +432,15 @@ class MainWindow(QMainWindow):
         self.show_collected_dialog()
 
     def show_collected_dialog(self):
-        from PySide6.QtCore import QMimeData
-
         dialog = QDialog(self)
         dialog.setWindowTitle("Verzamelde rijen")
         dialog.resize(800, 400)
 
-        show_stock = load_show_stock()
-        if show_stock == "S":
-            headers = list(COLUMN_HEADERS_S.values())
+        if self.search_type_select.currentText() == "BP":
+            headers = ["CardCode", "CardName", "FederalTaxID", "ContactPerson"]
         else:
-            headers = list(COLUMN_HEADERS_DEFAULT.values())
+            show_stock = load_show_stock()
+            headers = list(COLUMN_HEADERS_S.values()) if show_stock == "S" else list(COLUMN_HEADERS_DEFAULT.values())
 
         table = QTableWidget()
         table.setColumnCount(len(headers))
@@ -440,25 +509,44 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Lijst is al leeg", "Er staan momenteel geen rijen in de lijst.")
             return
 
-        # 1) Maak de interne lijst leeg
         self.collected_data.clear()
 
-        # 2) Haal alle checkbox-selecties uit de hoofd-tabel
         for row in range(self.table.rowCount()):
             widget = self.table.cellWidget(row, 0)
             if isinstance(widget, QCheckBox):
                 widget.setChecked(False)
 
-        # 3) Zet de 'Selecteer alles' checkbox terug uit, indien aanwezig
         if hasattr(self, 'select_all_checkbox'):
-            # Blokkeren van signaal om toggling niet opnieuw _toggle_select_all te triggeren
             self.select_all_checkbox.blockSignals(True)
             self.select_all_checkbox.setChecked(False)
             self.select_all_checkbox.blockSignals(False)
 
         QMessageBox.information(self, "Lijst geleegd", "De verzamelde rijen zijn nu verwijderd en alle vakjes zijn uitgevinkt.")
 
+    # --------------- DETAIL / CONTEXTMENU / LABEL ----------------
+
     def handle_row_double_click(self, item):
+        search_type = self.search_type_select.currentText()
+
+        # Nieuw: BP dubbelklik opent ui_bp en zoekt op CardCode
+        if search_type == "BP":
+            row = item.row()
+            # In populate_bp_table is de kolomvolgorde:
+            # ["Selectie", "CardCode", "CardName", "FederalTaxID", "ContactPerson"]
+            card_code_item = self.table.item(row, 1)  # kolom 1 = CardCode
+            card_code = card_code_item.text() if card_code_item else ""
+            if not card_code:
+                QMessageBox.information(self, "Info", "Geen geldige CardCode gevonden op deze rij.")
+                return
+
+            bpw = BpWindow()
+            bpw.showMaximized()
+            bpw.preset_and_fetch(card_code, auto_fetch=True)
+
+            self.bp_windows.append(bpw)
+            return
+
+        # Bestaande flow voor niet-BP (artikels / detail)
         row = item.row()
         # Kolom 1 bevat ItemCode (kolom 0 is checkbox)
         item_code = self.table.item(row, 1).text()
@@ -474,14 +562,28 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self, "Detail Fout", str(e))
 
-        #QTimer.singleShot(0, lambda: self.input_field.setFocus(Qt.FocusReason.ActiveWindowFocusReason))
-
     def _open_selected_row(self):
+        search_type = self.search_type_select.currentText()
         selected_items = self.table.selectedItems()
         if not selected_items:
             QMessageBox.warning(self, "Geen selectie", "Selecteer een rij om te openen.")
             return
         first_index = selected_items[0].row()
+
+        if search_type == "BP":
+            card_code_item = self.table.item(first_index, 1)  # kolom 1 = CardCode
+            card_code = card_code_item.text() if card_code_item else ""
+            if not card_code:
+                QMessageBox.information(self, "Info", "Geen geldige CardCode gevonden op deze rij.")
+                return
+
+            bpw = BpWindow()
+            bpw.showMaximized()
+            bpw.preset_and_fetch(card_code, auto_fetch=True)
+            self.bp_windows.append(bpw)
+            return
+
+        # Niet-BP: bestaande artikel-detail flow
         self.handle_row_double_click(self.table.item(first_index, 1))
 
     def show_table_context_menu(self, position: QPoint):
@@ -489,22 +591,27 @@ class MainWindow(QMainWindow):
         if not index.isValid():
             return
         row = index.row()
-        # Kolom 1 is ItemCode
-        item_code = self.table.item(row, 1).text()
         menu = QMenu(self)
         copy_action = menu.addAction("📋 Kopieer rij")
-        detail_action = menu.addAction("🔍 Toon detail")
-        label_action = menu.addAction("🏷️ Genereer label")
+
+        if self.search_type_select.currentText() != "BP":
+            detail_action = menu.addAction("🔍 Toon detail")
+            label_action = menu.addAction("🏷️ Genereer label")
         action = menu.exec(self.table.viewport().mapToGlobal(position))
         if action == copy_action:
             values = [self.table.item(row, col).text() for col in range(1, self.table.columnCount())]
             QApplication.clipboard().setText("\t".join(values))
-        elif action == detail_action:
-            self.handle_row_double_click(self.table.item(row, 1))
-        elif action == label_action:
-            self._generate_label()
+        elif self.search_type_select.currentText() != "BP":
+            if action and action.text().startswith("🔍"):
+                self.handle_row_double_click(self.table.item(row, 1))
+            elif action and action.text().startswith("🏷️"):
+                self._generate_label()
 
     def _generate_label(self):
+        if self.search_type_select.currentText() == "BP":
+            QMessageBox.information(self, "Info", "Label genereren is enkel voor artikels.")
+            return
+
         selected = self.table.selectedItems()
         if not selected:
             QMessageBox.warning(self, "Geen selectie", "Selecteer een rij om een label te genereren.")
@@ -515,6 +622,8 @@ class MainWindow(QMainWindow):
         supplier = self.table.item(row, 3).text() if self.table.columnCount() > 3 else "-"
         generate_label(code, desc, supplier, "00000000")
 
+    # --------------- DIVERSE HELPERS / DIALOGEN ----------------
+
     def _show_label_settings_dialog(self):
         dialog = LabelSettingsDialog(self)
         dialog.exec()
@@ -523,6 +632,7 @@ class MainWindow(QMainWindow):
         self.input_field.clear()
         self.input_field.setFocus()
         self.table.setRowCount(0)
+        self.table.setColumnCount(0)
         self.result_count_label.setText("Aantal resultaten: 0")
 
     def eventFilter(self, obj, event):
@@ -549,7 +659,7 @@ class MainWindow(QMainWindow):
             save_environment(selected)
             QMessageBox.information(self, "Herstart vereist", f"Omgeving gewijzigd naar '{selected}'. Gelieve te herstarten.")
 
-    # — OVERRIDES voor moveEvent en resizeEvent zodat DetailWindows mee verplaatsen —
+    # OVERRIDES zodat DetailWindows mee verplaatsen
     def moveEvent(self, event):
         super().moveEvent(event)
         for dlg in self.detail_windows:
@@ -569,14 +679,9 @@ class MainWindow(QMainWindow):
         nieuwe_x = hoofd_pos.x() + offset_x
         nieuwe_y = hoofd_pos.y() + offset_y
         dlg.move(nieuwe_x, nieuwe_y)
-    # — EINDE OVERRIDES —
-    
-    # ————————————————
-    #  Vier nieuwe methods in MainWindow voor de FileEditorDialog
-    # ————————————————
 
+    # Editors
     def _open_style_qss_editor(self):
-        """Open de editor voor ./assets/css/style.qss"""
         base = os.path.dirname(__file__)
         path = os.path.join(base, "assets", "css", "style.qss")
         if not os.path.exists(path):
@@ -586,7 +691,6 @@ class MainWindow(QMainWindow):
         dlg.exec()
 
     def _open_detail_qss_editor(self):
-        """Open de editor voor ./assets/css/detail.qss"""
         base = os.path.dirname(__file__)
         path = os.path.join(base, "assets", "css", "detail.qss")
         if not os.path.exists(path):
@@ -596,7 +700,6 @@ class MainWindow(QMainWindow):
         dlg.exec()
 
     def _open_upload_qss_editor(self):
-        """Open de editor voor ./assets/css/upload.qss"""
         base = os.path.dirname(__file__)
         path = os.path.join(base, "assets", "css", "upload.qss")
         if not os.path.exists(path):
@@ -606,7 +709,6 @@ class MainWindow(QMainWindow):
         dlg.exec()
 
     def _open_ui_main_py_editor(self):
-        """Open de editor voor ui_main.py zelf"""
         path = os.path.join(os.path.dirname(__file__), "ui_main.py")
         if not os.path.exists(path):
             QMessageBox.warning(self, "Bestand niet gevonden", f"Kan {path} niet vinden.")
@@ -615,7 +717,6 @@ class MainWindow(QMainWindow):
         dlg.exec()
 
     def _open_ui_detail_py_editor(self):
-        """Open de editor voor ui_detail.py"""
         path = os.path.join(os.path.dirname(__file__), "ui_detail.py")
         if not os.path.exists(path):
             QMessageBox.warning(self, "Bestand niet gevonden", f"Kan {path} niet vinden.")
@@ -624,22 +725,20 @@ class MainWindow(QMainWindow):
         dlg.exec()
 
     def _open_ui_upload_py_editor(self):
-        """Open de editor voor ui_upload.py (of hoe jouw upload-bestand ook heet)"""
         path = os.path.join(os.path.dirname(__file__), "ui_upload.py")
         if not os.path.exists(path):
             QMessageBox.warning(self, "Bestand niet gevonden", f"Kan {path} niet vinden.")
             return
         dlg = FileEditorDialog(self, path)
         dlg.exec()
-    # —————————————— Einde nieuwe methods —
 
+    # QSS live-reload
     def _on_qss_file_changed(self, path: str):
         """Herlaadt het gewijzigde .qss-bestand en past het toe."""
         try:
             with open(path, "r", encoding="utf-8") as f:
                 qss = f.read()
         except Exception:
-            # bestand kan nog in flux zijn: probeer na 0.5s opnieuw
             QTimer.singleShot(500, lambda: self._retry_reload(path))
             return
 
@@ -657,6 +756,7 @@ class MainWindow(QMainWindow):
         if os.path.exists(path):
             self._on_qss_file_changed(path)
 
+    # Changelog & Help & About
     def _show_changelog_dialog(self):
         dialog = QDialog(self)
         dialog.setWindowTitle("Changelog")
@@ -666,13 +766,11 @@ class MainWindow(QMainWindow):
         changelog_view = QTextBrowser()
         changelog_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # Zoek pad naar changelog.md
         if getattr(sys, "frozen", False):
             base_dir = sys._MEIPASS
         else:
             base_dir = os.path.dirname(__file__)
 
-        #changelog_file = os.path.join(base_dir, "changelog.md")
         changelog_file = os.path.join(base_dir, "docs", "changelog.md")
         try:
             with open(changelog_file, "r", encoding="utf-8") as f:
@@ -703,7 +801,6 @@ class MainWindow(QMainWindow):
         badges_folder = os.path.join(base_dir, "assets", "badges")
         help_view.setSearchPaths([badges_folder])
 
-        #help_file = os.path.join(base_dir, "help.md")
         help_file = os.path.join(base_dir, "docs", "help.md")
         try:
             with open(help_file, "r", encoding="utf-8") as f:
@@ -736,12 +833,10 @@ class MainWindow(QMainWindow):
         self.update_btn.clicked.connect(lambda: download_latest_release(dialog))
         layout.addWidget(self.update_btn)
 
-        # ✅ Updatecontrole met knop activatie via callback
         check_for_update(__version__, dialog, lambda ok: self.update_btn.setEnabled(ok))
 
         dialog.setLayout(layout)
         dialog.exec()
-
 
     def _show_bug_report_dialog(self):
         dialog = BugDialog(self)
@@ -757,19 +852,57 @@ class MainWindow(QMainWindow):
     def _update_input_tooltip(self, search_type: str):
         if search_type == "Project":
             tip = "Typ projectnummer"
+        elif search_type == "BP":
+            tip = "Typ BP-nummer of naam"
         else:
             tip = "Geef zoekterm in… geen prefix = zoeken op art.nr., * omschrijving, - kernwoorden, / leverancier"
         self.input_field.setToolTip(tip)
         self.input_field.setPlaceholderText(tip)
 
-    def _toggle_fields_by_search_type(self, search_type: str):
-        is_project = (search_type == "Project")
-        self.mode_label.setVisible(not is_project)
-        self.mode_select.setVisible(not is_project)
-        self.stock_label.setVisible(not is_project)
-        self.show_stock_select.setVisible(not is_project)
+    def _set_combo_items(self, combo: QComboBox, items, current=None):
+        combo.blockSignals(True)
+        combo.clear()
+        combo.addItems(items)
+        if current is not None and current in items:
+            combo.setCurrentText(current)
+        combo.blockSignals(False)
 
-        # Leeg de zoekinput en focus erop
+    def _toggle_fields_by_search_type(self, search_type: str):
+        """
+        - Standaard:     Zoekmodus zichtbaar, label='Toon voorraad:', items R/S/B
+        - BP:            Zoekmodus zichtbaar, label='Type:', items "", C, S
+        - Project:       Beide verbergen
+        """
+        is_project = (search_type == "Project")
+        is_bp      = (search_type == "BP")
+
+        # Zoekmodus
+        self.mode_label.setVisible(not is_project)   # zichtbaar voor Standaard & BP
+        self.mode_select.setVisible(not is_project)
+
+        # Rij eronder: dynamisch label + items
+        if is_project:
+            self.stock_label.setVisible(False)
+            self.show_stock_select.setVisible(False)
+        elif is_bp:
+            self.stock_label.setText("Type:")
+            self.stock_label.setVisible(True)
+            self.show_stock_select.setVisible(True)
+            self._set_combo_items(self.show_stock_select, ["", "C", "S"], current="")
+        else:
+            self.stock_label.setText("Toon voorraad:")
+            self.stock_label.setVisible(True)
+            self.show_stock_select.setVisible(True)
+            self._set_combo_items(self.show_stock_select, ["R", "S", "B"], current=load_show_stock())
+
+        # UI reset
         self.input_field.clear()
         self.input_field.setFocus()
-
+        self.table.clearSelection()
+        self.table.setRowCount(0)
+        self.table.setColumnCount(0)
+        self.result_count_label.setText("Aantal resultaten: 0")
+        if hasattr(self, 'select_all_checkbox'):
+            self.select_all_checkbox.blockSignals(True)
+            self.select_all_checkbox.setChecked(False)
+            self.select_all_checkbox.blockSignals(False)

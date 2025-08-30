@@ -5957,3 +5957,1959 @@
 [INFO] 2025-08-07 07:36:52 - [Startup] Vooraf token laden voor StockInfo...
 [INFO] 2025-08-07 07:36:52 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
 [INFO] 2025-08-07 07:36:52 - [StockInfo] Token ontvangen (vervalt in 1800s)
+[INFO] 2025-08-22 07:11:10 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:11:10 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:13:31 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:13:31 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:13:42 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:13:42 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:14:19 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:14:19 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:14:55 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:14:55 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:16:07 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:16:07 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:16:49 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:16:49 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:16:59 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:16:59 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:18:03 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:18:03 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:19:13 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:19:14 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:20:45 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:20:45 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:22:33 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:22:33 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:24:21 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[ERROR] 2025-08-22 07:24:21 - [ArticleSearch] Ongeldige token response: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+[INFO] 2025-08-22 07:54:18 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-22 07:54:18 - [ArticleSearch] Token ontvangen (vervalt in 1800s)
+[INFO] 2025-08-22 07:54:18 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-22 07:54:18 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-22 07:54:18 - [StockInfo] Token ontvangen (vervalt in 1800s)
+[INFO] 2025-08-22 08:07:39 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-22 08:07:39 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-22 08:07:39 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-22 08:07:39 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-22 08:07:39 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-22 08:10:43 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-22 08:10:43 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-22 08:10:43 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-22 08:10:43 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-22 08:10:43 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:01:31 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:01:31 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:01:31 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-25 08:01:31 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:01:31 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:20:50 - [AtpWhs] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:20:50 - [AtpWhs] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:21:50 - [AtpWhs] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:21:50 - [AtpWhs] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:23:29 - [AtpWhs] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:23:29 - [AtpWhs] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:34:54 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:34:54 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:34:54 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-25 08:34:54 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:34:54 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:35:51 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:35:51 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:36:25 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:36:25 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:38:58 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:38:58 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:38:58 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-25 08:38:58 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:38:58 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:42:10 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:42:10 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:47:46 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:47:46 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:49:16 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:49:17 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:49:30 - [AtpWhs] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:49:30 - [AtpWhs] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:53:55 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:53:55 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:54:35 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:54:35 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:54:39 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:54:39 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 08:59:42 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 08:59:42 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 09:00:45 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 09:00:45 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-25 09:00:51 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-25 09:00:51 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:17:40 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:17:41 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:37:52 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:37:52 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:37:52 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 07:37:52 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:37:52 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:42:26 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:42:26 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:42:26 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 07:42:26 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:42:26 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:49:26 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:49:26 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:49:26 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 07:49:26 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:49:26 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:50:19 - ENV=live
+[INFO] 2025-08-26 07:50:19 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 07:50:19 - Kind=data | project_search=False
+[INFO] 2025-08-26 07:50:19 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,90,pp",
+    "@mode": "AND",
+    "@show_stock": "B"
+  }
+}
+[INFO] 2025-08-26 07:50:19 - HTTP 200
+[INFO] 2025-08-26 07:50:31 - ENV=live
+[INFO] 2025-08-26 07:50:31 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 07:50:31 - Kind=project | project_search=True
+[INFO] 2025-08-26 07:50:31 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c24/00489",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-26 07:50:32 - HTTP 200
+[INFO] 2025-08-26 07:52:45 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:52:45 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:52:45 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 07:52:45 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:52:45 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:52:57 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND'
+[INFO] 2025-08-26 07:52:57 - ENV=live
+[INFO] 2025-08-26 07:52:57 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 07:52:57 - Kind=data | project_search=False
+[INFO] 2025-08-26 07:52:57 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": "B"
+  }
+}
+[INFO] 2025-08-26 07:52:57 - HTTP 200
+[INFO] 2025-08-26 07:53:09 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND'
+[INFO] 2025-08-26 07:53:09 - ENV=live
+[INFO] 2025-08-26 07:53:09 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 07:53:09 - Kind=bp | project_search=False
+[INFO] 2025-08-26 07:53:09 - Payload:
+{
+  "ConfigurationID": "C80TSJ",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 07:53:09 - HTTP 400
+[ERROR] 2025-08-26 07:53:09 - Response body (preview): {"Data":null,"IsError":true,"ErrorCode":51076,"ErrorMessage":"Error 51076: The parameter @so from the query was not found. Please provide it."}
+[ERROR] 2025-08-26 07:53:09 - Netwerkfout bij bp-search: 400 400 Client Error: Bad Request for url: https://api.cgk-group.com/api/datarequest | Response body: {"Data":null,"IsError":true,"ErrorCode":51076,"ErrorMessage":"Error 51076: The parameter @so from the query was not found. Please provide it."}
+[ERROR] 2025-08-26 07:53:09 - Zoekfout (bp): Netwerkfout bij bp-search: 400 400 Client Error: Bad Request for url: https://api.cgk-group.com/api/datarequest | Response body: {"Data":null,"IsError":true,"ErrorCode":51076,"ErrorMessage":"Error 51076: The parameter @so from the query was not found. Please provide it."}
+[INFO] 2025-08-26 07:59:17 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:59:17 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 07:59:17 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 07:59:17 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 07:59:17 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:05:14 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:05:14 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:05:14 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 08:05:14 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:05:14 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:15:39 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:15:40 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:15:40 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 08:15:40 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:15:40 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:22:17 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:22:17 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:22:17 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 08:22:17 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:22:17 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:22:30 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND'
+[INFO] 2025-08-26 08:22:30 - ENV=live
+[INFO] 2025-08-26 08:22:30 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 08:22:30 - Kind=data | project_search=False
+[INFO] 2025-08-26 08:22:30 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-26 08:22:30 - Auth=Bearer eyJhbGci...kUHw
+[INFO] 2025-08-26 08:22:30 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": "B"
+  }
+}
+[INFO] 2025-08-26 08:22:30 - HTTP 200
+[INFO] 2025-08-26 08:22:47 - Zoekactie: type=Project | kind=project | term='c24/00489' | mode='AND'
+[INFO] 2025-08-26 08:22:47 - ENV=live
+[INFO] 2025-08-26 08:22:47 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 08:22:47 - Kind=project | project_search=True
+[INFO] 2025-08-26 08:22:47 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-26 08:22:47 - Auth=Bearer eyJhbGci...kUHw
+[INFO] 2025-08-26 08:22:47 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c24/00489",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-26 08:22:48 - HTTP 200
+[INFO] 2025-08-26 08:22:56 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND'
+[INFO] 2025-08-26 08:22:56 - ENV=live
+[INFO] 2025-08-26 08:22:56 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 08:22:56 - Kind=bp | project_search=False
+[INFO] 2025-08-26 08:22:56 - Config key gekozen: so_configP_Bp => C80TSJ
+[INFO] 2025-08-26 08:22:56 - Auth=Bearer eyJhbGci...kUHw
+[INFO] 2025-08-26 08:22:56 - Payload:
+{
+  "ConfigurationID": "C80TSJ",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 08:22:56 - HTTP 400
+[ERROR] 2025-08-26 08:22:56 - Response body (preview): {"Data":null,"IsError":true,"ErrorCode":51076,"ErrorMessage":"Error 51076: The parameter @so from the query was not found. Please provide it."}
+[ERROR] 2025-08-26 08:22:56 - Netwerkfout bij bp-search: 400 400 Client Error: Bad Request for url: https://api.cgk-group.com/api/datarequest | Response body: {"Data":null,"IsError":true,"ErrorCode":51076,"ErrorMessage":"Error 51076: The parameter @so from the query was not found. Please provide it."} | Hint: geselecteerde BP-config ('so_configP_Bp' -> C80TSJ) lijkt @so te vereisen. Controleer je API_ENVIRONMENTS mapping en gebruik de BP-config die werkt met alleen @zoekterm/@mode/@type (bv. 'OMW5IN').
+[ERROR] 2025-08-26 08:22:56 - Zoekfout (bp): Netwerkfout bij bp-search: 400 400 Client Error: Bad Request for url: https://api.cgk-group.com/api/datarequest | Response body: {"Data":null,"IsError":true,"ErrorCode":51076,"ErrorMessage":"Error 51076: The parameter @so from the query was not found. Please provide it."} | Hint: geselecteerde BP-config ('so_configP_Bp' -> C80TSJ) lijkt @so te vereisen. Controleer je API_ENVIRONMENTS mapping en gebruik de BP-config die werkt met alleen @zoekterm/@mode/@type (bv. 'OMW5IN').
+[INFO] 2025-08-26 08:38:56 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:38:57 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:38:57 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 08:38:57 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:38:57 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:39:09 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND'
+[INFO] 2025-08-26 08:39:09 - ENV=live
+[INFO] 2025-08-26 08:39:09 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 08:39:09 - Kind=bp | project_search=False
+[INFO] 2025-08-26 08:39:09 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 08:39:09 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 08:39:09 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 08:39:09 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 08:39:10 - HTTP 200
+[INFO] 2025-08-26 08:40:00 - Zoekactie: type=Standaard | kind=data | term='41.1.1' | mode='AND'
+[INFO] 2025-08-26 08:40:00 - ENV=live
+[INFO] 2025-08-26 08:40:00 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 08:40:00 - Kind=data | project_search=False
+[INFO] 2025-08-26 08:40:00 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 08:40:00 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-26 08:40:00 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 08:40:00 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "41.1.1",
+    "@mode": "AND",
+    "@show_stock": "B"
+  }
+}
+[INFO] 2025-08-26 08:40:01 - HTTP 200
+[INFO] 2025-08-26 08:40:09 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND'
+[INFO] 2025-08-26 08:40:09 - ENV=live
+[INFO] 2025-08-26 08:40:09 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 08:40:09 - Kind=data | project_search=False
+[INFO] 2025-08-26 08:40:09 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 08:40:09 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-26 08:40:09 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 08:40:09 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": "B"
+  }
+}
+[INFO] 2025-08-26 08:40:09 - HTTP 200
+[INFO] 2025-08-26 08:40:20 - Zoekactie: type=Project | kind=project | term='c24/00489' | mode='AND'
+[INFO] 2025-08-26 08:40:20 - ENV=live
+[INFO] 2025-08-26 08:40:20 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 08:40:20 - Kind=project | project_search=True
+[INFO] 2025-08-26 08:40:20 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 08:40:20 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-26 08:40:20 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 08:40:20 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c24/00489",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-26 08:40:21 - HTTP 200
+[INFO] 2025-08-26 08:41:13 - Zoekactie: type=Project | kind=project | term='c24/00489' | mode='AND'
+[INFO] 2025-08-26 08:41:13 - ENV=live
+[INFO] 2025-08-26 08:41:13 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 08:41:13 - Kind=project | project_search=True
+[INFO] 2025-08-26 08:41:13 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 08:41:13 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-26 08:41:13 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 08:41:13 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c24/00489",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-26 08:41:14 - HTTP 200
+[INFO] 2025-08-26 08:47:28 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:47:29 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 08:47:29 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 08:47:29 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 08:47:29 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 11:38:02 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 11:38:02 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 11:38:02 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 11:38:02 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 11:38:02 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 11:38:13 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 11:38:13 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 11:38:13 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 11:38:13 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 11:38:13 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 11:39:30 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 11:39:30 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 11:39:30 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 11:39:30 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 11:39:30 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 11:39:44 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND'
+[INFO] 2025-08-26 11:39:44 - ENV=live
+[INFO] 2025-08-26 11:39:44 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 11:39:44 - Kind=bp | project_search=False
+[INFO] 2025-08-26 11:39:44 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 11:39:44 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 11:39:44 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 11:39:44 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 11:39:44 - HTTP 200
+[INFO] 2025-08-26 11:40:40 - Zoekactie: type=BP | kind=bp | term='bek' | mode='AND'
+[INFO] 2025-08-26 11:40:40 - ENV=live
+[INFO] 2025-08-26 11:40:40 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 11:40:40 - Kind=bp | project_search=False
+[INFO] 2025-08-26 11:40:40 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 11:40:40 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 11:40:40 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 11:40:40 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bek",
+    "@mode": "",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 11:40:41 - HTTP 200
+[INFO] 2025-08-26 11:40:54 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND'
+[INFO] 2025-08-26 11:40:54 - ENV=live
+[INFO] 2025-08-26 11:40:54 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 11:40:54 - Kind=bp | project_search=False
+[INFO] 2025-08-26 11:40:54 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 11:40:54 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 11:40:54 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 11:40:54 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 11:40:55 - HTTP 200
+[INFO] 2025-08-26 11:41:06 - Zoekactie: type=BP | kind=bp | term='BE0405388338' | mode='AND'
+[INFO] 2025-08-26 11:41:06 - ENV=live
+[INFO] 2025-08-26 11:41:06 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 11:41:06 - Kind=bp | project_search=False
+[INFO] 2025-08-26 11:41:06 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 11:41:06 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 11:41:06 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 11:41:06 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "BE0405388338",
+    "@mode": "",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 11:41:07 - HTTP 200
+[INFO] 2025-08-26 11:41:17 - Zoekactie: type=BP | kind=bp | term='K14124' | mode='AND'
+[INFO] 2025-08-26 11:41:17 - ENV=live
+[INFO] 2025-08-26 11:41:17 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 11:41:17 - Kind=bp | project_search=False
+[INFO] 2025-08-26 11:41:17 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 11:41:17 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 11:41:17 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 11:41:17 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "K14124",
+    "@mode": "",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 11:41:17 - HTTP 200
+[INFO] 2025-08-26 11:41:19 - Zoekactie: type=BP | kind=bp | term='K1412' | mode='AND'
+[INFO] 2025-08-26 11:41:19 - ENV=live
+[INFO] 2025-08-26 11:41:19 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 11:41:19 - Kind=bp | project_search=False
+[INFO] 2025-08-26 11:41:19 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 11:41:19 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 11:41:19 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 11:41:19 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "K1412",
+    "@mode": "",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 11:41:19 - HTTP 200
+[INFO] 2025-08-26 11:41:47 - Zoekactie: type=Standaard | kind=data | term='41.1.1' | mode='AND'
+[INFO] 2025-08-26 11:41:47 - ENV=live
+[INFO] 2025-08-26 11:41:47 - Base=https://api.cgk-group.com
+[INFO] 2025-08-26 11:41:47 - Kind=data | project_search=False
+[INFO] 2025-08-26 11:41:47 - ENV mapping (live/test): {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 11:41:47 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-26 11:41:47 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 11:41:47 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "41.1.1",
+    "@mode": "AND",
+    "@show_stock": "B"
+  }
+}
+[INFO] 2025-08-26 11:41:48 - HTTP 200
+[INFO] 2025-08-26 11:42:54 - [AtpWhs] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 11:42:54 - [AtpWhs] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 12:20:24 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 12:20:24 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 12:20:24 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-26 12:20:24 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-26 12:20:24 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-26 12:20:40 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND' | bp_type=''
+[INFO] 2025-08-26 12:20:40 - ENV=live
+[INFO] 2025-08-26 12:20:40 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 12:20:40 - Kind=data | project_search=False
+[INFO] 2025-08-26 12:20:40 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 12:20:40 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-26 12:20:40 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 12:20:40 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": "B"
+  }
+}
+[INFO] 2025-08-26 12:20:41 - HTTP 200
+[INFO] 2025-08-26 12:20:52 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type=''
+[INFO] 2025-08-26 12:20:52 - ENV=live
+[INFO] 2025-08-26 12:20:52 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 12:20:52 - Kind=bp | project_search=False
+[INFO] 2025-08-26 12:20:52 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 12:20:52 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 12:20:52 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 12:20:52 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 12:20:52 - HTTP 200
+[INFO] 2025-08-26 12:20:57 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type='C'
+[INFO] 2025-08-26 12:20:57 - ENV=live
+[INFO] 2025-08-26 12:20:57 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 12:20:57 - Kind=bp | project_search=False
+[INFO] 2025-08-26 12:20:57 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 12:20:57 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 12:20:57 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 12:20:57 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@type": "C"
+  }
+}
+[INFO] 2025-08-26 12:20:57 - HTTP 200
+[INFO] 2025-08-26 12:21:01 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type='S'
+[INFO] 2025-08-26 12:21:01 - ENV=live
+[INFO] 2025-08-26 12:21:01 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 12:21:01 - Kind=bp | project_search=False
+[INFO] 2025-08-26 12:21:01 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 12:21:01 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 12:21:01 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 12:21:01 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@type": "S"
+  }
+}
+[INFO] 2025-08-26 12:21:01 - HTTP 200
+[INFO] 2025-08-26 12:21:04 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type=''
+[INFO] 2025-08-26 12:21:04 - ENV=live
+[INFO] 2025-08-26 12:21:04 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 12:21:04 - Kind=bp | project_search=False
+[INFO] 2025-08-26 12:21:04 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 12:21:04 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 12:21:04 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 12:21:04 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 12:21:04 - HTTP 200
+[INFO] 2025-08-26 12:21:19 - Zoekactie: type=BP | kind=bp | term='bekaert,K14124' | mode='AND' | bp_type=''
+[INFO] 2025-08-26 12:21:19 - ENV=live
+[INFO] 2025-08-26 12:21:19 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-26 12:21:19 - Kind=bp | project_search=False
+[INFO] 2025-08-26 12:21:19 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-26 12:21:19 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-26 12:21:19 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-26 12:21:19 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert,K14124",
+    "@mode": "AND",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-26 12:21:19 - HTTP 200
+[INFO] 2025-08-27 08:50:28 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-27 08:50:28 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:22:05 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:22:06 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:22:06 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 07:22:06 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:22:06 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:22:16 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:22:16 - ENV=live
+[INFO] 2025-08-28 07:22:16 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:22:16 - Kind=bp | project_search=False
+[INFO] 2025-08-28 07:22:16 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:22:16 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-28 07:22:16 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:22:16 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-28 07:22:18 - HTTP 200
+[INFO] 2025-08-28 07:36:28 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:36:28 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:36:28 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 07:36:28 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:36:28 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:36:41 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:36:41 - ENV=live
+[INFO] 2025-08-28 07:36:41 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:36:41 - Kind=data | project_search=False
+[INFO] 2025-08-28 07:36:41 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:36:41 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 07:36:41 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:36:41 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": ""
+  }
+}
+[INFO] 2025-08-28 07:36:42 - HTTP 200
+[INFO] 2025-08-28 07:37:16 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:37:16 - ENV=live
+[INFO] 2025-08-28 07:37:16 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:37:16 - Kind=data | project_search=False
+[INFO] 2025-08-28 07:37:16 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:37:16 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 07:37:16 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:37:16 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": ""
+  }
+}
+[INFO] 2025-08-28 07:37:17 - HTTP 200
+[INFO] 2025-08-28 07:37:30 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:37:30 - ENV=live
+[INFO] 2025-08-28 07:37:30 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:37:30 - Kind=bp | project_search=False
+[INFO] 2025-08-28 07:37:30 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:37:30 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-28 07:37:30 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:37:30 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:37:30 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:37:30 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-28 07:37:31 - HTTP 400
+[ERROR] 2025-08-28 07:37:31 - Response body (preview): {"Data":null,"IsError":true,"ErrorCode":51076,"ErrorMessage":"Error 51076: The parameter @card_type from the query was not found. Please provide it."}
+[INFO] 2025-08-28 07:38:01 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:38:01 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:38:01 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 07:38:01 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:38:01 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:38:21 - Zoekactie: type=Standaard | kind=data | term='*bocht,90,pp' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:38:21 - ENV=live
+[INFO] 2025-08-28 07:38:21 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:38:21 - Kind=data | project_search=False
+[INFO] 2025-08-28 07:38:21 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:38:21 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 07:38:21 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:38:21 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,90,pp",
+    "@mode": "AND",
+    "@show_stock": ""
+  }
+}
+[INFO] 2025-08-28 07:38:21 - HTTP 200
+[INFO] 2025-08-28 07:38:38 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:38:38 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:38:38 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 07:38:38 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:38:38 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:38:45 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:38:45 - ENV=live
+[INFO] 2025-08-28 07:38:45 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:38:45 - Kind=data | project_search=False
+[INFO] 2025-08-28 07:38:45 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:38:45 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 07:38:45 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:38:45 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": ""
+  }
+}
+[INFO] 2025-08-28 07:38:46 - HTTP 200
+[INFO] 2025-08-28 07:41:48 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:41:48 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:41:48 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 07:41:48 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:41:48 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:41:55 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:41:55 - ENV=live
+[INFO] 2025-08-28 07:41:55 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:41:55 - Kind=data | project_search=False
+[INFO] 2025-08-28 07:41:55 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:41:55 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 07:41:55 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:41:55 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": ""
+  }
+}
+[INFO] 2025-08-28 07:41:55 - HTTP 200
+[INFO] 2025-08-28 07:42:15 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:42:15 - ENV=live
+[INFO] 2025-08-28 07:42:15 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:42:15 - Kind=data | project_search=False
+[INFO] 2025-08-28 07:42:15 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:42:15 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 07:42:15 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:42:15 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": "B"
+  }
+}
+[INFO] 2025-08-28 07:42:16 - HTTP 200
+[INFO] 2025-08-28 07:42:28 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:42:28 - ENV=live
+[INFO] 2025-08-28 07:42:28 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:42:28 - Kind=bp | project_search=False
+[INFO] 2025-08-28 07:42:28 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:42:28 - Config key gekozen: so_configP_Bp => OMW5IN
+[INFO] 2025-08-28 07:42:28 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:42:28 - Payload:
+{
+  "ConfigurationID": "OMW5IN",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-28 07:42:28 - HTTP 200
+[INFO] 2025-08-28 07:48:41 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:48:41 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:48:41 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 07:48:41 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:48:41 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:48:53 - Zoekactie: type=Standaard | kind=data | term='*bocht,90,pp' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:48:53 - ENV=live
+[INFO] 2025-08-28 07:48:53 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:48:53 - Kind=data | project_search=False
+[INFO] 2025-08-28 07:48:53 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:48:53 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 07:48:53 - Auth client: DEFAULT
+[INFO] 2025-08-28 07:48:53 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:48:53 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,90,pp",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2025-08-28 07:48:53 - HTTP 200
+[INFO] 2025-08-28 07:49:30 - Zoekactie: type=Project | kind=project | term='c24/00489' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:49:30 - ENV=live
+[INFO] 2025-08-28 07:49:30 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:49:30 - Kind=project | project_search=True
+[INFO] 2025-08-28 07:49:30 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:49:30 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-28 07:49:30 - Auth client: DEFAULT
+[INFO] 2025-08-28 07:49:30 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:49:30 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c24/00489",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-28 07:49:32 - HTTP 200
+[INFO] 2025-08-28 07:49:42 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:49:42 - ENV=live
+[INFO] 2025-08-28 07:49:42 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:49:42 - Kind=bp | project_search=False
+[INFO] 2025-08-28 07:49:42 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:49:42 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-28 07:49:42 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:49:42 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:49:42 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-28 07:49:42 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:49:42 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@type": ""
+  }
+}
+[INFO] 2025-08-28 07:49:42 - HTTP 400
+[ERROR] 2025-08-28 07:49:42 - Response body (preview): {"Data":null,"IsError":true,"ErrorCode":51076,"ErrorMessage":"Error 51076: The parameter @card_type from the query was not found. Please provide it."}
+[INFO] 2025-08-28 07:52:20 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:52:20 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:52:20 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 07:52:20 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:52:20 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:52:27 - Zoekactie: type=Standaard | kind=data | term='*bocht,90,pp' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:52:27 - ENV=live
+[INFO] 2025-08-28 07:52:27 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:52:27 - Kind=data | project_search=False
+[INFO] 2025-08-28 07:52:27 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:52:27 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 07:52:27 - Auth client: DEFAULT
+[INFO] 2025-08-28 07:52:27 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:52:27 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,90,pp",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2025-08-28 07:52:28 - HTTP 200
+[INFO] 2025-08-28 07:52:34 - Zoekactie: type=Project | kind=project | term='c24/00489' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:52:34 - ENV=live
+[INFO] 2025-08-28 07:52:34 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:52:34 - Kind=project | project_search=True
+[INFO] 2025-08-28 07:52:34 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:52:34 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-28 07:52:34 - Auth client: DEFAULT
+[INFO] 2025-08-28 07:52:34 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:52:34 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c24/00489",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-28 07:52:35 - HTTP 200
+[INFO] 2025-08-28 07:52:42 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 07:52:42 - ENV=live
+[INFO] 2025-08-28 07:52:42 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 07:52:42 - Kind=bp | project_search=False
+[INFO] 2025-08-28 07:52:42 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 07:52:42 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-28 07:52:42 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 07:52:42 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 07:52:42 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-28 07:52:42 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 07:52:42 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2025-08-28 07:52:42 - HTTP 200
+[INFO] 2025-08-28 08:04:01 - Zoekactie: type=BP | kind=bp | term='bekaert' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 08:04:01 - ENV=live
+[INFO] 2025-08-28 08:04:01 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 08:04:01 - Kind=bp | project_search=False
+[INFO] 2025-08-28 08:04:01 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 08:04:01 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-28 08:04:01 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-28 08:04:01 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 08:04:01 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "bekaert",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2025-08-28 08:04:02 - HTTP 200
+[INFO] 2025-08-28 10:36:12 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 10:36:12 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 10:36:12 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 10:36:12 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 10:36:12 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:11:36 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:11:36 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:11:36 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 11:11:36 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:11:36 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:11:52 - Zoekactie: type=Standaard | kind=data | term='*bocht,pp,90' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 11:11:52 - ENV=live
+[INFO] 2025-08-28 11:11:52 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 11:11:52 - Kind=data | project_search=False
+[INFO] 2025-08-28 11:11:52 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 11:11:52 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 11:11:52 - Auth client: DEFAULT
+[INFO] 2025-08-28 11:11:52 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 11:11:52 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "*bocht,pp,90",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2025-08-28 11:11:53 - HTTP 200
+[INFO] 2025-08-28 11:12:04 - [AtpWhs] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:12:04 - [AtpWhs] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:12:15 - Zoekactie: type=Project | kind=project | term='c24/00489' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 11:12:15 - ENV=live
+[INFO] 2025-08-28 11:12:15 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 11:12:15 - Kind=project | project_search=True
+[INFO] 2025-08-28 11:12:15 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 11:12:15 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-28 11:12:15 - Auth client: DEFAULT
+[INFO] 2025-08-28 11:12:15 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 11:12:15 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c24/00489",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-28 11:12:18 - HTTP 200
+[INFO] 2025-08-28 11:13:14 - Zoekactie: type=Project | kind=project | term='c24/00480' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 11:13:14 - ENV=live
+[INFO] 2025-08-28 11:13:14 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 11:13:14 - Kind=project | project_search=True
+[INFO] 2025-08-28 11:13:14 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 11:13:14 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-28 11:13:14 - Auth client: DEFAULT
+[INFO] 2025-08-28 11:13:14 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 11:13:14 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c24/00480",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-28 11:13:16 - HTTP 200
+[INFO] 2025-08-28 11:13:31 - Zoekactie: type=Project | kind=project | term='c25/00480' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 11:13:31 - ENV=live
+[INFO] 2025-08-28 11:13:31 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 11:13:31 - Kind=project | project_search=True
+[INFO] 2025-08-28 11:13:31 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 11:13:31 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-28 11:13:31 - Auth client: DEFAULT
+[INFO] 2025-08-28 11:13:31 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 11:13:31 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c25/00480",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-28 11:13:32 - HTTP 200
+[INFO] 2025-08-28 11:13:46 - Zoekactie: type=Project | kind=project | term='c25/00284' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 11:13:46 - ENV=live
+[INFO] 2025-08-28 11:13:46 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 11:13:46 - Kind=project | project_search=True
+[INFO] 2025-08-28 11:13:46 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 11:13:46 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-28 11:13:46 - Auth client: DEFAULT
+[INFO] 2025-08-28 11:13:46 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 11:13:46 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "c25/00284",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-28 11:13:48 - HTTP 200
+[INFO] 2025-08-28 11:14:33 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:14:33 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:22:12 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:22:12 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:22:12 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 11:22:12 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:22:12 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:22:21 - Zoekactie: type=Standaard | kind=data | term='41.1.1' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 11:22:21 - ENV=live
+[INFO] 2025-08-28 11:22:21 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 11:22:21 - Kind=data | project_search=False
+[INFO] 2025-08-28 11:22:21 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 11:22:21 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2025-08-28 11:22:21 - Auth client: DEFAULT
+[INFO] 2025-08-28 11:22:21 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 11:22:21 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "41.1.1",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2025-08-28 11:22:21 - HTTP 200
+[INFO] 2025-08-28 11:22:33 - [AtpWhs] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:22:33 - [AtpWhs] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:30:19 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:30:20 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:35:07 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:35:08 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 11:45:06 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 11:45:06 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 12:04:11 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 12:04:11 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 12:11:33 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 12:11:33 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 12:21:12 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 12:21:12 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 12:28:51 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 12:28:51 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 13:10:48 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 13:10:48 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 13:12:53 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 13:12:53 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 13:16:10 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 13:16:11 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 13:27:07 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 13:27:07 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 13:32:35 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 13:32:35 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 14:50:30 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 14:50:31 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 14:54:56 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 14:54:56 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 15:22:27 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 15:22:27 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 15:33:05 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 15:33:05 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 15:33:56 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 15:33:56 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 15:33:56 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-28 15:33:56 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 15:33:56 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 15:34:16 - Zoekactie: type=Project | kind=project | term='C24/00748' | mode='AND' | bp_type=''
+[INFO] 2025-08-28 15:34:16 - ENV=live
+[INFO] 2025-08-28 15:34:16 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-28 15:34:16 - Kind=project | project_search=True
+[INFO] 2025-08-28 15:34:16 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-28 15:34:16 - Config key gekozen: project_configP_id => AXF4GX
+[INFO] 2025-08-28 15:34:16 - Auth client: DEFAULT
+[INFO] 2025-08-28 15:34:16 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-28 15:34:16 - Payload:
+{
+  "ConfigurationID": "AXF4GX",
+  "MultiKey": {
+    "@prjID": "C24/00748",
+    "@is_closed": ""
+  }
+}
+[INFO] 2025-08-28 15:34:18 - HTTP 200
+[INFO] 2025-08-28 15:35:59 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 15:35:59 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 15:48:08 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 15:48:09 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-28 15:55:32 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-28 15:55:32 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 07:28:10 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 07:28:10 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 07:30:19 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 07:30:19 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 07:42:11 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 07:42:11 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 07:43:56 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 07:43:56 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 07:47:59 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 07:47:59 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 07:51:06 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 07:51:06 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 07:56:23 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 07:56:23 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:10:47 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:10:47 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:12:26 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:12:26 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:18:12 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:18:12 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:26:48 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:26:48 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:32:18 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:32:18 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:34:05 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:34:05 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:42:19 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:42:19 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:43:01 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:43:01 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:45:56 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:45:56 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 08:54:24 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 08:54:24 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 09:01:08 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 09:01:08 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 09:04:22 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 09:04:22 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 09:10:03 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 09:10:03 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 09:24:27 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 09:24:27 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 09:30:23 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 09:30:24 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 09:34:43 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 09:34:43 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 09:49:27 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 09:49:27 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 09:52:53 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 09:52:53 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:04:20 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:04:20 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:10:29 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:10:29 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:11:20 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:11:20 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:19:57 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:19:57 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:21:46 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:21:46 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:21:46 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-29 10:21:46 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:21:46 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:22:04 - Zoekactie: type=BP | kind=bp | term='aquafin' | mode='AND' | bp_type=''
+[INFO] 2025-08-29 10:22:04 - ENV=live
+[INFO] 2025-08-29 10:22:04 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-29 10:22:04 - Kind=bp | project_search=False
+[INFO] 2025-08-29 10:22:04 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-29 10:22:04 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-29 10:22:04 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:22:04 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:22:04 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-29 10:22:04 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-29 10:22:04 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "aquafin",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2025-08-29 10:22:04 - HTTP 200
+[INFO] 2025-08-29 10:43:49 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:43:49 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:43:49 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-29 10:43:49 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:43:50 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:44:02 - Zoekactie: type=BP | kind=bp | term='aquafin' | mode='AND' | bp_type=''
+[INFO] 2025-08-29 10:44:02 - ENV=live
+[INFO] 2025-08-29 10:44:02 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-29 10:44:02 - Kind=bp | project_search=False
+[INFO] 2025-08-29 10:44:02 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-29 10:44:02 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-29 10:44:02 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:44:02 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:44:02 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-29 10:44:02 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-29 10:44:02 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "aquafin",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2025-08-29 10:44:02 - HTTP 200
+[INFO] 2025-08-29 10:44:04 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 10:44:04 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 10:46:22 - Zoekactie: type=BP | kind=bp | term='aquafin' | mode='AND' | bp_type=''
+[INFO] 2025-08-29 10:46:22 - ENV=live
+[INFO] 2025-08-29 10:46:22 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-29 10:46:22 - Kind=bp | project_search=False
+[INFO] 2025-08-29 10:46:22 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-29 10:46:22 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-29 10:46:22 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-29 10:46:22 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-29 10:46:22 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "aquafin",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2025-08-29 10:46:22 - HTTP 200
+[INFO] 2025-08-29 11:23:18 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:23:18 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:29:16 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:29:16 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:29:16 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:29:16 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:50:39 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:50:39 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:50:40 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:50:40 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:51:50 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:51:50 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:51:50 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-29 11:51:50 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:51:51 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:52:07 - Zoekactie: type=BP | kind=bp | term='K05036' | mode='AND' | bp_type=''
+[INFO] 2025-08-29 11:52:07 - ENV=live
+[INFO] 2025-08-29 11:52:07 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-29 11:52:07 - Kind=bp | project_search=False
+[INFO] 2025-08-29 11:52:07 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-29 11:52:07 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-29 11:52:07 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:52:07 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:52:07 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-29 11:52:07 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-29 11:52:07 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "K05036",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2025-08-29 11:52:07 - HTTP 200
+[INFO] 2025-08-29 11:52:09 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:52:09 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:52:09 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:52:09 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:56:18 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:56:19 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 11:56:19 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 11:56:19 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 13:09:16 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 13:09:16 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 13:09:16 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-29 13:09:16 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 13:09:17 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 13:09:52 - Zoekactie: type=BP | kind=bp | term='aqua' | mode='AND' | bp_type=''
+[INFO] 2025-08-29 13:09:52 - ENV=live
+[INFO] 2025-08-29 13:09:52 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-29 13:09:52 - Kind=bp | project_search=False
+[INFO] 2025-08-29 13:09:52 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-29 13:09:52 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-29 13:09:52 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 13:09:52 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 13:09:52 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-29 13:09:52 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-29 13:09:52 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "aqua",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2025-08-29 13:09:52 - HTTP 200
+[INFO] 2025-08-29 13:10:32 - Zoekactie: type=BP | kind=bp | term='aquafin' | mode='AND' | bp_type=''
+[INFO] 2025-08-29 13:10:32 - ENV=live
+[INFO] 2025-08-29 13:10:32 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-29 13:10:32 - Kind=bp | project_search=False
+[INFO] 2025-08-29 13:10:32 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-29 13:10:32 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-29 13:10:32 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-29 13:10:32 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-29 13:10:32 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "aquafin",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2025-08-29 13:10:32 - HTTP 200
+[INFO] 2025-08-29 13:10:38 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 13:10:38 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 13:10:38 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 13:10:38 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:13:30 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:13:30 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:13:31 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:13:31 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:38:23 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:38:23 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:38:23 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:38:23 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:41:40 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:41:40 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:41:45 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:41:45 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:48:00 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:48:00 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:48:00 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:48:00 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:48:15 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:48:15 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:48:15 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:48:15 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:53:04 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:53:04 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 14:53:04 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 14:53:04 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 15:01:39 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 15:01:39 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 15:01:39 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 15:01:39 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 15:12:25 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 15:12:25 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-29 15:12:25 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-29 15:12:25 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-30 08:37:33 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-30 08:37:35 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-30 08:38:20 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-30 08:38:21 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-30 08:38:21 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2025-08-30 08:38:21 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-30 08:38:21 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-30 08:38:36 - Zoekactie: type=BP | kind=bp | term='aquaf' | mode='AND' | bp_type=''
+[INFO] 2025-08-30 08:38:36 - ENV=live
+[INFO] 2025-08-30 08:38:36 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2025-08-30 08:38:36 - Kind=bp | project_search=False
+[INFO] 2025-08-30 08:38:36 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP"
+}
+[INFO] 2025-08-30 08:38:36 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2025-08-30 08:38:36 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-30 08:38:36 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-30 08:38:36 - Auth client: BpS (BP zoeklijst)
+[INFO] 2025-08-30 08:38:36 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2025-08-30 08:38:36 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "aquaf",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2025-08-30 08:38:37 - HTTP 200
+[INFO] 2025-08-30 08:38:40 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-30 08:38:40 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-30 08:39:30 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-30 08:39:30 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-30 08:39:31 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-30 08:39:32 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-30 08:41:05 - [businesspartneru] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-30 08:41:05 - [businesspartneru] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2025-08-30 08:41:07 - [CreditControl] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2025-08-30 08:41:07 - [CreditControl] Token ontvangen (vervalt in 1800s) | type=Bearer

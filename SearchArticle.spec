@@ -2,6 +2,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 from PyInstaller.utils.hooks import collect_data_files
+pyside6_datas = collect_data_files('PySide6')
 
 block_cipher = None
 
@@ -26,7 +27,8 @@ a = Analysis(
         ('assets/badges/*', 'assets/badges'),
         ('logs/*', 'logs'),                       # 📝 Logbestanden
         ('label/*', 'label'),                     # 🏷️ Label functionaliteit
-        ('docs/*', 'docs')                        # 📚 Markdown documentatie
+        ('docs/*', 'docs'),                        # 📚 Markdown documentatie
+        ('labels.txt', '.'),                 # ✅ voeg je default labels toe
     ] + reportlab_datas + transformers_datas + sklearn_datas,
     hiddenimports=[
         'upload_dialog',
@@ -45,7 +47,6 @@ a = Analysis(
         'label.label_generator',
         'label.label_settings_dialog',
         'bug_report_dialog',
-        'test_oitmi_upload',
         'PIL',
         'PIL.Image',
         'requests',
@@ -67,6 +68,25 @@ a = Analysis(
         'sklearn',
         'sklearn.metrics',
         'sklearn.metrics.pairwise',
+        'huggingface_hub',
+        'safetensors',
+        'tokenizers',
+        'tokenizers.models',
+        'tokenizers.pre_tokenizers',
+        'tokenizers.decoders',
+        'tokenizers.normalizers',
+        'tokenizers.processors',
+        'tqdm',
+        'regex',
+        'yaml',
+        'filelock',
+        'fsspec',    
+        'ui_bp',
+        'ui_bp_header_panel',
+        'ui_bp_helper',
+        'cc_service',
+        'cc_token',
+        'bp_token',
     ],
     hookspath=[],
     hooksconfig={},
@@ -90,7 +110,7 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,
-    icon='C:/PY/cgk tools/cgk-tools/images/CGKico.ico'
+    icon='assets/logo.ico'
 )
 
 coll = COLLECT(

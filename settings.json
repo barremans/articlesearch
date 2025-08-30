@@ -1,7 +1,7 @@
 {
   "default_search_type": "Standaard",
   "environment": "live",
-  "show_stock": "B",
+  "show_stock": "R",
   "detail_modal": false,
   "language": "NL",
   "tab_order": [

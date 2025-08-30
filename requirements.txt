@@ -17,3 +17,12 @@ transformers==4.41.2
 torch==2.3.0
 scikit-learn==1.5.0
 numpy==1.26.4
+huggingface-hub==0.23.2
+tokenizers==0.19.1
+safetensors==0.4.3
+tqdm==4.66.4
+regex==2024.5.15
+PyYAML==6.0.1
+filelock==3.14.0
+fsspec==2024.6.0
+typing-extensions==4.11.0

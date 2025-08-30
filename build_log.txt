@@ -302,3 +302,24 @@ Alle assets en metadata toegevoegd.
  
 --- Build gestart op 03/07/2025 11:38:55.13 --- 
 ✅ Assets en metadata toegevoegd. 
+ 
+--- Build gestart op 30/08/2025  9:08:05.67 --- 
+❌ Fout tijdens build met PyInstaller. 
+ 
+--- Build gestart op 30/08/2025  9:21:56.90 --- 
+❌ Fout tijdens build met PyInstaller. 
+ 
+--- Build gestart op 30/08/2025  9:29:20.01 --- 
+❌ Fout tijdens build met PyInstaller. 
+ 
+--- Build gestart op 30/08/2025  9:37:23.20 --- 
+❌ Fout tijdens build met PyInstaller. 
+ 
+--- Build gestart op 30/08/2025  9:43:02.33 --- 
+❌ Fout tijdens build met PyInstaller. 
+ 
+--- Build gestart op 30/08/2025  9:46:57.48 --- 
+❌ Fout tijdens build met PyInstaller. 
+ 
+--- Build gestart op 30/08/2025 10:10:29.96 --- 
+✅ Assets en metadata toegevoegd. 
