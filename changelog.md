@@ -1,4 +1,32 @@
 # 📝 Changelog
+## [V6.0.0] - 2025-08-29
+- toevoeging BusinessPartner zoek flow
+- Business partner detail fiche toevoeging
+- toevoeging credit control data
+- voorbereiding voo AI op artikelen
+
+## [v5.1.0] – 2025-07-09
+- Aanpassingen op token manager
+- voorbereidingen op Business Partner integratie
+
+
+## [v5.0.2] – 2025-07-09
+
+### 🌍 Meertaligheid & vertalingen
+- Toegevoegd: **Taalkeuze (NL/EN)** in het instellingenvenster (`settings_dialog.py`).
+- Nieuw: Centrale `translations`-directory met `nl.py` en `en.py` bestanden.
+- Labels (bijv. "Update nu") in `ui_main.py` worden nu dynamisch geladen op basis van ingestelde taal.
+
+### ⚙️ Settings verbeteringen
+- `settings.json` bevat nu de key `"language"`, standaard ingesteld op `"NL"`.
+- `settings.py`: Functies `load_language()` en `save_language()` toegevoegd.
+- Automatisch aanvullen van ontbrekende keys bij laden van settings.
+
+### 💡 Code refactor
+- `show_settings_dialog` verplaatst naar eigen bestand `settings_dialog.py` voor betere structuur en onderhoudbaarheid.
+- Oude, dubbele `_show_settings_dialog()` code uit `ui_main.py` verwijderd.
+
+---
 
 ## [v5.0.1] – 2025-07-03
 - 💡 **UI Verbeteringen & uniformisatie**
