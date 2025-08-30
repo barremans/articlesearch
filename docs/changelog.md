@@ -1,8 +1,9 @@
 # 📝 Changelog
-## [V5.1.1] - 2025-08-29
+## [V6.0.0] - 2025-08-29
 - toevoeging BusinessPartner zoek flow
 - Business partner detail fiche toevoeging
 - toevoeging credit control data
+- voorbereiding voo AI op artikelen
 
 ## [v5.1.0] – 2025-07-09
 - Aanpassingen op token manager
