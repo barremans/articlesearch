@@ -87,6 +87,9 @@ a = Analysis(
         'cc_service',
         'cc_token',
         'bp_token',
+        'security_cc',
+        'ui_bp_cc_detail_tab',
+
     ],
     hookspath=[],
     hooksconfig={},

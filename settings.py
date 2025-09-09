@@ -11,6 +11,7 @@ DEFAULT_SETTINGS = {
     "detail_modal": False,
     "language": "NL",
     "tab_order": ["vta", "install", "vta_cert", "art"],
+    "bp_default_type": "",  # <-- NIEUW: default BP-type ("", "C", "S")
     "label_settings": {
         "LABEL_WIDTH": 85.0,
         "LABEL_HEIGHT": 25.0,
@@ -27,8 +28,6 @@ DEFAULT_SETTINGS = {
         "DATE_LEFT": 5.0,
         "INBOUND_TOP": 3.0,
         "INBOUND_LEFT": 50.0,
-        "SUPPLIER_TOP": 6.0,
-        "SUPPLIER_LEFT": 5.0,
         "FONT_SIZE_ART": 7.0,
         "FONT_SIZE_DESCRIPTION": 9.0,
         "FONT_SIZE_SUPPLIER": 7.0,
@@ -129,7 +128,7 @@ DEFAULT_SETTINGS = {
             "WhsName": "Magazijn",
             "ShipDate": "Verzenddatum",
             "FreeTxt": "Vrije tekst"
-            },            
+        },            
         "ui_texts_main": {
             "label_search_term": "Zoekterm:",
             "label_search_type": "Search-type:",
@@ -205,6 +204,9 @@ def load_settings():
             if "language" not in merged:
                 merged["language"] = DEFAULT_SETTINGS["language"]
 
+            if "bp_default_type" not in merged:
+                merged["bp_default_type"] = DEFAULT_SETTINGS["bp_default_type"]
+
             # Zorg dat alle QSS paths aanwezig zijn
             for key in ("main_qss_path", "detail_qss_path", "upload_qss_path"):
                 if key not in merged:
@@ -244,6 +246,9 @@ def load_show_stock():
     return load_settings().get("show_stock", DEFAULT_SETTINGS["show_stock"])
 
 def save_show_stock(val: str):
+    # Optionele guard: alleen R/S/B toelaten
+    if val not in ("R", "S", "B"):
+        return
     settings = load_settings()
     settings["show_stock"] = val
     save_settings(settings)
@@ -326,3 +331,17 @@ def load_sap_headers_map():
 
 def load_sales_headers_map():
     return load_settings().get("field_labels", {}).get("sales", {})
+
+# --- NIEUW: BP default type opslaan/laden ---
+def load_bp_default_type() -> str:
+    """Geeft het standaard BP-type terug: '', 'C' of 'S'."""
+    val = load_settings().get("bp_default_type", DEFAULT_SETTINGS["bp_default_type"])
+    return val if val in ("", "C", "S") else ""
+
+def save_bp_default_type(val: str):
+    """Bewaar standaard BP-type (alleen '', 'C', 'S' toegestaan)."""
+    if val not in ("", "C", "S"):
+        return
+    settings = load_settings()
+    settings["bp_default_type"] = val
+    save_settings(settings)

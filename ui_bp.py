@@ -1,7 +1,7 @@
 # ui_bp.py
 import sys
 import requests
-from typing import Any, Optional
+from typing import Any
 from concurrent.futures import ThreadPoolExecutor
 
 from PySide6.QtWidgets import (
@@ -12,6 +12,7 @@ from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtCore import Qt, Signal, Slot
 
 from bp_token import get_auth_header
+# get_auth_header() levert je Authorization header
 from config import API_ENVIRONMENTS, ENVIRONMENT
 
 from ui_bp_header_panel import HeaderPanel
@@ -19,6 +20,7 @@ from ui_bp_addresses_tab import AddressesTab
 from ui_bp_contacts_tab import ContactsTab
 
 from cc_service import fetch_cc_data  # ongewijzigd laten
+from ui_bp_cc_detail_tab import CreditControlDetailTab  # Credit Control-tab
 
 # SSL warnings onderdrukken omdat verify=False gebruikt wordt bij requests
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -85,12 +87,18 @@ class BpWindow(QWidget):
         self.contacts_tab = ContactsTab(self)
         self.tabs.addTab(self.addr_tab, "Adressen")
         self.tabs.addTab(self.contacts_tab, "Contacten")
-        self.tabs.addTab(QWidget(), "Overzicht")
+
+        # Credit Control tab met wachtwoord
+        self.cc_detail_tab = CreditControlDetailTab(self)
+        self.tabs.addTab(self.cc_detail_tab, "Credit Control")
+
         root.addWidget(self.tabs, 1)
 
         # Shortcuts
         QShortcut(QKeySequence("Ctrl+Return"), self).activated.connect(self.load_data)
         QShortcut(QKeySequence("Esc"), self).activated.connect(self.close)
+        # NIEUW: Delete = zoekvenster leegmaken
+        QShortcut(QKeySequence("Delete"), self).activated.connect(self.clear_search)
 
         # Signals koppelen
         self.bp_success.connect(self._on_bp_success)
@@ -102,6 +110,29 @@ class BpWindow(QWidget):
         self.zoekterm_input.setText(zoekterm or "")
         if auto_fetch:
             self.load_data()
+
+    # ===================== NIEUW: zoekvelden & UI leegmaken =====================
+    def clear_search(self):
+        """Leeg zoekvelden en reset UI/resultaten."""
+        # velden
+        self.zoekterm_input.clear()
+        self.mode_input.clear()
+        self.type_input.clear()
+
+        # resultaten + picker
+        self.results = []
+        self.result_picker.blockSignals(True)
+        self.result_picker.clear()
+        self.result_picker.blockSignals(False)
+
+        # panels/tabs
+        self._clear_all()
+
+        # state
+        self.current_card_code = ""
+
+        # focus terug op zoekveld
+        self.zoekterm_input.setFocus()
 
     # ===================== ASYNC BP FETCH =====================
 
@@ -157,6 +188,8 @@ class BpWindow(QWidget):
         self.header_panel.clear()
         self.addr_tab.clear()
         self.contacts_tab.clear()
+        # CC-tab opruimen
+        self.cc_detail_tab.clear()
 
     def _on_pick_changed(self, idx: int):
         if 0 <= idx < len(self.results):
@@ -180,6 +213,10 @@ class BpWindow(QWidget):
         # CC async: bij afronding overschrijft dit het financiële blok
         card_code = str(rec.get("CardCode") or "")
         self.current_card_code = card_code
+
+        # Tab voorbereiden op dit record (loading-status)
+        self.cc_detail_tab.set_loading(card_code)
+
         self._fetch_cc_async(card_code)
 
     # ===================== ASYNC CC FETCH =====================
@@ -245,9 +282,15 @@ class BpWindow(QWidget):
     @Slot(object, str)
     def _on_cc_success(self, cc: object, card_code: str):
         # Alleen updaten indien nog steeds het actuele record
-        if not cc or card_code != self.current_card_code:
+        if card_code != self.current_card_code:
             return
-        self.header_panel.fill_financial_cc(cc)
+
+        # Headerpanel bijwerken indien data
+        if cc:
+            self.header_panel.fill_financial_cc(cc)
+
+        # Geef de CC-data door aan de CC-detailtab
+        self.cc_detail_tab.set_from_json(cc if isinstance(cc, dict) else {})
 
     # ===================== Proper afsluiten =====================
 

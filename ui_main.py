@@ -1,6 +1,7 @@
-#ui_main.py
+# ui_main.py
 import os
 import sys
+import json  # <-- toegevoegd
 import logging
 import markdown
 
@@ -25,7 +26,8 @@ from settings import (
     load_detail_modal, save_detail_modal,
     load_main_qss_path, load_detail_qss_path, load_upload_qss_path,
     load_default_search_type, save_default_search_type,
-    load_language
+    load_language,
+    load_bp_default_type, save_bp_default_type  # <-- NIEUW
 )
 from label.label_generator import generate_label
 from label.label_settings_dialog import LabelSettingsDialog
@@ -167,8 +169,10 @@ class MainWindow(QMainWindow):
         # - BP      : label = "Type:", items = ["", "C", "S"]
         self.stock_label = QLabel("Toon voorraad:")
         self.show_stock_select = QComboBox()
+        # INIT: stock-items + huidige setting
         self._set_combo_items(self.show_stock_select, ["R", "S", "B"], current=load_show_stock())
-        self.show_stock_select.currentTextChanged.connect(save_show_stock)
+        # Routeer opslag via centrale handler (afhankelijk van actieve modus)
+        self.show_stock_select.currentTextChanged.connect(self._handle_secondary_combo_change)
 
         self.search_button = QPushButton("Zoeken")
         self.search_button.clicked.connect(self.perform_search)
@@ -552,15 +556,24 @@ class MainWindow(QMainWindow):
         item_code = self.table.item(row, 1).text()
         self.table.clearSelection()
         try:
-            detail_data = get_item_detail_stockinfo(item_code) or {}
+            raw_detail = get_item_detail_stockinfo(item_code)
 
-            dialog = DetailWindow(parent=self, item_code=item_code, detail_data=detail_data)
+            # --- Belangrijk: normaliseer elk type naar dict ---
+            detail_data = self._normalize_detail_payload(raw_detail)
+
+            logger.info(
+                "Detail payload type=%s keys=%s",
+                type(raw_detail).__name__,
+                list(detail_data.keys())[:10] if isinstance(detail_data, dict) else "n/a",
+            )
+
+            dialog = DetailWindow(parent=self, item_code=item_code, detail_data=detail_data or {})
             dialog.show()
             self._reposition_detail(dialog)
             self.detail_windows.append(dialog)
 
         except Exception as e:
-            QMessageBox.warning(self, "Detail Fout", str(e))
+            QMessageBox.warning(self, "Detail Fout", f"Kon detail niet openen:\n{e}\n(type: {type(e).__name__})")
 
     def _open_selected_row(self):
         search_type = self.search_type_select.currentText()
@@ -737,7 +750,7 @@ class MainWindow(QMainWindow):
         """Herlaadt het gewijzigde .qss-bestand en past het toe."""
         try:
             with open(path, "r", encoding="utf-8") as f:
-                qss = f.read()
+                qss = read_qss = f.read()
         except Exception:
             QTimer.singleShot(500, lambda: self._retry_reload(path))
             return
@@ -867,6 +880,16 @@ class MainWindow(QMainWindow):
             combo.setCurrentText(current)
         combo.blockSignals(False)
 
+    # NIEUW: centrale opslag van de "tweede" combobox
+    def _handle_secondary_combo_change(self, value: str):
+        if self.search_type_select.currentText() == "BP":
+            # Opslaan als BP default type
+            save_bp_default_type(value if value in ("", "C", "S") else "")
+        else:
+            # Opslaan als show_stock (alleen R/S/B)
+            if value in ("R", "S", "B"):
+                save_show_stock(value)
+
     def _toggle_fields_by_search_type(self, search_type: str):
         """
         - Standaard:     Zoekmodus zichtbaar, label='Toon voorraad:', items R/S/B
@@ -888,7 +911,7 @@ class MainWindow(QMainWindow):
             self.stock_label.setText("Type:")
             self.stock_label.setVisible(True)
             self.show_stock_select.setVisible(True)
-            self._set_combo_items(self.show_stock_select, ["", "C", "S"], current="")
+            self._set_combo_items(self.show_stock_select, ["", "C", "S"], current=load_bp_default_type())
         else:
             self.stock_label.setText("Toon voorraad:")
             self.stock_label.setVisible(True)
@@ -905,4 +928,32 @@ class MainWindow(QMainWindow):
         if hasattr(self, 'select_all_checkbox'):
             self.select_all_checkbox.blockSignals(True)
             self.select_all_checkbox.setChecked(False)
-            self.select_all_checkbox.blockSignals(False)
+
+    # --------------- Helper: detail-payload normaliseren ---------------
+
+    def _normalize_detail_payload(self, payload):
+        """
+        Converteer de respons van get_item_detail_stockinfo(*) naar een dictionary.
+        Ondersteunt dict, list, str, bytes/bytearray en None.
+        """
+        if payload is None:
+            return {}
+        if isinstance(payload, dict):
+            return payload
+        if isinstance(payload, list):
+            if payload and isinstance(payload[0], dict):
+                return payload[0]  # vaak 1 record als [ {...} ]
+            return {"RAW": payload}
+        if isinstance(payload, (bytes, bytearray)):
+            try:
+                return json.loads(payload.decode("utf-8", errors="ignore"))
+            except Exception:
+                return {"RAW_TEXT": payload[:2000].decode("utf-8", errors="ignore")}
+        if isinstance(payload, str):
+            s = payload.strip()
+            try:
+                return json.loads(s)
+            except Exception:
+                return {"RAW_TEXT": s[:2000]}
+        # laatste redmiddel
+        return {"RAW": payload}

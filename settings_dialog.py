@@ -9,13 +9,14 @@ from settings import (
     load_default_search_type, save_default_search_type,
     load_tab_order, save_tab_order,
     load_language, 
-    save_language
+    save_language,
+    load_bp_default_type, save_bp_default_type   # <-- NIEUW
 )
 
 def show_settings_dialog(parent):
     dialog = QDialog(parent)
     dialog.setWindowTitle("Instellingen")
-    dialog.resize(400, 500)
+    dialog.resize(400, 560)
 
     layout = QVBoxLayout(dialog)
 
@@ -33,9 +34,9 @@ def show_settings_dialog(parent):
     modal = QCheckBox("Toon detail als modal dialoog")
     modal.setChecked(load_detail_modal())
 
-    # Zoektype
+    # Standaard zoektype (nu met BP)
     search_type_default = QComboBox()
-    search_type_default.addItems(["Standaard", "Project"])
+    search_type_default.addItems(["Standaard", "Project", "BP"])
     search_type_default.setCurrentText(load_default_search_type())
     
     # Taal
@@ -44,6 +45,10 @@ def show_settings_dialog(parent):
     language_combo.addItem("English", "EN")
     language_combo.setCurrentText("Nederlands" if load_language() == "NL" else "English")
 
+    # NIEUW: Default BP-type
+    bp_type_default = QComboBox()
+    bp_type_default.addItems(["", "C", "S"])
+    bp_type_default.setCurrentText(load_bp_default_type())
 
     # Tab-volgorde
     tab_order_label = QLabel("Tab-volgorde (versleep om te herschikken):")
@@ -66,6 +71,7 @@ def show_settings_dialog(parent):
         save_detail_modal(modal.isChecked())
         save_default_search_type(search_type_default.currentText())
         save_language(language_combo.currentData())
+        save_bp_default_type(bp_type_default.currentText())   # <-- NIEUW
         new_order = [tab_order_list.item(i).text() for i in range(tab_order_list.count())]
         save_tab_order(new_order)
         QMessageBox.information(dialog, "Instellingen", "Instellingen opgeslagen.")
@@ -82,6 +88,13 @@ def show_settings_dialog(parent):
     layout.addWidget(search_type_default)
     layout.addWidget(QLabel("Taal:"))
     layout.addWidget(language_combo)
+
+    # --- NIEUW blokje voor BP ---
+    layout.addSpacing(10)
+    layout.addWidget(QLabel("BP Type (default):"))
+    layout.addWidget(bp_type_default)
+    # -----------------------------
+
     layout.addSpacing(10)
     layout.addWidget(tab_order_label)
     layout.addWidget(tab_order_list)

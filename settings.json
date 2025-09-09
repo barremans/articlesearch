@@ -1,5 +1,5 @@
 {
-  "default_search_type": "Standaard",
+  "default_search_type": "BP",
   "environment": "live",
   "show_stock": "R",
   "detail_modal": false,
@@ -10,6 +10,7 @@
     "vta_cert",
     "art"
   ],
+  "bp_default_type": "",
   "label_settings": {
     "LABEL_WIDTH": 85.0,
     "LABEL_HEIGHT": 25.0,
@@ -26,13 +27,13 @@
     "DATE_LEFT": 5.0,
     "INBOUND_TOP": 3.0,
     "INBOUND_LEFT": 50.0,
-    "SUPPLIER_TOP": 6.0,
-    "SUPPLIER_LEFT": 5.0,
     "FONT_SIZE_ART": 7.0,
     "FONT_SIZE_DESCRIPTION": 9.0,
     "FONT_SIZE_SUPPLIER": 7.0,
     "FONT_SIZE_INBOUND": 7.0,
-    "FONT_SIZE_DATE": 7.0
+    "FONT_SIZE_DATE": 7.0,
+    "SUPPLIER_TOP": 6.0,
+    "SUPPLIER_LEFT": 5.0
   },
   "field_labels": {
     "logistics": {

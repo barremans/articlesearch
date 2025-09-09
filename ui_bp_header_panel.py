@@ -7,6 +7,7 @@ from ui_bp_helper import (
     extract_bp_core, rich_html
 )
 
+SPACER_H = 12  # hoogte van de lege rij tussen 'Adres 2' en 'Plaats'
 
 class HeaderPanel(QWidget):
     """
@@ -56,7 +57,7 @@ class HeaderPanel(QWidget):
         blockA_grid = QGridLayout(blockA)
         blockA_grid.setContentsMargins(0, 0, 0, 0)
         blockA_grid.setHorizontalSpacing(12)
-        blockA_grid.setVerticalSpacing(0)
+        blockA_grid.setVerticalSpacing(0)  # compact; spacer-rij komt er expliciet bij
         blockA.setMaximumWidth(420)
 
         ba_r = 0
@@ -75,12 +76,19 @@ class HeaderPanel(QWidget):
         self.type_c,  self.type_v  = add_blockA_row("Type Partner:")
         self.addr_c,  self.addr_v  = add_blockA_row("Adres:",  wordwrap=True)
         self.addr2_c, self.addr2_v = add_blockA_row("Adres 2:", wordwrap=True)
+
+        # === Lege spacer-rij tussen 'Adres 2' en 'Plaats' ===
+        spacer = QWidget()
+        spacer.setFixedHeight(SPACER_H)
+        blockA_grid.addWidget(spacer, ba_r, 0, 1, 2)
+        ba_r += 1
+
         self.place_c, self.place_v = add_blockA_row("Plaats:")
         self.tel1_c,  self.tel1_v  = add_blockA_row("Tel. 1:")
         self.tel2_c,  self.tel2_v  = add_blockA_row("Tel. 2:")
         self.gsm_c,   self.gsm_v   = add_blockA_row("GSM:")
 
-        self.grid.addWidget(blockA, r_left, 0, 1, 2, alignment=Qt.AlignLeft)
+        self.grid.addWidget(blockA, r_left, 0, 1, 2)
         r_left += 1
 
         # ruimte tussen blok A en B
@@ -112,7 +120,7 @@ class HeaderPanel(QWidget):
         self.vat_c,     self.vat_v     = add_blockB_row("BTW:")
         self.valid_c,   self.valid_v   = add_blockB_row("Actief:")
 
-        self.grid.addWidget(blockB, r_left, 0, 1, 2, alignment=Qt.AlignLeft)
+        self.grid.addWidget(blockB, r_left, 0, 1, 2)
         r_left += 1
 
         # ---------------- Middenkolom ----------------
@@ -132,12 +140,12 @@ class HeaderPanel(QWidget):
         self.grid.addWidget(self.free_c, r_mid, 2)
         self.grid.addWidget(self.free_v, r_mid, 3, 5, 1)
 
-        # ---------------- Rechterkolom (financieel) in eigen panel (geen verticale ruimte) ----------------
+        # ---------------- Rechterkolom (financieel) ----------------
         self.finPanel = QWidget(self)
         fin_grid = QGridLayout(self.finPanel)
         fin_grid.setContentsMargins(0, 0, 0, 0)
         fin_grid.setHorizontalSpacing(12)
-        fin_grid.setVerticalSpacing(0)  # geen verticale ruimte
+        fin_grid.setVerticalSpacing(0)
 
         r_fin = 0
 
@@ -150,10 +158,7 @@ class HeaderPanel(QWidget):
             r_fin += 1
             return c, v
 
-        # Valuta bovenaan – UIT BP endpoint (wrapper of vlak)
         self.cur_c,    self.cur_v    = add_fin_row("Valuta:")
-
-        # Volgorde en labels conform CreditControl-API mapping
         self.clim_c,   self.clim_v   = add_fin_row("Krediet Limit:")
         self.bal_c,    self.bal_v    = add_fin_row("Balance:")
         self.oo_c,     self.oo_v     = add_fin_row("Total open orders:")
@@ -169,11 +174,9 @@ class HeaderPanel(QWidget):
         self.upd_c,    self.upd_v    = add_fin_row("Laatste update:")
         self.inv_c,    self.inv_v    = add_fin_row("Laatste factuur datum:")
 
-        # IBAN (blijft bestaan – valt buiten CC, maar wil je behouden)
         self.iban_c,   self.iban_v   = add_fin_row("IBAN:")
         self.iban2_c,  self.iban2_v  = add_fin_row("IBAN 2:")
 
-        # Plaats het finPanel in de hoofdgrid als enige widget in kolommen 4-5.
         self.grid.addWidget(self.finPanel, 0, 4, max(r_left, r_mid + 5), 2)
 
     # ---------------- API ----------------
@@ -183,7 +186,6 @@ class HeaderPanel(QWidget):
             self.type_v, self.addr_v, self.addr2_v, self.place_v,
             self.tel1_v, self.tel2_v, self.gsm_v,
             self.contact_v, self.mail_v, self.email_v, self.vat_v, self.valid_v,
-            # rechts:
             self.cur_v,
             self.clim_v, self.bal_v, self.oo_v, self.oln_v,
             self.ofa_v, self.odp_v, self.ocn_v, self.ocred_v,
@@ -196,7 +198,6 @@ class HeaderPanel(QWidget):
 
     # ------ BP basis + vrije tekst ------
     def fill_left_and_middle(self, bp: dict):
-        # Sta wrapper of vlakke dict toe
         core = extract_bp_core(bp)
 
         # boven
@@ -204,7 +205,7 @@ class HeaderPanel(QWidget):
         self.name_v.setText(str(core.get("CardName") or "-"))
 
         # blok A
-        self.type_v.setText(map_card_type(core.get("CardType")))
+        self.type_v.setText(map_card_type(str(core.get("CardType") or "")))
         self.addr_v.setText(str(core.get("Address") or "-"))
         self.addr2_v.setText(str(core.get("MailAddres") or "-"))
         self.place_v.setText(build_place(core.get("Country"), core.get("ZipCode"), core.get("City")))
@@ -232,22 +233,12 @@ class HeaderPanel(QWidget):
 
     # ------ Rechterkolom met BP-fallback ------
     def fill_financial_bp(self, bp: dict):
-        """
-        Toont wat er logisch beschikbaar is in BP-data.
-        CC-specifieke velden worden gereset naar '-'.
-        Valuta komt vanuit BP (wrapper of vlak).
-        """
         core = extract_bp_core(bp)
-
-        # Valuta uit BP
         self.cur_v.setText(str(core.get("Currency") or "-"))
-
         self.clim_v.setText(fmt_num(core.get("CreditLimit")))
         self.bal_v.setText(fmt_num(core.get("CurrentAccountBalance")))
         self.oln_v.setText(fmt_num(core.get("OpenDeliveryNotesBalance")))
         self.oo_v.setText(fmt_num(core.get("OpenOrdersBalance")))
-
-        # CC-only of niet aanwezig in BP → resetten
         for v in [
             self.ofa_v, self.odp_v, self.ocn_v, self.ocred_v,
             self.avail_v, self.stat_v, self.used_v, self.pg_v, self.upd_v, self.inv_v
@@ -256,20 +247,11 @@ class HeaderPanel(QWidget):
 
     # ------ Rechterkolom met CreditControl-data ------
     def fill_financial_cc(self, cc: dict):
-        """
-        Verwacht structuur (minstens) cc["BP"] met:
-          CreditLimit, CurrentBalance, TotalOpenOrders, TotalOpenDeliveries,
-          TotalOpenInvoices, TotalOpenDownPayments, Info_TotalOpenCN,
-          OpenCredit, AvailableCredit, CreditStatus, CreditUsagePercent,
-          PaymentGroup, LastUpdate, LastInvoiceDate
-        LET OP: Valuta wordt HIER NIET gezet (komt uit BP).
-        """
         data = cc.get("BP", cc) if isinstance(cc, dict) else {}
 
         def fmt_pct(v):
             return f"{float(v):.2f} %" if isinstance(v, (int, float)) else "-"
 
-        # Numerieke/gewone velden
         self.clim_v.setText(fmt_num(data.get("CreditLimit")))
         self.bal_v.setText(fmt_num(data.get("CurrentBalance")))
         self.oo_v.setText(fmt_num(data.get("TotalOpenOrders")))
@@ -286,23 +268,20 @@ class HeaderPanel(QWidget):
         else:
             self.avail_v.setText(fmt_num(avail))
 
-        # Krediet status → 'Over Limit' = ❗ + rood + vet
+        # Krediet status
         status = str(data.get("CreditStatus") or "-").strip()
         if status.lower() == "over limit":
             self.stat_v.setText(f'❗ {rich_html(status, danger=True, bold=True)}')
         else:
             self.stat_v.setText(status)
 
-        # % opgebruikte kredit → >100% rood + vet
+        # % opgebruikte krediet
         used = data.get("CreditUsagePercent")
         if isinstance(used, (int, float)) and used > 100:
             self.used_v.setText(rich_html(fmt_pct(used), danger=True, bold=True))
         else:
             self.used_v.setText(fmt_pct(used))
 
-        # Betalingsconditie = PaymentGroup
         self.pg_v.setText(str(data.get("PaymentGroup") or "-"))
-
-        # Datums
         self.upd_v.setText(str(data.get("LastUpdate") or "-"))
         self.inv_v.setText(str(data.get("LastInvoiceDate") or "-"))

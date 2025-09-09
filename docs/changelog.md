@@ -1,4 +1,22 @@
 # 📝 Changelog
+## [V6.0.1] - 2025-09-04
+- 🐞 Bugfix: artikel “no dict” error opgelost.
+- 🧭 Business Partner (BP)
+  - Tab **“Overzicht”** verwijderd.
+- 💳 Credit Control
+  - **ODPI (Voorschotten), OINV (Facturen), ORIN (Kredietnota’s)** toegevoegd aan lijsten.
+  - Kolommen **DPI1/INV1/RIN1** bewust **niet** in de tabellen getoond (blijven in row-payload voor pop-ups).
+  - **Dubbelklik-pop-ups** toegevoegd:
+    - Orders → **ORDRL** (met groot FreeTxt-veld)
+    - Leveringen → **DNL1** (met FreeTxt/LineMemo)
+    - Voorschotten → **DPI1** (met FreeTxt/LineMemo)
+    - Facturen → **INV1** (met FreeTxt/LineMemo)
+    - Kredietnota’s → **RIN1** (met FreeTxt/LineMemo)
+  - Pop-ups blijven correct werken na sorteren (row-payload aan kolom 0 bevestigd via `Qt.UserRole`).
+- 🔒 UI & security
+  - **Debug-knop en debugpaneel** uit de Credit Control-tab verwijderd.
+  - Wachtwoordslot blijft behouden; “Vergrendel opnieuw” blijft beschikbaar.
+
 ## [V6.0.0] - 2025-08-29
 - toevoeging BusinessPartner zoek flow
 - Business partner detail fiche toevoeging
@@ -8,7 +26,6 @@
 ## [v5.1.0] – 2025-07-09
 - Aanpassingen op token manager
 - voorbereidingen op Business Partner integratie
-
 
 ## [v5.0.2] – 2025-07-09
 
@@ -153,5 +170,3 @@
 ## [v1.2.0] – 2025-05-20
 - 🚀 Initieel projectzoekvenster toegevoegd.
 - 📦 Basis ondersteuning voor ART-gegevens.
-
----
