@@ -1,4 +1,43 @@
 # 📝 Changelog
+
+## [v6.0.3] - 2025-09-13
+### ✨ Nieuw: Open Sales/Purchase — Documents
+- Nieuw venster **Open Sales/Purchase — Documents** (menu **Export → Open elements**).
+- Beveiligd met wachtwoord (zelfde als BP). **Eénmalige** ingave per sessie; sluiten van het venster vergrendelt opnieuw.
+- **Aantal** (voorheen “Key”): keuze **6** of **Anders** (vrij getal). Wordt meegestuurd naar de API.
+- **Groepering/sortering** (radio-opties):
+  - **CardName** *(standaardlogica)* → groepeer op klant/leverancier; sorteer binnen groep op **Vervaldatum ↑** (oudste eerst), daarna **MaandenOud** met **meer oud eerst** (dus -10 vóór -8).
+  - **CardCode** → idem maar gegroepeerd op code.
+  - **DocOwner** → groepeer op document-eigenaar; sorteer binnen groep op **Naam** + **Vervaldatum ↑**.
+  - **SalesOwner** → groepeer op verkoper; sorteer binnen groep op **Naam** + **Vervaldatum ↑**.
+  - **MaandenOud** → sorteer primair op **MaandenOud** (meer negatief eerst), secundair **Vervaldatum ↑**.
+- **Tabs & structuur**
+  - Visuele scheiding met disabled tabs: **— Verkoop —**, **— Samenvatting —**, **— Aankoop —**.
+  - **Verkoop**: OSO → OSDL → OSDP → OSR → OSI (in deze volgorde).
+  - **Aankoop**: OPO → OPDL → OPR → OPI (in deze volgorde).
+  - Na ophalen wordt tab **OSO** automatisch geselecteerd (fallback: eerste beschikbare).
+- **Samenvatting** (met subtabs en sorteerbare kolommen):
+  - **Secties (Sales)** en **Secties (Purchase)**: totalen, earliest/latest due, outstanding.
+  - **Klanten**: per CardCode/CardName twee kolommen **SalesOpen** en **PurchaseOpen** (klik op headers om ↑/↓ te wisselen).
+  - **DocOwner**, **SalesOwner**, **Buyer**: aantallen per verantwoordelijke.
+- **Kolommen & layout**
+  - Standaardkolommen per sectie:  
+    `DocNum, CardCode, CardName, DocDate, DocDueDate, DocTotal, PaidSum, Outstanding, OrderCount, MaandenOud, SalesOwner, DocOwner`
+  - **VATNbr** en **DocEntry** worden **verborgen**.
+  - Datums in **DD-MM-YYYY**.
+  - **CardName breder**, **DocOwner smaller**; automatische kolombreedte (max cap) en herberekening na sorteren.
+- **Export**
+  - Knoppen **Exporteer…** (huidige tab of samenvatting) en **Exporteer alles** (volledige workbook).
+  - Export-bereik: **Huidige tab / Alle tabs / Sales / Purchase**.
+  - Bestandsnaam met **datumstempel** (bijv. `OSO_20250914.xlsx`, `OpenSales_20250914.xlsx`, `OpenDocuments_20250914.xlsx`).
+  - Standaardmap **Downloads**.
+  - Excel via **openpyxl** of **XlsxWriter**; één tab kan ook als **CSV**.
+- **Integratie**
+  - Nieuw menu **Export** in `ui_main` met item **Open elements** dat het venster opent.
+  - Wachtwoord wordt gedeeld met BP-module (zelfde bron).
+
+---
+
 ## [V6.0.1] - 2025-09-04
 - 🐞 Bugfix: artikel “no dict” error opgelost.
 - 🧭 Business Partner (BP)

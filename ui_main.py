@@ -48,6 +48,8 @@ from settings import load_column_headers_s, load_column_headers_default
 
 # ---- NIEUW: BP detailvenster
 from ui_bp import BpWindow
+# ---- NIEUW: Export/Elements venster
+from ui_docs import DocsWindow  # <-- toegevoegd
 
 # Dynamische kolomheaders laden uit settings
 COLUMN_HEADERS_S = load_column_headers_s()
@@ -73,7 +75,8 @@ class MainWindow(QMainWindow):
         self.detail_windows = []
         self.upload_windows = []
         self.project_window = None
-        self.bp_windows = []  # <-- vensters bijhouden zodat ze open blijven
+        self.bp_windows = []   # <-- BP vensters bijhouden
+        self.docs_windows = [] # <-- NIEUW: Docs/Elements vensters bijhouden
         self.setStatusBar(QStatusBar(self))
 
         QTimer.singleShot(1000, lambda: check_for_update(__version__, self))
@@ -136,6 +139,10 @@ class MainWindow(QMainWindow):
         settings_menu.addAction("✏️ Bewerk style.qss").triggered.connect(self._open_style_qss_editor)
         settings_menu.addAction("✏️ Bewerk detail.qss").triggered.connect(self._open_detail_qss_editor)
         settings_menu.addAction("✏️ Bewerk upload.qss").triggered.connect(self._open_upload_qss_editor)
+
+        # ---- NIEUW: Export-menu
+        export_menu = menubar.addMenu("&Export")
+        export_menu.addAction("Open &Elements").triggered.connect(self._open_docs_window)
 
         report_menu = menubar.addMenu("&Rapporteren")
         report_menu.addAction("🐞 &Bug of feature melden...").triggered.connect(self._show_bug_report_dialog)
@@ -957,3 +964,13 @@ class MainWindow(QMainWindow):
                 return {"RAW_TEXT": s[:2000]}
         # laatste redmiddel
         return {"RAW": payload}
+
+    # --------------- NIEUW: Export/Elements openen ---------------
+    def _open_docs_window(self):
+        """Opent ui_docs (Elements) vanuit het menu Export."""
+        try:
+            w = DocsWindow()
+            w.showMaximized()
+            self.docs_windows.append(w)  # referentie bewaren
+        except Exception as e:
+            QMessageBox.critical(self, "Fout", f"Kon 'Elements' openen:\n{e}")

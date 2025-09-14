@@ -26,7 +26,8 @@ API_ENVIRONMENTS = {
         "so_configP_id": "C80TSJ",  #Sales order data
         "bp_configP_Bp": "U63P1T",  #Bussiness partner min search data
         "so_configP_Bp": "OMW5IN",  #Bussiness partner  data
-        "so_configP_Cc": "OLH3RP",  #CreditControl data       
+        "so_configP_Cc": "OLH3RP",  #CreditControl data
+        "so_configP_OE": "4AA8DF",  #Open Elements data       
     }
 }
 
@@ -113,7 +114,13 @@ API_CLIENTS = {
             "client_id": "BpSearchMin",
             "client_secret": "NDQ4MDk0NTUtNzY4OC00ODEyLWE2ZWMtYTdiOTFhMjA1Yzc3"
         }
-    }                            
+    }  ,
+    "OE": {
+        "live": {
+            "client_id": "OpenElements",
+            "client_secret": "YzRiOTZkNzQtNmZhMi00NjkzLWFhNzQtNGFiMTAwYzE1OTI1"
+        }
+    }                           
 #end
 }
 

@@ -1,103 +1,38 @@
-# SearchArticle.spec
+# SearchArticle.spec  V6.x
 # -*- mode: python ; coding: utf-8 -*-
 
-from PyInstaller.utils.hooks import collect_data_files
-pyside6_datas = collect_data_files('PySide6')
+import os
+from PyInstaller.utils.hooks import collect_all
+
+# Pandas assets zonder tests
+pandas_datas, pandas_binaries, pandas_hidden = collect_all("pandas")
+pandas_hidden = [h for h in pandas_hidden if not h.startswith("pandas.tests")]
+
+# Zorg dat de VC++ runtime naast python312.dll in _internal staat
+extra_bins = []
+windir = os.environ.get("WINDIR", r"C:\Windows")
+candidates = [
+    os.path.join(windir, "System32", "vcruntime140.dll"),
+    os.path.join(windir, "System32", "vcruntime140_1.dll"),
+    os.path.join(windir, "System32", "msvcp140.dll"),
+    r".\.venv\Scripts\vcruntime140.dll",
+    r".\.venv\Scripts\vcruntime140_1.dll",
+    r".\.venv\Scripts\msvcp140.dll",
+]
+for p in candidates:
+    if os.path.exists(p):
+        extra_bins.append((p, "_internal"))  # ⬅️ belangrijk
 
 block_cipher = None
-
-# ✅ Voeg alle datafiles van reportlab toe (fonts, templates, etc.)
-reportlab_datas = collect_data_files('reportlab')
-transformers_datas = collect_data_files('transformers')
-sklearn_datas = collect_data_files('sklearn')
 
 a = Analysis(
     ['main.py'],
     pathex=['.'],
-    binaries=[],
-    datas=[
-        ('docs/help.md', 'docs'),                 # 📘 Helpbestand
-        ('docs/changelog.md', 'docs'),            # 📄 Changelog
-        ('requirements.txt', '.'),                # 📦 Requirements
-        ('version.py', '.'),                      # 🔢 Versie info
-        ('updater.py', '.'),                      # 🔄 Updater module
-        ('assets/spinner.gif', 'assets'),         # ⏳ Loading GIF
-        ('assets/*', 'assets'),
-        ('assets/css/*', 'assets/css'),           # 🎨 QSS stylesheets
-        ('assets/badges/*', 'assets/badges'),
-        ('logs/*', 'logs'),                       # 📝 Logbestanden
-        ('label/*', 'label'),                     # 🏷️ Label functionaliteit
-        ('docs/*', 'docs'),                        # 📚 Markdown documentatie
-        ('labels.txt', '.'),                 # ✅ voeg je default labels toe
-    ] + reportlab_datas + transformers_datas + sklearn_datas,
-    hiddenimports=[
-        'upload_dialog',
-        'oitmi_upload',
-        'config',
-        'stock_token',
-        'auth',
-        'token_manager',
-        'data_request',
-        'stock_info',
-        'ui_detail',
-        'ui_main',
-        'settings',
-        'updater',
-        'version',
-        'label.label_generator',
-        'label.label_settings_dialog',
-        'bug_report_dialog',
-        'PIL',
-        'PIL.Image',
-        'requests',
-        'packaging',
-        'packaging.version',
-        'oitmi_token',
-        'reportlab',
-        'reportlab.pdfgen',
-        'reportlab.lib.utils',
-        'reportlab.graphics',
-        'reportlab.graphics.shapes',
-        'reportlab.graphics.renderPDF',
-        'transformers',
-        'transformers.models.clip',
-        'transformers.models.clip.modeling_clip',
-        'transformers.models.clip.processing_clip',
-        'torch',
-        'numpy',
-        'sklearn',
-        'sklearn.metrics',
-        'sklearn.metrics.pairwise',
-        'huggingface_hub',
-        'safetensors',
-        'tokenizers',
-        'tokenizers.models',
-        'tokenizers.pre_tokenizers',
-        'tokenizers.decoders',
-        'tokenizers.normalizers',
-        'tokenizers.processors',
-        'tqdm',
-        'regex',
-        'yaml',
-        'filelock',
-        'fsspec',    
-        'ui_bp',
-        'ui_bp_header_panel',
-        'ui_bp_helper',
-        'cc_service',
-        'cc_token',
-        'bp_token',
-        'security_cc',
-        'ui_bp_cc_detail_tab',
-
-    ],
-    hookspath=[],
-    hooksconfig={},
-    runtime_hooks=[],
-    excludes=[],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
+    binaries=pandas_binaries + extra_bins,
+    datas=pandas_datas,
+    hiddenimports=pandas_hidden + ['upload_dialog'],
+    excludes=['pandas.tests'],
+    noarchive=False,
 )
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
@@ -108,12 +43,9 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name='ArticleSearch',
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
+    icon='assets\\logo.ico',
     console=False,
-    icon='assets/logo.ico'
+    disable_windowed_traceback=False,
 )
 
 coll = COLLECT(
@@ -122,7 +54,6 @@ coll = COLLECT(
     a.zipfiles,
     a.datas,
     strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='ArticleSearch'
+    upx=False,
+    name='ArticleSearch',  # onedir outputmap
 )

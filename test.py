@@ -18,11 +18,15 @@ def main():
 
     # >>>>>>>>>>>> PLAK HIER JE JSON PAYLOAD <<<<<<<<<<<<<<
     payload = {
-    "ConfigurationID": "OLH3RP",
-        "MultiKey":{
-        "@key": "K05036"
-    }
+            "ConfigurationID": "4AA8DF",
+            "Key":"6"
+    #"ConfigurationID": "OLH3RP",
+    #"MultiKey":{
+    #"@key": "K05036"
+   # }
 }
+    
+    
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     headers = get_auth_header()
