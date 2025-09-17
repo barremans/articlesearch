@@ -1,2 +1,2 @@
 7.0.4
-
+https://github.com/barremans/articlesearch/releases/download/v7.0.4/ArticleSearchSetup_7.0.4.exe
