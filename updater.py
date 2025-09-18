@@ -1,94 +1,89 @@
-
-#updater.pyimport requests
-import requests
+# updater.py — private/public repo + 2-regelige version.txt
 import webbrowser
-from PySide6.QtWidgets import QMessageBox
+import requests
 from packaging.version import parse as parse_version
+from PySide6.QtWidgets import QMessageBox
 
-
-
-# 🔧 GitHub configuratie
-OWNER = "barremans"
-REPO = "articlesearch"
+OWNER  = "barremans"
+REPO   = "articlesearch"
 BRANCH = "main"
-RELEASE_FOLDER = "releases/latest"
-VERSION_FILE_NAME = "version.txt"
+REL_DIR = "releases/latest"
 
-# 🔗 API URL's
-CONTENTS_API_URL = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{RELEASE_FOLDER}?ref={BRANCH}"
-VERSION_API_URL = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{RELEASE_FOLDER}/{VERSION_FILE_NAME}?ref={BRANCH}"
+RAW_VERSION_URL      = f"https://raw.githubusercontent.com/{OWNER}/{REPO}/{BRANCH}/{REL_DIR}/version.txt"
+CONTENTS_VERSION_URL = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{REL_DIR}/version.txt?ref={BRANCH}"
 
-# 🔐 GitHub token (alleen nodig voor private repo's)
-TOKEN = "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"
+# ZET DIT IN: token met scope 'repo' (PAT classic)
+TOKEN = "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"
 
-HEADERS = {
-    "Accept": "application/vnd.github.v3.raw",
-    "Authorization": f"token {TOKEN}"
-}
+def _headers_raw():
+    # raw github ondersteunt geen auth
+    return {"Accept": "text/plain"}
 
-def extract_version_from_filename(name: str):
-    parts = name.rstrip(".exe").split("_")
-    if len(parts) >= 2:
-        try:
-            return parse_version(parts[-1])
-        except Exception:
-            return None
-    return None
+def _headers_api():
+    h = {"Accept": "application/vnd.github.v3.raw"}
+    if TOKEN:
+        h["Authorization"] = f"token {TOKEN}"
+    return h
 
-def check_for_update(current_version: str, parent=None, callback=None):
+def _fetch_version_txt(timeout=8) -> str:
+    # 1) Raw (werkt voor public)
     try:
-        response = requests.get(VERSION_API_URL, headers=HEADERS, timeout=5)
-        if response.status_code != 200:
-            print(f"[update-check] Fout {response.status_code} bij ophalen version.txt")
-            if callback:
-                callback(False)
-            return
+        r = requests.get(RAW_VERSION_URL, headers=_headers_raw(), timeout=timeout)
+        if r.ok:
+            return r.text
+        print(f"[update-check] raw GET {RAW_VERSION_URL} -> {r.status_code}")
+    except Exception as e:
+        print(f"[update-check] raw exception: {e}")
 
-        latest = response.text.strip().lstrip("vV")
-        print(f"[update-check] Lokale versie: {current_version}, Remote versie: {latest}")
-        is_update_available = parse_version(latest) > parse_version(current_version)
+    # 2) Contents API (werkt ook voor private, mits TOKEN)
+    r = requests.get(CONTENTS_VERSION_URL, headers=_headers_api(), timeout=timeout)
+    if not r.ok:
+        # 404 bij private zonder juiste token is normaal
+        raise requests.HTTPError(f"{r.status_code} for {CONTENTS_VERSION_URL}: {r.text[:200]}")
+    return r.text  # met Accept: v3.raw = pure file-inhoud
 
+def _parse_version_file(txt: str):
+    # regel 1: versie; regel 2: optionele download-URL
+    lines = [ln.strip() for ln in txt.splitlines() if ln.strip()]
+    if not lines:
+        raise RuntimeError("version.txt is leeg")
+    version = lines[0].lstrip("vV")
+    url = lines[1] if len(lines) >= 2 and lines[1].startswith(("http://", "https://")) else None
+    return version, url
+
+def _asset_url(version: str, asset_name: str | None = None) -> str:
+    if not asset_name:
+        asset_name = f"ArticleSearchSetup_{version}.exe"
+    return f"https://github.com/{OWNER}/{REPO}/releases/download/v{version}/{asset_name}"
+
+def check_for_update(current_version: str, parent=None, callback=None) -> bool:
+    try:
+        txt = _fetch_version_txt()
+        remote_version, _ = _parse_version_file(txt)
+        is_newer = parse_version(remote_version) > parse_version(current_version)
+        print(f"[update-check] Lokale versie: {current_version}, Remote versie: {remote_version}")
         if callback:
-            # 👉 alleen knop activeren
-            callback(is_update_available)
-        elif is_update_available:
-            # 👉 alleen popup tonen als geen callback
+            callback(is_newer)
+        elif is_newer:
             QMessageBox.information(
-                parent,
-                "Nieuwe versie beschikbaar",
-                f"Je gebruikt versie {current_version}, maar versie {latest} is beschikbaar.\n"
-                "Klik op 'Update nu' in het menu om de nieuwste versie te downloaden."
+                parent, "Nieuwe versie beschikbaar",
+                f"Je gebruikt {current_version}, nieuwste is {remote_version}.\n"
+                f"Klik op 'Update nu' om te downloaden."
             )
+        return is_newer
     except Exception as e:
         print(f"[update-check] Mislukt: {e}")
         if callback:
             callback(False)
-
+        return False
 
 def download_latest_release(parent=None):
     try:
-        response = requests.get(CONTENTS_API_URL, headers=HEADERS, timeout=5)
-        if response.status_code != 200:
-            raise Exception(f"Kan inhoud niet ophalen van GitHub. Status: {response.status_code}")
-
-        files = response.json()
-        exe_files = [f for f in files if f["name"].lower().endswith(".exe")]
-
-        versioned_files = []
-        for f in exe_files:
-            version = extract_version_from_filename(f["name"])
-            if version is not None:
-                versioned_files.append((version, f["download_url"]))
-
-        if not versioned_files:
-            QMessageBox.warning(parent, "Geen update gevonden", "Er is geen .exe-bestand met een geldige versie gevonden.")
-            return
-
-        versioned_files.sort(reverse=True, key=lambda x: x[0])
-        latest_url = versioned_files[0][1]
-
-        QMessageBox.information(parent, "Update beschikbaar", "De nieuwste versie wordt geopend in je browser.")
-        webbrowser.open(latest_url)
-
+        txt = _fetch_version_txt()
+        version, url = _parse_version_file(txt)
+        if not url:
+            url = _asset_url(version)
+        QMessageBox.information(parent, "Update", "De nieuwste installer wordt geopend in je browser.")
+        webbrowser.open(url)
     except Exception as e:
         QMessageBox.critical(parent, "Fout bij download", str(e))

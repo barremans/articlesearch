@@ -1,5 +1,47 @@
 # 📝 Changelog
 
+
+## [7.0.3] - 2025-09-17
+### Fixed
+- 🐞 **Updater-fix**: het updatemechanisme hersteld zodat de applicatie opnieuw correct de **remote versie** ophaalt via `version.txt` in de repository.
+- De `version.txt` wordt nu automatisch aangevuld met de **volledige download-URL** bij publicatie.
+- Hierdoor detecteert de app opnieuw correct of een **nieuwere versie beschikbaar** is en wordt de **"Update nu"-knop** correct geactiveerd.
+
+
+
+## [7.0.2] - 2025-09-17
+### Changed
+- Publicatieproces herwerkt: installateurs (.exe-bestanden) worden niet langer rechtstreeks in de repository opgeslagen, maar als **assets bij GitHub Releases**.
+- `version.txt` bevat nu naast het versienummer ook de **volledige download-URL** van de meest recente installer.
+- Toegevoegd `.gitignore` om `.exe`-bestanden uit de repository te houden en zo de repository slank te houden.
+
+## [V7.0.1] - 2025-09-16
+### 💳 Credit Control – lijsten & pop-ups
+- **Altijd links uitlijnen** in álle tabellen (lijsten + pop-ups), ongeacht datatype.
+- **NL-kopteksten/vertalingen** toegevoegd in lijsten en pop-ups (o.a. *Bestelnr, Leveringsnr, Datum, Vervaldatum, BTW, Munt, Openstaand*, …).
+- **Datumnotatie**: alle datumvelden automatisch naar **dd/mm/jjjj**. Ondersteunt ISO (`YYYY-MM-DD[THH:MM:SS]`) en SAP `/Date(ms)/`.
+- **DocEntry verborgen** in lijsten (ODPI/OINV/ORIN); blijft wel beschikbaar in row-payload voor doorklik.
+- **Vrije tekst (FreeTxt/LineMemo)**:
+  - **Orders (ORDRL), Facturen (INV1), Kredietnota’s (RIN1)** → **vrije tekst als kolom** in de grid. Het aparte tekstvlak is verwijderd.
+  - **Leveringen (DNL1)** → **geen vrije tekst**: tekstvlak verwijderd en geen FreeTxt-kolom.
+  - **Voorschotten (DPI1)** → vrije tekst als **kolom** (indien aanwezig in de data).
+- **Datums in headers** van pop-up dialogen geformatteerd naar **dd/mm/jjjj**.
+- **Dubbelklik-gedrag** blijft werken na sorteren; row-payload blijft vast aan kolom 0 via `Qt.UserRole`.
+- 🐞 **Bugfix**: ontbrekende `snapshot()` in `CreditControlListsTab` toegevoegd (verhinderde `AttributeError` bij `show_after_unlock`).
+
+### 📄 Aangepaste/belangrijke bestanden (versieheaders in code)
+- `ui_bp_cc_lists_tab.py` — **V7.1.0** (links uitlijnen, datums, vertalingen, DocEntry verbergen, payload & dblclick)
+- `ui_bp_cc_ordrl_dialog.py` — **V7.0.1** (FreeTxt als kolom, NL-headers, links uitlijnen)
+- `ui_bp_cc_inv1_dialog.py` — **V7.0.1** (FreeTxt als kolom, NL-headers, links uitlijnen, datum header)
+- `ui_bp_cc_rin1_dialog.py` — **V7.0.1** (FreeTxt als kolom, NL-headers, links uitlijnen, datum header)
+- `ui_bp_cc_dpi1_dialog.py` — **V7.0.1** (FreeTxt als kolom, NL-headers, links uitlijnen, datum header)
+- `ui_bp_cc_dnl1_dialog.py` — **V7.1.0** (geen FreeTxt-kolom/tekstvlak, NL-headers, links uitlijnen, datum header)
+
+## [7.0.0] - 2025-09-17
+### Added
+- BP (Business Partner)-venster: **vertaling toegevoegd** zodat dit venster nu correct vertaald wordt in de gebruikersinterface.
+
+---
 ## [v6.0.3] - 2025-09-13
 ### ✨ Nieuw: Open Sales/Purchase — Documents
 - Nieuw venster **Open Sales/Purchase — Documents** (menu **Export → Open elements**).
