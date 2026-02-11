@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Peppol error mapping voor UI-vertaling",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "description": "Korte titel voor de fout",
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        ]
+      },
+      "user_message": {
+        "description": "Gebruiksvriendelijke foutboodschap",
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        ]
+      },
+      "severity": {
+        "type": "string",
+        "enum": ["info", "warning", "error"]
+      },
+      "category": {
+        "type": "string"
+      },
+      "user_action": {
+        "type": "string"
+      },
+      "internal_hint": {
+        "type": "string"
+      },
+      "source": {
+        "type": "string"
+      },
+      "since": {
+        "type": "string",
+        "description": "Datum of versie sinds wanneer de fout voorkomt"
+      }
+    },
+    "required": ["user_message"],
+    "additionalProperties": true
+  }
+}

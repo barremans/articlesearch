@@ -1,4 +1,5 @@
 # auth.py
+import requests
 from config import API_CLIENTS, API_ENVIRONMENTS, ENVIRONMENT
 from token_manager import TokenManager
 
@@ -45,3 +46,19 @@ def get_auth_header_bps():
             f"'{ENVIRONMENT}'. Voeg API_CLIENTS['BpS']['{ENVIRONMENT}'] toe in config.py."
         )
     return bps_token.get_auth_header()
+
+
+def can_connect_to_ad() -> bool:
+    """
+    Controleert of de AD-authenticatie (API-login endpoint) bereikbaar is.
+    True = online en AD bereikbaar.
+    False = geen verbinding mogelijk.
+    """
+    try:
+        env = API_ENVIRONMENTS[ENVIRONMENT]
+        base = env["base_url"].rstrip("/")
+        url = f"{base}/api/account/login"
+        resp = requests.options(url, timeout=3, verify=False)
+        return resp.status_code < 500
+    except Exception:
+        return False

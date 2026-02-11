@@ -166,7 +166,7 @@ class HeaderPanel(QWidget):
         self.ofa_c,    self.ofa_v    = add_fin_row("Open facturen:")
         self.odp_c,    self.odp_v    = add_fin_row("Open voorschotten:")
         self.ocn_c,    self.ocn_v    = add_fin_row("Open krediet notes:")
-        self.ocred_c,  self.ocred_v  = add_fin_row("Totaal open waarde:")
+        self.ocred_c,  self.ocred_v  = add_fin_row("RISK voor CGK:")
         self.avail_c,  self.avail_v  = add_fin_row("Beschikbaar krediet:")
         self.stat_c,   self.stat_v   = add_fin_row("Krediet status:")
         self.used_c,   self.used_v   = add_fin_row("% opgebruikte kredit:")
@@ -259,7 +259,17 @@ class HeaderPanel(QWidget):
         self.ofa_v.setText(fmt_num(data.get("TotalOpenInvoices")))
         self.odp_v.setText(fmt_num(data.get("TotalOpenDownPayments")))
         self.ocn_v.setText(fmt_num(data.get("Info_TotalOpenCN")))
-        self.ocred_v.setText(fmt_num(data.get("OpenCredit")))
+        #self.ocred_v.setText(fmt_num(data.get("Risk_For_CGK")))
+        risk_val = data.get("Risk_For_CGK")
+        # Toon waarde
+        self.ocred_v.setText(fmt_num(risk_val))
+
+        # Kleur bij risico > 0
+        if isinstance(risk_val, (int, float)) and risk_val > 0:
+            self.ocred_v.setStyleSheet("background-color: #ffcccc;")  # lichtrood
+        else:
+            self.ocred_v.setStyleSheet("")  # reset naar standaard
+
 
         # Beschikbaar krediet → negatief in rood + vet
         avail = data.get("AvailableCredit")
@@ -268,12 +278,17 @@ class HeaderPanel(QWidget):
         else:
             self.avail_v.setText(fmt_num(avail))
 
-        # Krediet status
-        status = str(data.get("CreditStatus") or "-").strip()
-        if status.lower() == "over limit":
+        # Krediet status (V2)
+        status = str(data.get("CreditStatus") or data.get("CreditLimitStatusText") or "-").strip()
+        risk_color = str(data.get("RiskColorType") or "").upper()
+        is_over = str(data.get("IsCreditLimitExceeded") or "").upper() == "YES"
+
+        if is_over or risk_color == "RED" or "OVER" in status.upper():
+            # Rood + vet
             self.stat_v.setText(f'❗ {rich_html(status, danger=True, bold=True)}')
         else:
             self.stat_v.setText(status)
+
 
         # % opgebruikte krediet
         used = data.get("CreditUsagePercent")

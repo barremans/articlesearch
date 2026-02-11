@@ -1,4 +1,4 @@
-#!C:\searcharticle\.venv\Scripts\python.exe
+#!C:\searcharticle_code\.venv\Scripts\python.exe
 
 ##############################################################################
 #

@@ -1,6 +1,312 @@
 # 📝 Changelog
 
+## [9.0.5] - 2026-02-03
 
+## [9.1.0] - 2026-02-09
+
+### 🔐 Beveiliging & Toegang (Azure AD)
+
+### ✨ Nieuw
+- 🔑 **Verplichte Azure AD-login bij applicatiestart**
+  - De applicatie vereist nu **altijd** een geldige Azure AD-aanmelding vóór de UI wordt opgebouwd.
+  - Geen succesvolle login → **app start niet door**.
+
+- 🚫 **Nieuwe “Geen toegang”-pagina**
+  - Speciaal venster (`ui_no_access.py`) dat wordt getoond wanneer:
+    - de gebruiker geen toegang heeft,
+    - de login wordt geannuleerd,
+    - of de gebruiker geen geldige rechten heeft.
+  - Volledig **meertalig** (NL / EN) via bestaande `translations`.
+
+- 🧭 **Meertalige foutmeldingen**
+  - “Geen toegang”-scherm toont duidelijke uitleg in de ingestelde taal.
+  - Gebruiker krijgt instructie om IT te contacteren indien nodig.
+
+---
+
+### 🛠 Verbeterd
+- 🧠 **Slimmere basis-toegangslogica**
+  - Gebruikers krijgen toegang tot de applicatie als ze:
+    - lid zijn van **`Alle gebruikers`**
+    - **OF** lid zijn van minstens één applicatiegroep:
+      - `CGK-APP-L1`
+      - `CGK-APP-L2`
+      - `CGK-APP-L3`
+      - `CGK-APP-L4`
+      - `CGK-APP-L5`
+  - Dit voorkomt onterechte blokkering van gebruikers met expliciete app-rechten.
+
+- ⏳ **Azure AD login-timeout toegevoegd**
+  - Wanneer de gebruiker:
+    - het browservenster sluit,
+    - niet inlogt,
+    - of te lang wacht,
+  - wordt de login **automatisch afgebroken** (timeout ±30s).
+  - De applicatie blijft **niet meer hangen**.
+
+- 🧱 **Geen race-conditions meer bij opstart**
+  - Asynchrone AD-aanroepen bij startup verwijderd.
+  - Alle toegangscontroles gebeuren **vóór** het hoofdvenster wordt gestart.
+
+---
+
+### 🔒 Security
+- ❌ Geen toegang voor:
+  - externe Azure AD tenants,
+  - gastgebruikers zonder CGK-appgroepen,
+  - persoonlijke Microsoft-accounts,
+  - gebruikers zonder basisrechten.
+- ✅ Bestaande rechtenstructuur (L1–L5, Finance, enz.) blijft volledig behouden.
+- 🔐 Tokens en API-calls worden **pas** uitgevoerd na succesvolle toegang.
+
+---
+
+### 🧪 Getest
+- ✅ Succesvolle login (CGK gebruiker).
+- ✅ Gebruiker alleen in `CGK-APP-L1`.
+- ❌ Login geannuleerd in browser.
+- ❌ Externe Azure AD gebruiker.
+- ❌ Gast zonder app-rechten.
+- ❌ Time-out zonder gebruikersinteractie.
+
+---
+
+### ✨ Nieuw
+- ⏱️ **Urenregistratie Downloader + Verwerker – verbeterde bestandsselectie**
+  - Bestanden uit SharePoint worden nu **gesorteerd op wijzigingsdatum**  
+    (**jongste eerst**, gebaseerd op `TimeLastModified`).
+  - **Zoekfilter toegevoegd** boven de bestandslijst:
+    - Live filtering op bestandsnaam en datum.
+    - Geen extra SharePoint-calls nodig (client-side filtering).
+  - Nieuwe optie **“Toon alle bestanden”**:
+    - Standaard worden enkel de **5 meest recente** bestanden getoond.
+    - Checkbox maakt het mogelijk om **de volledige lijst** zichtbaar te maken.
+    - Zoekfilter werkt correct in beide modi (Top 5 / Alles).
+
+---
+
+### 🛠 Verbeterd
+- **Gebruiksvriendelijkheid**
+  - Overzichtelijkere bestandslijst met focus op recente weken.
+  - Sneller navigeren in omgevingen met veel historische Excel-bestanden.
+- **Technische structuur**
+  - Bestandsmetadata (naam, grootte, datum) intern opgesplitst i.p.v. string-sortering.
+  - Robuustere datumverwerking bij ontbrekende of ongeldige SharePoint-metadata.
+- **GUI-interactie**
+  - Dynamische hertekening van de lijst bij zoeken of wisselen van weergavemodus.
+  - Consistente werking bij verversen van de lijst.
+
+---
+
+## [9.0.4] - 2025-12-11
+- Patch Timings
+
+
+## [9.0.3] - 2025-12-04
+
+### ✨ Nieuw
+- 🧮 **Tools – volledig nieuw menu**
+- Nieuw beveiligd venster met diverse tools
+- artikel search
+  - rechts klik actie toegevoegd
+    - keuze uit 
+      - copy veld
+      - copy rij
+
+
+## [9.0.0] - 2025-12-04
+
+### ✨ Nieuw
+- 🧮 **Credit Control (CC BP) – volledig nieuw venster**
+  - Nieuw beveiligd venster `ui_CcBP.py` toegevoegd aan het hoofdmenu  
+    (**Export → Open Credit Control (CC BP)**).
+  - Bevat nu:
+    - ✅ Filters, groepering en sortering  
+    - ✅ Selectiebeheer (➕ toevoegen, 📋 tonen, ❌ leegmaken, ⬇️ exporteren)  
+    - ✅ Dubbelklik op klant → filterweergave  
+    - ✅ Delete / Ctrl + D → reset filters  
+    - ✅ Export naar Excel met automatische kolombreedte  
+    - ✅ Dynamische kleurcodering voor **Risicokleur** en **Risicocategorie**  
+    - ✅ Visuele markering voor “Over kredietlimiet” (rood/groen)
+  - Exporteert selectie of volledige dataset automatisch naar `~/Downloads` met datumstempel.
+
+- 🔐 **Azure AD-integratie**
+  - Controleert of de gebruiker lid is van **Azure AD-groep `GPP_Finance`**.  
+  - Geen toegang → melding en automatisch sluiten.  
+  - Volledige integratie via `permissions_azure.py`.
+
+- 🔄 **Integratie met hoofdvenster (`ui_main.py`)**
+  - Nieuw menu-item onder **Export** voor Credit Control.  
+  - Alleen beschikbaar in **online modus** (`OFFLINE_MODE = False`).  
+  - Foutafhandeling via `QMessageBox`.  
+  - Toegevoegd aan `self.docs_windows` voor centraal vensterbeheer.
+
+- ⚙️ **Nieuwe hulpfunctie `_open_ccbp_window()`**
+  - Toegevoegd aan `MainWindow` voor veilige, consistente toegang.  
+  - Zelfde logica als `_open_docs_window()`.  
+  - Toont waarschuwing bij offline gebruik.
+
+- 💾 **Excel-export 2.0**
+  - Ondersteunt volledige dataset én selectie-export.  
+  - Inclusief automatische kolombreedte, datumformaat `dd-mm-yyyy` en timestamp-bestandsnaam.  
+  - Bestanden worden automatisch opgeslagen in de `Downloads`-map.
+
+---
+
+### 🛠 Verbeterd
+- **Hoofdapplicatie (`ui_main.py`)**
+  - Code opgeschoond en menu’s geherstructureerd.  
+  - Consistente logica voor alle exportmodules.  
+  - Offline-indicator blijft zichtbaar in menubalk.
+
+- **Credit Control-logica (`ui_CcBP.py`)**
+  - API-aanroepen via `ThreadPoolExecutor` (geen UI-blokkering).  
+  - Betere foutafhandeling met `api_success` / `api_error`-signalen.  
+  - `prepare_dataframe()` normaliseert kolomnamen voor uniforme weergave.
+
+- **Beveiliging**
+  - AD-authenticatie en groepcontrole uitgevoerd vóór UI-opbouw.  
+  - Offlinegebruikers krijgen duidelijke melding i.p.v. crash.
+
+- **Gebruikerservaring**
+  - Minimale grootte 1300×750 px.  
+  - Kolommen resizen automatisch na laden of sorteren.  
+  - Intuïtieve knoppen met emoji (➕ ❌ 📋 ⬇️).  
+  - Statuslabel toont steeds aantal resultaten of geselecteerde klant.
+
+---
+
+### 💄 Visuele verbeteringen
+- **Kleurcodering voor risico’s**
+  - 🟢 LOW / GREEN  
+  - 🟡 MEDIUM / YELLOW  
+  - 🟠 HIGH / AMBER  
+  - 🔴 CRITICAL / RED
+- **Geselecteerde klanten** → lichtgroene markering.  
+- **Filters en opties** hergroepeerd in drie secties:
+  1. Hoofdcriteria  
+  2. Extra opties  
+  3. Selectiebeheer  
+- Uniforme stijl met accentkleuren en strakke layouts.
+
+---
+
+### 🧩 Technisch
+- Nieuwe bestanden:
+  - `ui_CcBP.py` – hoofdvenster Credit Control  
+  - `ui_CcBP_helper.py` – data-preprocessing en formattering
+- Gewijzigd:
+  - `ui_main.py` – menu-integratie en AD-controle  
+  - `config.py` – ondersteuning voor `OFFLINE_MODE`
+- Bibliotheken: `pandas`, `requests`, `openpyxl`.  
+- Thread-safe signalering voor API-verwerking.
+
+---
+
+### 🧪 Getest
+- ✅ Gevalideerd op **test** en **live** omgeving.  
+- ✅ Meerdere `ConfigurationID`s getest voor API-consistentie.  
+- ✅ Excel-export en selectiebeheer getest.  
+- ✅ Offline- en AD-scenario’s succesvol gesimuleerd.
+
+---
+
+### 🔜 Volgende stappen
+- 📊 Credit Risk Summary-tab met grafieken.  
+- 🧾 PDF-export voor klantensamenvattingen.  
+- 🧠 AI-analyse voor hoog-risico klanten (over limiet).
+
+---
+
+---
+## [8.0.1] - 2025-11-26
+    - Bugfix *.md files
+---
+## [8.0.0] - 2025-11-26
+
+### ✨ Nieuw
+- 🧾 **Project Info-venster uitgebreid**
+  - Toegevoegd: **intelligente sortering** in tabbladen:
+    - Aankooporders (type `12`) worden **bovenaan** geplaatst.
+    - Documenten met status **“IN PROGRESS”** komen direct onder de aankooporders.
+    - Overige documenten volgen daaronder.
+  - **Kleuraccenten toegevoegd:**
+    - Aankooporders (`type 12`) krijgen een **groene achtergrond**.
+    - Documenten met status **OPEN** of **IN PROGRESS** worden **rood gemarkeerd** voor duidelijkheid.
+  - Sortering geldt nu zowel in:
+    - 📄 **PRJ Art. (VTA)** tab  
+    - 🧰 **Installaties** tab
+  - Verbeterde herkenning van statusvelden via **diepzoekfunctie** — statuswaarden worden nu correct gevonden, ongeacht of ze op hoofd- of subniveau staan (zoals in `POR`, `LART`, enz.).
+
+- 🖱️ **Dubbelklikfunctionaliteit toegevoegd**
+  - In de tabbladen **Artikels (ART)**, **Installaties** en **PRJ Art. (VTA)** kan je nu dubbelklikken op een artikelnummer om het **detailvenster (ui_detail.py)** direct te openen.
+  - Het detailvenster toont automatisch alle informatie over het gekozen artikel (LISA, SAP, logistiek, aankopen, verkoop, afbeeldingen, …).
+  - Venster opent bovenop het projectscherm en blijft actief tot sluiten.
+
+- ⚠️ **Geen voorraadmelding toegevoegd**
+  - Wanneer de gebruiker zoekt met **Search-type = "Standaard"** en **Toon voorraad = "S"**,  
+    wordt nu een duidelijke melding getoond als **geen voorraad beschikbaar** is voor de opgegeven zoekterm.
+  - De tabel toont in dat geval één rij met de melding *“⚠️ Geen voorraad aanwezig voor deze zoekterm.”*
+  - Er verschijnt tevens een pop-upmelding om de gebruiker onmiddellijk te informeren.
+  - De statusbalk toont: `Aantal resultaten: 0 (geen voorraad)`.
+
+- 🧑‍🤝‍🧑 **Nieuw icoon toegevoegd voor Business Partner**
+  - In `ui_bp.py` wordt nu het icoon `bp.png` gebruikt als **venstericoon** in de titelbalk.
+  - Het icoon wordt tevens weergegeven naast het label **“Partner:”** in de zoekbalk.
+  - Zorgt voor visuele herkenbaarheid tussen modules (`BP`, `PO`, `VTA`, `PRJ`, …).
+
+---
+
+### 🛠 Verbeterd
+- Betere stabiliteit bij het openen van **documentvensters** (`PO` en `VTA`) via dubbelklik.
+- Verbeterde weergave en consistentie van kolommen tussen tabbladen.
+- Kleine optimalisaties in de UI-layout en sorteerlogica.
+- Vensterpositie en focus worden nu correct behouden bij het openen van subvensters (zoals `ui_detail.py`).
+- Business Partner-venster (`ui_bp.py`) geoptimaliseerd voor consistente icoonweergave.
+
+---
+
+### 💄 Visuele verbeteringen
+- De melding in de tabel is **gecentreerd en geel gemarkeerd**, zodat ze duidelijk opvalt.
+- Spinner en laadindicator worden netjes gestopt zodra de melding verschijnt.
+- Subvensters openen nu altijd **bovenop** en met een consistente stijl (uit `assets/css/detail.qss`).
+- Nieuw `bp.png`-icoon volgt dezelfde visuele stijl als andere module-iconen.
+
+---
+
+
+## [7.2.0] - 2025-11-25
+### ✨ Nieuw
+- 🔍 **VTA-integratie uitgebreid**
+  - Nieuw zoektype **"VTA"** toegevoegd aan het hoofdzoekvenster.
+  - Direct openen van het **VTA-venster (ui_vta.py)** bij zoekopdrachten van type “VTA”.
+  - Automatisch invullen van het ingegeven VTA-nummer en ophalen van de data bij openen.
+  - Zoekveld wordt automatisch **leeggemaakt en focus hersteld** na het openen.
+
+- ⚙️ **Instellingen uitgebreid**
+  - Nieuw keuzemenu in **Instellingen → Standaard zoektype**: nu ook optie **“VTA”**.
+  - Gebruikers kunnen hun **voorkeurszoektype** (Standaard / Project / BP / VTA) opslaan in `settings.json`.
+  - Ondersteuning voor **BP Type (default)** toegevoegd (`""`, `"C"`, `"S"`).
+  - `settings.py` uitgebreid met validatie voor `"VTA"` in `load_default_search_type()` en `save_default_search_type()`.
+
+- 🧭 **UI & navigatie**
+  - VTA-venster opent **niet-modale** (onafhankelijke) vensters voor parallel gebruik.
+  - Ctrl + D toegevoegd voor **Delete & focus** functionaliteit in `ui_vta.py`.
+  - **Zoekbalk** in hoofdvenster wordt automatisch leeggemaakt na openen van VTA-venster.
+
+- 🎨 **Kleuren in VTA-tabel**
+  - Kolom **Status** krijgt dynamische kleuren:
+    - 🔴 Rood met witte tekst bij “Open > 0”.
+    - 🟢 Groen met zwarte tekst bij status “COMPLETE”.
+
+### 🧰 Technisch
+- Nieuwe functies in `settings.py`:
+  - `save_default_search_type()` en `load_default_search_type()` ondersteunen nu `"VTA"`.
+- `settings_dialog.py` bijgewerkt om `"VTA"` in het dropdownmenu te tonen.
+- `ui_main.py` herwerkt om VTA-flow correct te openen, inclusief focus- en vensterbeheer.
+- Verbeterde compatibiliteit tussen **ui_main** en **ui_vta** bij directe of indirecte opening.
+
+---
 ## [7.0.3] - 2025-09-17
 ### Fixed
 - 🐞 **Updater-fix**: het updatemechanisme hersteld zodat de applicatie opnieuw correct de **remote versie** ophaalt via `version.txt` in de repository.

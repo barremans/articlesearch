@@ -36,7 +36,7 @@ def show_settings_dialog(parent):
 
     # Standaard zoektype (nu met BP)
     search_type_default = QComboBox()
-    search_type_default.addItems(["Standaard", "Project", "BP"])
+    search_type_default.addItems(["Standaard", "Project", "BP", "VTA"])
     search_type_default.setCurrentText(load_default_search_type())
     
     # Taal

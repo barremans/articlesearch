@@ -11,6 +11,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtCore import Qt, Signal, Slot
 
+from PySide6.QtGui import QIcon
+import os
+
 from bp_token import get_auth_header
 # get_auth_header() levert je Authorization header
 from config import API_ENVIRONMENTS, ENVIRONMENT
@@ -35,6 +38,7 @@ class BpWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Business Partner")
+        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "assets", "bp.png")))
         self.setContentsMargins(6, 6, 6, 6)
 
         self.results: list[dict] = []
@@ -50,20 +54,32 @@ class BpWindow(QWidget):
 
         # ---------- Zoek-regel 1 ----------
         row1 = QHBoxLayout(); row1.setSpacing(8)
+
+        # 🧑‍🤝‍🧑 Partner-icoon + label
+        icon_label = QLabel()
+        icon_path = os.path.join(os.path.dirname(__file__), "assets", "bp.png")
+        icon_label.setPixmap(QIcon(icon_path).pixmap(20, 20))
+        icon_label.setToolTip("Business Partner")
+
+        text_label = QLabel("<b>Partner:</b>")
+
         self.zoekterm_input = QLineEdit("K05036")
         self.zoekterm_input.setPlaceholderText("bv. K05036")
-        row1.addWidget(QLabel("Zoekterm (@zoekterm):"))
+
+        row1.addWidget(icon_label)
+        row1.addWidget(text_label)
         row1.addWidget(self.zoekterm_input, 1)
         root.addLayout(row1)
+
 
         # ---------- Zoek-regel 2 ----------
         row2 = QHBoxLayout(); row2.setSpacing(8)
         self.mode_input = QLineEdit(); self.mode_input.setPlaceholderText("leeg laten"); self.mode_input.setFixedWidth(140)
         self.type_input = QLineEdit(); self.type_input.setPlaceholderText("leeg laten"); self.type_input.setFixedWidth(140)
         self.btn_fetch = QPushButton("Ophalen"); self.btn_fetch.setFixedWidth(110); self.btn_fetch.clicked.connect(self.load_data)
-        row2.addWidget(QLabel("Mode (@mode):")); row2.addWidget(self.mode_input)
+        row2.addWidget(QLabel("Mode (And, Or):")); row2.addWidget(self.mode_input)
         row2.addSpacing(12)
-        row2.addWidget(QLabel("Type (@type):")); row2.addWidget(self.type_input)
+        row2.addWidget(QLabel("Type (C, S, ''):")); row2.addWidget(self.type_input)
         row2.addSpacing(12)
         row2.addWidget(self.btn_fetch)
         row2.addStretch(1)

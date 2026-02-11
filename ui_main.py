@@ -1,9 +1,11 @@
-# ui_main.py
+# ui_main.py 05022026_001
 import os
 import sys
-import json  # <-- toegevoegd
+import json
 import logging
 import markdown
+
+from permissions_azure import list_user_groups, user_in_azure_group
 
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -12,7 +14,7 @@ from PySide6.QtWidgets import (
     QDialog, QStatusBar, QMenu, QApplication,
     QHeaderView, QInputDialog, QCheckBox, QTextBrowser, QSizePolicy,
     QAbstractItemView, QTextEdit, QFileDialog,
-    QGridLayout, QSpacerItem
+    QGridLayout
 )
 from PySide6.QtGui import QShortcut, QKeySequence, QMovie, QIcon
 from PySide6.QtCore import QEvent, Qt, QPoint, QTimer, QFileSystemWatcher, QMimeData
@@ -24,10 +26,8 @@ from settings import (
     load_environment, save_environment,
     load_show_stock, save_show_stock,
     load_detail_modal, save_detail_modal,
-    load_main_qss_path, load_detail_qss_path, load_upload_qss_path,
     load_default_search_type, save_default_search_type,
-    load_language,
-    load_bp_default_type, save_bp_default_type  # <-- NIEUW
+    load_language, load_bp_default_type, save_bp_default_type
 )
 from label.label_generator import generate_label
 from label.label_settings_dialog import LabelSettingsDialog
@@ -38,24 +38,18 @@ from github_cases import show_github_cases
 from file_editor_dialog import FileEditorDialog
 from help_dialogs import show_help_dialog
 from settings_dialog import show_settings_dialog
-
 from translations import get_labels
-
-# JSON-viewer voor project/BP (Project gebruikt dit venster)
 from project_ui import ProjectWindow
-
+from ui_bp import BpWindow
+from ui_docs import DocsWindow
+from ui_vta import PoWidget
+from ui_CcBP import CreditControlWindow
+from ui_peppol import PepWidget  # ✅ NIEUW: Peppol check venster
+from config import OFFLINE_MODE
 from settings import load_column_headers_s, load_column_headers_default
 
-# ---- NIEUW: BP detailvenster
-from ui_bp import BpWindow
-# ---- NIEUW: Export/Elements venster
-from ui_docs import DocsWindow  # <-- toegevoegd
 
-# Dynamische kolomheaders laden uit settings
-COLUMN_HEADERS_S = load_column_headers_s()
-COLUMN_HEADERS_DEFAULT = load_column_headers_default()
-
-# Logging voor UI
+# ---- Logging ----
 logger = logging.getLogger("ArticleSearch.UI")
 if not logger.handlers:
     handler = logging.StreamHandler()
@@ -64,19 +58,36 @@ if not logger.handlers:
     logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
+COLUMN_HEADERS_S = load_column_headers_s()
+COLUMN_HEADERS_DEFAULT = load_column_headers_default()
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        
-        labels = get_labels(load_language())
-        
-        self.collected_data = []
+
+        # ✅ voorkomt crash bij moveEvent
         self.detail_windows = []
         self.upload_windows = []
+        self.bp_windows = []
+        self.docs_windows = []
         self.project_window = None
-        self.bp_windows = []   # <-- BP vensters bijhouden
-        self.docs_windows = [] # <-- NIEUW: Docs/Elements vensters bijhouden
+        self.collected_data = []
+
+        # ✅ NIEUW: Peppol windows bijhouden zodat ze niet verdwijnen
+        self.pep_windows = []
+
+        # ✅ Azure AD initialisatie
+        try:
+            _ = list_user_groups()
+            print("[AD] Azure AD module geladen (groepen worden later opgehaald).")
+        except Exception as e:
+            print(f"[AD] ⚠️ Fout bij initialisatie Azure AD: {e}")
+
+        # -----------------------
+        # UI setup
+        # -----------------------
+        labels = get_labels(load_language())
         self.setStatusBar(QStatusBar(self))
 
         QTimer.singleShot(1000, lambda: check_for_update(__version__, self))
@@ -95,7 +106,7 @@ class MainWindow(QMainWindow):
                 self.setStyleSheet(f.read())
 
         base_css = os.path.join(os.path.dirname(__file__), "assets", "css")
-        self._style_qss  = os.path.join(base_css, "style.qss")
+        self._style_qss = os.path.join(base_css, "style.qss")
         self._detail_qss = os.path.join(base_css, "detail.qss")
         self._upload_qss = os.path.join(base_css, "upload.qss")
 
@@ -120,11 +131,54 @@ class MainWindow(QMainWindow):
         self.installEventFilter(self)
         self.input_field.installEventFilter(self)
 
-    # ---------------- UI OPBOUW ----------------
+    # ---------- OVERRIDES ----------
+    def moveEvent(self, event):
+        super().moveEvent(event)
+        for dlg in getattr(self, "detail_windows", []):
+            try:
+                if dlg.isVisible():
+                    self._reposition_detail(dlg)
+            except Exception:
+                pass
 
-    def _enable_update_button(self, is_update_available: bool):
-        if hasattr(self, 'update_btn') and self.update_btn:
-            self.update_btn.setEnabled(is_update_available)
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        for dlg in getattr(self, "detail_windows", []):
+            try:
+                if dlg.isVisible():
+                    self._reposition_detail(dlg)
+            except Exception:
+                pass
+
+    # ---------- QSS Reload ----------
+    def _on_qss_file_changed(self, path: str):
+        """Herlaadt gewijzigde QSS-bestanden."""
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                qss = f.read()
+        except Exception:
+            QTimer.singleShot(500, lambda: self._retry_reload(path))
+            return
+
+        if path == self._style_qss:
+            self.setStyleSheet(qss)
+        elif path == self._detail_qss:
+            for dlg in self.detail_windows:
+                dlg.setStyleSheet(qss)
+        elif path == self._upload_qss:
+            for uw in self.upload_windows:
+                uw.setStyleSheet(qss)
+
+    def _retry_reload(self, path: str):
+        if os.path.exists(path):
+            self._on_qss_file_changed(path)
+
+    # ---------- Basis UI ----------
+    def _center_window(self):
+        frame = self.frameGeometry()
+        center = self.screen().availableGeometry().center()
+        frame.moveCenter(center)
+        self.move(frame.topLeft())
 
     def _create_menu_bar(self):
         menubar = self.menuBar()
@@ -140,9 +194,17 @@ class MainWindow(QMainWindow):
         settings_menu.addAction("✏️ Bewerk detail.qss").triggered.connect(self._open_detail_qss_editor)
         settings_menu.addAction("✏️ Bewerk upload.qss").triggered.connect(self._open_upload_qss_editor)
 
-        # ---- NIEUW: Export-menu
         export_menu = menubar.addMenu("&Export")
         export_menu.addAction("Open &Elements").triggered.connect(self._open_docs_window)
+        export_menu.addAction("Open Credit Control (CC BP)").triggered.connect(self._open_ccbp_window)
+        export_menu.addSeparator()
+
+        # --- Tools ---
+        tools_menu = menubar.addMenu("&Tools")
+        tools_menu.addAction("🕒 Timings (urenregistratie)").triggered.connect(self._open_timings_window)
+
+        # ✅ NIEUW: Peppol check
+        tools_menu.addAction("📨 Peppol check").triggered.connect(self._open_peppol_check_window)
 
         report_menu = menubar.addMenu("&Rapporteren")
         report_menu.addAction("🐞 &Bug of feature melden...").triggered.connect(self._show_bug_report_dialog)
@@ -151,9 +213,16 @@ class MainWindow(QMainWindow):
 
         help_menu = menubar.addMenu("&Help")
         help_menu.addAction("&Help").triggered.connect(lambda: show_help_dialog(self))
-        settings_menu.addSeparator()
         help_menu.addAction("&Over...").triggered.connect(self._show_about_dialog)
         help_menu.addAction("📄 &Changelog...").triggered.connect(self._show_changelog_dialog)
+
+        if OFFLINE_MODE:
+            offline_label = QLabel(" OFFLINE ")
+            offline_label.setStyleSheet(
+                "color: white; background-color: #c0392b; font-weight: bold; "
+                "border-radius: 4px; padding: 2px 8px; margin-right: 10px;"
+            )
+            menubar.setCornerWidget(offline_label, Qt.TopRightCorner)
 
     def _create_main_layout(self):
         self.input_field = QLineEdit()
@@ -162,7 +231,7 @@ class MainWindow(QMainWindow):
         )
 
         self.search_type_select = QComboBox()
-        self.search_type_select.addItems(["Standaard", "Project", "BP"])
+        self.search_type_select.addItems(["Artikel", "Project", "BP", "VTA"])
         self.search_type_select.setCurrentText(load_default_search_type())
         self.search_type_select.currentTextChanged.connect(self._toggle_fields_by_search_type)
         self.search_type_select.currentTextChanged.connect(self._update_input_tooltip)
@@ -183,10 +252,12 @@ class MainWindow(QMainWindow):
 
         self.search_button = QPushButton("Zoeken")
         self.search_button.clicked.connect(self.perform_search)
-
         self.table = QTableWidget()
         self.table.itemDoubleClicked.connect(self.handle_row_double_click)
-        self.collect_button  = QPushButton("Voeg toe aan lijst")
+        # ➕ Rechterklik-copy activeren
+        self._add_context_menu_to_table()
+
+        self.collect_button = QPushButton("Voeg toe aan lijst")
         self.clear_collected_button = QPushButton("Leeg lijst")
         self.show_list_button = QPushButton("Toon lijst")
         self.select_all_checkbox = QCheckBox("Selecteer alles")
@@ -217,18 +288,18 @@ class MainWindow(QMainWindow):
         search_type_label = QLabel("Search-type:")
 
         grid.addWidget(self.input_field, 0, 1, 1, 2)
-        grid.addWidget(zoekterm_label,     0, 0, Qt.AlignRight | Qt.AlignVCenter)
-        grid.addWidget(self.input_field,   0, 1, 1, 2)
+        grid.addWidget(zoekterm_label, 0, 0, Qt.AlignRight | Qt.AlignVCenter)
+        grid.addWidget(self.input_field, 0, 1, 1, 2)
 
-        grid.addWidget(search_type_label,  1, 0, Qt.AlignRight | Qt.AlignVCenter)
+        grid.addWidget(search_type_label, 1, 0, Qt.AlignRight | Qt.AlignVCenter)
         grid.addWidget(self.search_type_select, 1, 1)
 
-        grid.addWidget(self.mode_label,    2, 0, Qt.AlignRight | Qt.AlignVCenter)
-        grid.addWidget(self.mode_select,   2, 1)
+        grid.addWidget(self.mode_label, 2, 0, Qt.AlignRight | Qt.AlignVCenter)
+        grid.addWidget(self.mode_select, 2, 1)
 
-        grid.addWidget(self.stock_label,   3, 0, Qt.AlignRight | Qt.AlignVCenter)
+        grid.addWidget(self.stock_label, 3, 0, Qt.AlignRight | Qt.AlignVCenter)
         grid.addWidget(self.show_stock_select, 3, 1)
-        
+
         self._update_input_tooltip(self.search_type_select.currentText())
         self._toggle_fields_by_search_type(self.search_type_select.currentText())
 
@@ -254,10 +325,9 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     # --------------- ZOEKACTIE & TABELLEN ----------------
-
     def perform_search(self):
-        zoekterm   = self.input_field.text().strip()
-        mode       = self.mode_select.currentText()
+        zoekterm = self.input_field.text().strip()
+        mode = self.mode_select.currentText()
         searchtype = self.search_type_select.currentText()
 
         self.result_count_label.setText("Aantal resultaten: 0")
@@ -271,14 +341,52 @@ class MainWindow(QMainWindow):
         self.loading_movie.start()
         QApplication.processEvents()
 
+        # --- Nieuw: VTA ---
+        is_vta = (searchtype == "VTA")
         is_project = (searchtype == "Project")
-        is_bp      = (searchtype == "BP")
+        is_bp = (searchtype == "BP")
+
+        # --- Als VTA, open direct ui_vta ---
+        if is_vta:
+            try:
+                from ui_vta import PoWidget
+                vta_window = PoWidget()
+
+                # ✅ Belangrijk: maak het volledig onafhankelijk van het hoofdvenster
+                vta_window.setParent(None)
+                vta_window.setWindowModality(Qt.NonModal)
+                vta_window.setWindowFlag(Qt.Window, True)
+
+                vta_window.show()
+                vta_window.activateWindow()
+                vta_window.raise_()
+
+                # 🔹 VTA-nummer invullen en automatisch ophalen
+                vta_window.po_input.setText(zoekterm)
+                vta_window.load_data()
+
+                # 🔹 Toevoegen aan actieve vensterslijst
+                self.detail_windows.append(vta_window)
+
+                # 🔹 Zoekveld in hoofdvenster leegmaken + focus terug
+                self.input_field.clear()
+                self.input_field.setFocus()
+
+            except Exception as e:
+                QMessageBox.critical(self, "Fout", f"Kon VTA-venster niet openen:\n{e}")
+            finally:
+                self.loading_movie.stop()
+                self.loading_spinner.hide()
+            return
+
         request_kind = "project" if is_project else ("bp" if is_bp else "data")
 
         # Voor BP gebruiken we dezelfde combobox voor Type
         bp_type = self.show_stock_select.currentText() if is_bp else ""
 
-        logger.info(f"Zoekactie: type={searchtype} | kind={request_kind} | term='{zoekterm}' | mode='{mode}' | bp_type='{bp_type}'")
+        logger.info(
+            f"Zoekactie: type={searchtype} | kind={request_kind} | term='{zoekterm}' | mode='{mode}' | bp_type='{bp_type}'"
+        )
 
         try:
             data = send_data_request(
@@ -289,9 +397,32 @@ class MainWindow(QMainWindow):
                 kind=request_kind,
                 bp_type=bp_type
             )
+            # --- ✅ Controle op lege resultaten bij Standaard + Toon voorraad = S ---
+            show_stock = self.show_stock_select.currentText()
+            if searchtype == "Standaard" and show_stock == "S" and (not data or len(data) == 0):
+                self.table.setRowCount(0)
+                self.table.setColumnCount(1)
+                self.table.setHorizontalHeaderLabels(["Geen voorraad"])
+                self.table.insertRow(0)
+
+                no_stock_item = QTableWidgetItem("⚠️ Geen voorraad aanwezig voor deze zoekterm.")
+                no_stock_item.setTextAlignment(Qt.AlignCenter)
+                no_stock_item.setForeground(Qt.darkYellow)
+                self.table.setItem(0, 0, no_stock_item)
+
+                self.result_count_label.setText("Aantal resultaten: 0 (geen voorraad)")
+                QMessageBox.information(
+                    self,
+                    "Geen voorraad",
+                    "⚠️ Er is geen voorraad aanwezig voor de opgegeven zoekterm."
+                )
+
+                self.loading_movie.stop()
+                self.loading_spinner.hide()
+                return
+
         except Exception as e:
             err_msg = str(e)
-            # Fout zichtbaar in tabel
             self.table.clearSelection()
             self.table.setRowCount(0)
             self.table.setColumnCount(1)
@@ -366,7 +497,7 @@ class MainWindow(QMainWindow):
 
     def populate_bp_table(self, data: list):
         """BP-weergave: alleen CardCode, CardName, FederalTaxID, ContactPerson."""
-        header_labels = ["Selectie", "CardCode", "CardName", "FederalTaxID", "ContactPerson"]
+        header_labels = ["Selectie", "CardCode", "Partner Naam", "BTW-Nbr", "Contact Persoon"]
 
         self.table.setRowCount(len(data))
         self.table.setColumnCount(len(header_labels))
@@ -396,10 +527,10 @@ class MainWindow(QMainWindow):
             checkbox.setFocusPolicy(Qt.NoFocus)
             self.table.setCellWidget(row, 0, checkbox)
 
-            card_code  = str(item.get("CardCode", "") or "")
-            card_name  = str(item.get("CardName", "") or "")
+            card_code = str(item.get("CardCode", "") or "")
+            card_name = str(item.get("CardName", "") or "")
             federal_id = str(item.get("FederalTaxID") or item.get("FedralTaxID") or "")
-            contact    = extract_contact_person(item)
+            contact = extract_contact_person(item)
 
             values = [card_code, card_name, federal_id, contact]
             for col_offset, val in enumerate(values, start=1):
@@ -412,7 +543,6 @@ class MainWindow(QMainWindow):
             self.table.selectRow(0)
 
     # --------------- VERZAMEL / DIALOGEN ----------------
-
     def collect_selected_rows(self):
         aantal_rijen = self.table.rowCount()
         if aantal_rijen == 0:
@@ -535,7 +665,6 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Lijst geleegd", "De verzamelde rijen zijn nu verwijderd en alle vakjes zijn uitgevinkt.")
 
     # --------------- DETAIL / CONTEXTMENU / LABEL ----------------
-
     def handle_row_double_click(self, item):
         search_type = self.search_type_select.currentText()
 
@@ -627,6 +756,36 @@ class MainWindow(QMainWindow):
             elif action and action.text().startswith("🏷️"):
                 self._generate_label()
 
+    # --------------- Contextmenu: Copy cel / rij ---------------
+    def _add_context_menu_to_table(self):
+        """Activeer rechterklik-copy voor de standaard zoekresultatentabel."""
+        self.table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.table.customContextMenuRequested.connect(self._show_copy_menu)
+
+    def _show_copy_menu(self, pos):
+        index = self.table.indexAt(pos)
+        if not index.isValid():
+            return
+
+        row, col = index.row(), index.column()
+        cell = self.table.item(row, col)
+        if not cell:
+            return
+
+        menu = QMenu(self)
+        copy_cell = menu.addAction("📋 Kopieer cel")
+        copy_row = menu.addAction("📋 Kopieer rij")
+        action = menu.exec(self.table.viewport().mapToGlobal(pos))
+
+        if action == copy_cell:
+            QApplication.clipboard().setText(cell.text())
+        elif action == copy_row:
+            row_values = []
+            for c in range(1, self.table.columnCount()):  # sla checkbox over
+                item = self.table.item(row, c)
+                row_values.append(item.text() if item else "")
+            QApplication.clipboard().setText("\t".join(row_values))
+
     def _generate_label(self):
         if self.search_type_select.currentText() == "BP":
             QMessageBox.information(self, "Info", "Label genereren is enkel voor artikels.")
@@ -643,7 +802,6 @@ class MainWindow(QMainWindow):
         generate_label(code, desc, supplier, "00000000")
 
     # --------------- DIVERSE HELPERS / DIALOGEN ----------------
-
     def _show_label_settings_dialog(self):
         dialog = LabelSettingsDialog(self)
         dialog.exec()
@@ -663,12 +821,6 @@ class MainWindow(QMainWindow):
             return True
         return super().eventFilter(obj, event)
 
-    def _center_window(self):
-        frame = self.frameGeometry()
-        center = self.screen().availableGeometry().center()
-        frame.moveCenter(center)
-        self.move(frame.topLeft())
-
     def _choose_environment(self):
         current = load_environment()
         options = ["live", "test"]
@@ -678,19 +830,6 @@ class MainWindow(QMainWindow):
         if ok and selected != current:
             save_environment(selected)
             QMessageBox.information(self, "Herstart vereist", f"Omgeving gewijzigd naar '{selected}'. Gelieve te herstarten.")
-
-    # OVERRIDES zodat DetailWindows mee verplaatsen
-    def moveEvent(self, event):
-        super().moveEvent(event)
-        for dlg in self.detail_windows:
-            if dlg.isVisible():
-                self._reposition_detail(dlg)
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        for dlg in self.detail_windows:
-            if dlg.isVisible():
-                self._reposition_detail(dlg)
 
     def _reposition_detail(self, dlg):
         hoofd_pos = self.pos()
@@ -728,36 +867,12 @@ class MainWindow(QMainWindow):
         dlg = FileEditorDialog(self, path)
         dlg.exec()
 
-    def _open_ui_main_py_editor(self):
-        path = os.path.join(os.path.dirname(__file__), "ui_main.py")
-        if not os.path.exists(path):
-            QMessageBox.warning(self, "Bestand niet gevonden", f"Kan {path} niet vinden.")
-            return
-        dlg = FileEditorDialog(self, path)
-        dlg.exec()
-
-    def _open_ui_detail_py_editor(self):
-        path = os.path.join(os.path.dirname(__file__), "ui_detail.py")
-        if not os.path.exists(path):
-            QMessageBox.warning(self, "Bestand niet gevonden", f"Kan {path} niet vinden.")
-            return
-        dlg = FileEditorDialog(self, path)
-        dlg.exec()
-
-    def _open_ui_upload_py_editor(self):
-        path = os.path.join(os.path.dirname(__file__), "ui_upload.py")
-        if not os.path.exists(path):
-            QMessageBox.warning(self, "Bestand niet gevonden", f"Kan {path} niet vinden.")
-            return
-        dlg = FileEditorDialog(self, path)
-        dlg.exec()
-
     # QSS live-reload
     def _on_qss_file_changed(self, path: str):
         """Herlaadt het gewijzigde .qss-bestand en past het toe."""
         try:
             with open(path, "r", encoding="utf-8") as f:
-                qss = read_qss = f.read()
+                qss = f.read()
         except Exception:
             QTimer.singleShot(500, lambda: self._retry_reload(path))
             return
@@ -780,61 +895,57 @@ class MainWindow(QMainWindow):
     def _show_changelog_dialog(self):
         dialog = QDialog(self)
         dialog.setWindowTitle("Changelog")
-        dialog.resize(800, 600)
+        dialog.resize(900, 650)
 
         layout = QVBoxLayout(dialog)
+
         changelog_view = QTextBrowser()
         changelog_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
+        # --- Bepaal paden ---
         if getattr(sys, "frozen", False):
-            base_dir = sys._MEIPASS
+            base_dir = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+            exe_dir = os.path.dirname(sys.executable)
         else:
             base_dir = os.path.dirname(__file__)
+            exe_dir = base_dir
 
-        changelog_file = os.path.join(base_dir, "docs", "changelog.md")
-        try:
-            with open(changelog_file, "r", encoding="utf-8") as f:
-                html = markdown.markdown(f.read())
-                changelog_view.setHtml(html)
-        except Exception as e:
-            changelog_view.setPlainText(f"Fout bij laden changelog.md:\n{e}")
+        # --- Mogelijke docs-locaties ---
+        possible_docs = [
+            os.path.join(exe_dir, "docs"),                 # PyInstaller output
+            os.path.join(base_dir, "docs"),                # Development
+            os.path.join(os.path.dirname(base_dir), "docs") # fallback
+        ]
+
+        possible_paths = []
+        changelog_file = None
+
+        for folder in possible_docs:
+            candidate = os.path.join(folder, "changelog.md")
+            possible_paths.append(candidate)
+            if os.path.exists(candidate):
+                changelog_file = candidate
+                break
+
+        # --- Badge folder (voor afbeeldingen) ---
+        badges_folder = os.path.join(exe_dir, "assets", "badges")
+        changelog_view.setSearchPaths([badges_folder])
+
+        # --- Markdown verwerken ---
+        if changelog_file:
+            try:
+                with open(changelog_file, "r", encoding="utf-8") as f:
+                    html = markdown.markdown(f.read(), extensions=['tables'])
+                    changelog_view.setHtml(html)
+            except Exception as e:
+                changelog_view.setPlainText(f"❌ Fout bij laden changelog.md:\n{e}")
+        else:
+            changelog_view.setPlainText(
+                "❌ changelog.md niet gevonden.\n\n"
+                "Gezocht in:\n" + "\n".join(possible_paths)
+            )
 
         layout.addWidget(changelog_view)
-        dialog.setLayout(layout)
-        dialog.exec()
-
-    def _show_help_dialog(self):
-        dialog = QDialog(self)
-        dialog.setWindowTitle("Help")
-        dialog.resize(800, 600)
-
-        layout = QVBoxLayout(dialog)
-
-        help_view = QTextBrowser()
-        help_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        if getattr(sys, "frozen", False):
-            base_dir = sys._MEIPASS
-        else:
-            base_dir = os.path.dirname(__file__)
-
-        badges_folder = os.path.join(base_dir, "assets", "badges")
-        help_view.setSearchPaths([badges_folder])
-
-        help_file = os.path.join(base_dir, "docs", "help.md")
-        try:
-            with open(help_file, "r", encoding="utf-8") as f:
-                html = markdown.markdown(f.read())
-                help_view.setHtml(html)
-        except Exception as e:
-            help_view.setPlainText(f"Fout bij laden help.md:\n{e}")
-
-        layout.addWidget(help_view, 1)
-
-        version_label = QLabel(f"Versie: {__version__}")
-        version_label.setAlignment(Qt.AlignRight)
-        layout.addWidget(version_label)
-
         dialog.setLayout(layout)
         dialog.exec()
 
@@ -874,6 +985,8 @@ class MainWindow(QMainWindow):
             tip = "Typ projectnummer"
         elif search_type == "BP":
             tip = "Typ BP-nummer of naam"
+        elif search_type == "VTA":
+            tip = "Typ VTA-nummer"
         else:
             tip = "Geef zoekterm in… geen prefix = zoeken op art.nr., * omschrijving, - kernwoorden, / leverancier"
         self.input_field.setToolTip(tip)
@@ -904,14 +1017,17 @@ class MainWindow(QMainWindow):
         - Project:       Beide verbergen
         """
         is_project = (search_type == "Project")
-        is_bp      = (search_type == "BP")
+        is_bp = (search_type == "BP")
+        is_vta = (search_type == "VTA")
 
-        # Zoekmodus
-        self.mode_label.setVisible(not is_project)   # zichtbaar voor Standaard & BP
-        self.mode_select.setVisible(not is_project)
+        # Zoekmodus verbergen bij Project en VTA
+        hide_mode = is_project or is_vta
+        self.mode_label.setVisible(not hide_mode)
+        self.mode_select.setVisible(not hide_mode)
 
         # Rij eronder: dynamisch label + items
-        if is_project:
+        if is_project or is_vta:
+            # 👇 beide velden volledig verbergen
             self.stock_label.setVisible(False)
             self.show_stock_select.setVisible(False)
         elif is_bp:
@@ -937,7 +1053,6 @@ class MainWindow(QMainWindow):
             self.select_all_checkbox.setChecked(False)
 
     # --------------- Helper: detail-payload normaliseren ---------------
-
     def _normalize_detail_payload(self, payload):
         """
         Converteer de respons van get_item_detail_stockinfo(*) naar een dictionary.
@@ -967,10 +1082,185 @@ class MainWindow(QMainWindow):
 
     # --------------- NIEUW: Export/Elements openen ---------------
     def _open_docs_window(self):
-        """Opent ui_docs (Elements) vanuit het menu Export."""
+        """Opent ui_docs (Elements) vanuit het menu Export, alleen online en voor Finance."""
+        from config import OFFLINE_MODE
+        from permissions_azure import user_in_azure_group  # lokale import voor zekerheid
+
+        # 🔒 Controleer of de applicatie offline draait
+        if OFFLINE_MODE:
+            QMessageBox.warning(
+                self,
+                "Offline modus",
+                "De Export / Elements-module is niet beschikbaar in offline-modus."
+            )
+            return
+
+        required_group = "GPP_Finance"
+
+        try:
+            if not user_in_azure_group(required_group):
+                QMessageBox.warning(
+                    self,
+                    "Geen toegang",
+                    f"U behoort niet tot de vereiste Azure AD-groep:\n\n{required_group}\n\n"
+                    "Neem contact op met IT indien u toegang nodig heeft."
+                )
+                return
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Azure AD fout",
+                f"Kon groepsrechten niet controleren:\n{e}"
+            )
+            return
+
+        # ✅ Toegang OK ➜ venster openen
         try:
             w = DocsWindow()
             w.showMaximized()
-            self.docs_windows.append(w)  # referentie bewaren
+            self.docs_windows.append(w)
         except Exception as e:
-            QMessageBox.critical(self, "Fout", f"Kon 'Elements' openen:\n{e}")
+            QMessageBox.critical(
+                self,
+                "Fout",
+                f"Kon 'Elements' openen:\n{e}"
+            )
+
+    def _open_ccbp_window(self):
+        """Open het Credit Control (BP) venster (met beveiligingscontrole)."""
+        from config import OFFLINE_MODE
+
+        # 🔒 Controleer of de applicatie offline draait
+        if OFFLINE_MODE:
+            QMessageBox.warning(
+                self,
+                "Offline modus",
+                "De Credit Control-module is niet beschikbaar in offline-modus."
+            )
+            return
+
+        try:
+            w = CreditControlWindow()
+            w.showMaximized()
+            self.docs_windows.append(w)
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Fout bij openen Credit Control (BP)",
+                f"Kon Credit Control niet openen:\n{e}"
+            )
+
+    def _open_timings_window(self):
+        """Open het Timings-venster (Urenregistratie via SharePoint) — alleen voor CGK-APP-L1 leden."""
+        from config import OFFLINE_MODE
+        from permissions_azure import user_in_azure_group
+
+        # 🔒 Offline check
+        if OFFLINE_MODE:
+            QMessageBox.warning(
+                self,
+                "Offline modus",
+                "De module 'Timings' is niet beschikbaar in offline-modus."
+            )
+            return
+
+        required_group = "CGK-APP-L1"
+
+        try:
+            # ✅ Controleer Azure AD groepslidmaatschap
+            if not user_in_azure_group(required_group):
+                QMessageBox.warning(
+                    self,
+                    "Toegang geweigerd",
+                    f"U hebt geen rechten om de module 'Timings' te openen.\n\n"
+                    f"Vereiste Azure AD-groep:\n→ {required_group}\n\n"
+                    "Neem contact op met IT indien u toegang nodig hebt."
+                )
+                return
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Azure AD fout",
+                f"Kon groepsrechten niet controleren:\n{e}"
+            )
+            return
+
+        # ✅ Toegang OK ➜ venster openen
+        try:
+            from ui_timings import ExcelApp
+
+            w = ExcelApp()
+            w.setParent(None)
+            w.setWindowModality(Qt.NonModal)
+            w.setWindowFlag(Qt.Window, True)
+
+            # Referentie bijhouden zodat venster niet verdwijnt
+            if not hasattr(self, "timings_windows"):
+                self.timings_windows = []
+            self.timings_windows.append(w)
+
+            w.show()
+            w.activateWindow()
+            w.raise_()
+
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Fout bij openen Timings",
+                f"Kon 'Timings' niet openen:\n{e}"
+            )
+
+    # ✅ NIEUW: Peppol check (CGK-APP-L1 of CGK-APP-L2)
+    def _open_peppol_check_window(self):
+        """Open 'Peppol check' — alleen voor CGK-APP-L1 en CGK-APP-L2."""
+        from config import OFFLINE_MODE
+        from permissions_azure import user_in_azure_group
+
+        # 🔒 Offline check
+        if OFFLINE_MODE:
+            QMessageBox.warning(
+                self,
+                "Offline modus",
+                "De module 'Peppol check' is niet beschikbaar in offline-modus."
+            )
+            return
+
+        required_groups = ("CGK-APP-L1", "CGK-APP-L2")
+
+        try:
+            if not any(user_in_azure_group(g) for g in required_groups):
+                QMessageBox.warning(
+                    self,
+                    "Toegang geweigerd",
+                    "U hebt geen rechten om de module 'Peppol check' te openen.\n\n"
+                    "Vereiste Azure AD-groep:\n→ CGK-APP-L1 of CGK-APP-L2\n\n"
+                    "Neem contact op met IT indien u toegang nodig hebt."
+                )
+                return
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Azure AD fout",
+                f"Kon groepsrechten niet controleren:\n{e}"
+            )
+            return
+
+        # ✅ Toegang OK ➜ venster openen
+        try:
+            w = PepWidget()
+            w.setParent(None)
+            w.setWindowModality(Qt.NonModal)
+            w.setWindowFlag(Qt.Window, True)
+
+            self.pep_windows.append(w)
+
+            w.show()
+            w.activateWindow()
+            w.raise_()
+
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Fout bij openen Peppol check",
+                f"Kon 'Peppol check' niet openen:\n{e}"
+            )

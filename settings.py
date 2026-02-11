@@ -262,9 +262,13 @@ def save_detail_modal(val: bool):
     save_settings(settings)
 
 def load_default_search_type() -> str:
-    return load_settings().get("default_search_type", DEFAULT_SETTINGS["default_search_type"])
+    val = load_settings().get("default_search_type", DEFAULT_SETTINGS["default_search_type"])
+    # alleen geldige types toelaten
+    return val if val in ("Standaard", "Project", "BP", "VTA") else "Standaard"
 
 def save_default_search_type(val: str):
+    if val not in ("Standaard", "Project", "BP", "VTA"):
+        val = "Standaard"
     settings = load_settings()
     settings["default_search_type"] = val
     save_settings(settings)

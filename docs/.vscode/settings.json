@@ -1,0 +1,14 @@
+{
+  "python.defaultInterpreterPath": "c:\\searcharticle_code\\.venv\\Scripts\\python.exe",
+  "python.terminal.activateEnvironment": true,
+
+  "code-runner.runInTerminal": true,
+  "code-runner.executorMap": {
+    "python": "c:\\searcharticle_code\\.venv\\Scripts\\python.exe -u"
+  },
+
+  // BELANGRIJK: zet je venv-Scripts vooraan in PATH in de geïntegreerde terminal
+  "terminal.integrated.env.windows": {
+    "PATH": "c:\\searcharticle_code\\.venv\\Scripts;${env:PATH}"
+  }
+}

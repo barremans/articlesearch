@@ -1,172 +1,244 @@
 # 📦 Artikelzoeker – Help
 
-**Versie:** 6.0.3  
-**Laatste update:** september 2025
+**Versie:** 9.0.5  
+**Laatste update:** februari 2026  
 
-Deze applicatie laat je toe om **artikels**, **projectitems**, **business partners**, en **openstaande documenten** (sales/purchase) efficiënt te consulteren. Werkt **online** via de Windows `.exe` (PyInstaller).
+De applicatie laat je toe om **artikels**, **projectitems**, **business partners (BP)**, **VTA's**, **openstaande documenten**, **Credit Control (CC BP)** én **Urenregistraties** te consulteren en te verwerken.  
+Werkt **online** via de Windows `.exe` (PyInstaller) met **Azure AD-beveiliging**.
 
 ---
 
 ## 🧭 Navigatie & menu
 
 - **Bestand** → Afsluiten  
-- **Instellingen** → Omgeving, (BP) type defaults, QSS-styles, …  
+- **Instellingen** → Omgeving, (BP/VTA) defaults, QSS-styles, taal, zoektype  
+- **Export** →  
+  - **Open Elements** – openstaande documenten  
+  - **Open Credit Control (CC BP)**  
+- **Applicaties** →  
+  - **Urenregistratie Downloader + Verwerker** *(nieuw)*  
 - **Rapporteren** → Bug/feature melden, open cases  
 - **Help** → Help, Over…, Changelog  
-- **Export** → **Open elements** *(nieuw venster voor openstaande documenten)*
+
+> 🔒 Credit Control is enkel beschikbaar **online** en voor gebruikers in de  
+> **Azure AD-groep “GPP_Finance”**.
 
 ---
 
 ## 🔎 Zoeken (hoofdscherm)
 
-1. **Zoekterm** invullen.
+1. **Zoekterm** invullen  
 2. **Type** kiezen:
-   - `Standaard` – zoekt artikels
-   - `Project` – zoekt in projectartikelen
-   - `BP` – zoekt Business Partners (klanten/leveranciers)
-3. **Modus** *(Standaard/BP)*: `AND` of `OR`
+   - `Standaard` – zoekt artikels  
+   - `Project` – zoekt in projectartikelen  
+   - `BP` – zoekt Business Partners (klanten/leveranciers)  
+   - `VTA` – zoekt VTA-documenten  
+3. **Modus** *(Standaard/BP)*: `AND` of `OR`  
 4. **Tweede keuzelijst**:
-   - **Standaard**: **Toon voorraad** → `R` (regulier), `S` (voorraad), `B` (beide)
-   - **BP**: **Type** → `""` (alle), `C` (Customer), `S` (Supplier)
-5. Start met **Zoeken** (`Ctrl + Enter`)
+   - **Standaard**: *Toon voorraad* → `R` (regulier), `S` (voorraad), `B` (beide)  
+   - **BP**: *Type* → `""` (alle), `C` (Customer), `S` (Supplier)  
+5. Klik op **Zoeken** (`Ctrl + Enter`)
 
-Resultaten verschijnen in een tabel. Dubbelklik of rechtermuisklik voor meer acties.
-
----
-
-## 🧑‍💼 BP-venster (samenvatting)
-
-- Dubbelklik op een BP-resultaat opent het **BP-venster** met **Contacten**, **Adressen** en **Credit Control** (beveiligd).
-- Credit Control toont na ontgrendeling **Orders**, **Leveringen**, **Voorschotten**, **Facturen**, **Kredietnota’s**.  
-  Dubbelklik toont detail-lijnen in pop-up.
+> Bij **VTA** opent automatisch het **VTA-venster**, vult het nummer in en haalt de data op.  
+> Het hoofdzoekveld wordt daarna **leeggemaakt** en **focus hersteld**.
 
 ---
 
-## 📑 Open Sales/Purchase — Documents *(nieuw)*
+## 🧾 VTA-venster
 
-Open via **menu: Export → Open elements**.
+- Automatisch geopend bij zoektype **VTA**.  
+- Toont alle VTA-lijnen met:
+  - **Statuskleur**:
+    - 🟢 *COMPLETE* → groen met zwarte tekst  
+    - 🔴 *Open > 0* → rood met witte tekst  
+- **Zoekfunctie** binnen VTA-items (filter op artikel of omschrijving).  
+- **Sneltoetsen**:
+  - `Ctrl + D` → veld wissen en focus terug  
+  - `Ctrl + Enter` → data ophalen  
+
+---
+
+## 🧑‍💼 BP-venster
+
+- Dubbelklik op een BP-resultaat opent het **BP-venster** met:
+  - **Contacten**, **Adressen** en **Credit Control**.  
+- Credit Control toont na ontgrendeling:
+  - **Orders**, **Leveringen**, **Voorschotten**, **Facturen**, **Kredietnota’s**.  
+  - Dubbelklik toont onderliggende **detail-lijnen** in pop-upvensters.  
+
+---
+
+## 💳 Credit Control (CC BP)
+
+Open via **Export → Open Credit Control (CC BP)**  
 
 ### 🔒 Beveiliging
-- Venster is **vergrendeld** bij openen.
-- Wachtwoord is **hetzelfde als BP** (centrale bron).
-- **Eénmalig** per sessie; sluiten van dit venster vergrendelt opnieuw.
+- Enkel beschikbaar voor gebruikers in **Azure AD-groep “GPP_Finance”**  
+- Offline gebruik is niet toegestaan (`OFFLINE_MODE = False`)  
+- Geen toegang → duidelijke foutmelding  
 
-### 🔢 Aantal
-- Kies **6** of **Anders** en vul een vrij getal in.
-- Dit aantal wordt meegegeven aan de API. (Indien de endpoint dit negeert, wordt server-side gefikst.)
+### 📊 Functionaliteit
+- **Filteropties**, **sortering**, **groepering**  
+- **Selectiebeheer** (➕ toevoegen, 📋 tonen, ❌ leegmaken)  
+- **Excel-export** (volledige dataset of selectie)  
+- **Dynamische kleurcodering**:
+  - 🟢 LOW / GREEN  
+  - 🟡 MEDIUM / YELLOW  
+  - 🟠 HIGH / AMBER  
+  - 🔴 CRITICAL / RED  
+- **Over kredietlimiet** → visueel rood/groen gemarkeerd  
 
-### 🧮 Groepering & sortering
-Kies één optie (radio):
+### ⌨️ Sneltoetsen
+| Toets          | Actie              |
+|----------------|--------------------|
+| `Ctrl + D`     | Filters wissen     |
+| `Ctrl + Enter` | Data vernieuwen    |
+| `Esc`          | Venster sluiten   |
 
-- **CardName** *(standaard)*  
-  - Groepeer op **CardName**  
-  - Sorteer binnen elke groep: **Vervaldatum ↑** (oudste eerst) → **MaandenOud** (meer oud eerst; negatievere waarde eerst)
+---
 
-- **CardCode**  
-  - Idem maar groepeer op **CardCode**
+## ⏱️ Urenregistratie Downloader + Verwerker
 
-- **DocOwner**  
-  - Groepeer op **DocOwner**  
-  - Sorteer binnen groep: **Naam** → **Vervaldatum ↑**
+Open via **Applicaties → Urenregistratie Downloader + Verwerker**
 
-- **SalesOwner**  
-  - Groepeer op **SalesOwner**  
-  - Sorteer binnen groep: **Naam** → **Vervaldatum ↑**
+Deze module laat je toe om **urenregistratie-Excelbestanden** van SharePoint te downloaden, automatisch te verwerken en overzichtstabellen te genereren.
 
-- **MaandenOud**  
-  - Sorteer primair op **MaandenOud** (meer negatief = ouder = eerst), dan **Vervaldatum ↑**
+---
 
-> Na ophalen wordt tab **OSO** automatisch geselecteerd (fallback: eerste beschikbare).
+### 🔐 Authenticatie
+- Automatische login via **Azure AD**
+- Interactieve Microsoft-login enkel indien nodig
+- Eén login per sessie (token refresh automatisch)
 
-### 🗂 Tabs & structuur
-- Visuele scheiding met disabled tabs: **— Verkoop —**, **— Samenvatting —**, **— Aankoop —**  
-- **Verkoop**: `OSO`, `OSDL`, `OSDP`, `OSR`, `OSI`  
-- **Aankoop**: `OPO`, `OPDL`, `OPR`, `OPI`  
-- **Samenvatting** bevat subtabs:
-  - **Secties (Sales)** en **Secties (Purchase)**: aantallen, totalen, earliest/latest due, outstanding
-  - **Klanten**: per CardCode/CardName **SalesOpen** en **PurchaseOpen**  
-    👉 Klik op kolomkoppen om ↑/↓ sortering te wisselen
-  - **DocOwner**, **SalesOwner**, **Buyer**: aantallen per verantwoordelijke
+---
 
-### 📋 Kolommen
-- Per sectie worden deze kolommen getoond:  
-  `DocNum, CardCode, CardName, DocDate, DocDueDate, DocTotal, PaidSum, Outstanding, OrderCount, MaandenOud, SalesOwner, DocOwner`
-- **VATNbr** en **DocEntry** worden **niet getoond**.
-- Datumweergave: **DD-MM-YYYY**.
-- Automatische kolombreedte met cap; **CardName** breder, **DocOwner** smaller.
+### 📂 Bestanden ophalen
 
-### ⬇️ Exporteren
-- **Exporteer…**: huidige tab (of volledige Samenvatting als multitab-workbook).
-- **Exporteer alles**: volledige workbook met **alle secties + samenvattingen**.
-- **Export-bereik**: **Huidige tab / Alle tabs / Sales / Purchase**.
-- **Bestandsnaam** bevat datumstempel (bv. `OpenSales_20250914.xlsx`).
-- **Downloads** als standaardmap.  
-- Excel via **openpyxl** of **XlsxWriter**; één tab kan ook als **CSV**.
+Klik op **🔄 Lijst verversen**.
+
+#### Sortering
+- Bestanden worden **gesorteerd op SharePoint-wijzigingsdatum**
+- **Jongste bestanden staan altijd bovenaan**
+- Sortering gebeurt **niet** op bestandsnaam
+
+---
+
+### ⭐ Standaardweergave: Top 5
+- Standaard worden enkel de **5 meest recente bestanden** getoond
+- Ideaal voor dagelijks gebruik
+
+---
+
+### ☑️ Optie: Toon alle bestanden
+- Checkbox **“📂 Toon alle bestanden”**
+- Toont de **volledige historische lijst**
+- Zoekfunctie blijft actief
+
+---
+
+### 🔍 Zoeken
+- **Live zoekveld** boven de lijst
+- Filtert op:
+  - bestandsnaam
+  - datumweergave
+- Werkt lokaal (geen nieuwe SharePoint-call)
+
+Voorbeelden:
+- `01-2026`
+- `aanwezigheden`
+- `week`
+
+---
+
+### ⬇️ Downloaden & verwerken
+
+Start via:
+- **Dubbelklik** op een bestand  
+- of **⬇️ Download geselecteerd**
+
+Automatisch:
+1. Download naar `C:\temp`
+2. Excel opschonen:
+   - Lege tabbladen verwijderd
+   - Tabblad **WeekTotaal** verwijderd
+3. Overzichten aangemaakt:
+   - Weekoverzichten
+   - Samengevoegde tijdsintervallen
+4. Bestand wordt **terug opgeslagen**
+
+Optie:
+- **📂 Excel automatisch openen na verwerking**
+
+---
+
+### ⌨️ Sneltoetsen (Urenregistratie)
+
+| Toets | Actie |
+|------|------|
+| `Esc` | Venster sluiten |
+| Dubbelklik | Download & verwerk |
+
+---
+
+## 📑 Open Sales/Purchase — Documents
+
+Open via **Export → Open Elements**
+
+- Beveiligd met wachtwoord (BP-wachtwoord)
+- Eénmalige ontgrendeling per sessie
+- Groepering, sortering en uitgebreide Excel-export
 
 ---
 
 ## ✳️ Zoektermen & prefixen (artikels)
 
-| Prefix   | Zoekveld                                        | Voorbeeld   |
-|----------|-------------------------------------------------|-------------|
-| *(geen)* | Artikelcode (ItemCode)                          | `41.1.1`    |
-| `*`      | Omschrijving, lange omschrijving, foreign name  | `*bocht`    |
-| `/`      | Leveranciersreferentie (SuppCatNum)             | `/2109009`  |
-| `-`      | Exact woord in naam/foreign name                | `-T-stuk`   |
+| Prefix   | Zoekveld                                       | Voorbeeld |
+|----------|------------------------------------------------|----------|
+| *(geen)* | Artikelcode (ItemCode)                         | `41.1.1` |
+| `*`      | Omschrijving / foreign name                   | `*bocht` |
+| `/`      | Leveranciersreferentie (SuppCatNum)            | `/2109009` |
+| `-`      | Exact woord                                    | `-T-stuk` |
 
-> Prefixen gelden niet voor BP of Documents.
-
----
-
-## 🎹 Sneltoetsen
-
-| Locatie            | Toets           | Actie                      |
-|--------------------|-----------------|----------------------------|
-| Hoofdscherm        | `Ctrl + Enter`  | Zoeken                     |
-|                    | `Ctrl + L`      | Label genereren (artikels) |
-|                    | `Ctrl + O`      | Detail openen              |
-|                    | `Delete`        | Zoekveld + tabel leeg      |
-|                    | `Esc`           | Venster sluiten            |
-| BP-venster         | `Ctrl + Enter`  | Data ophalen               |
-|                    | `Esc`           | Sluiten                    |
-| Documents-venster  | `Ctrl + Enter`  | Ophalen                    |
-|                    | —               |                            |
+> Prefixen gelden niet voor **BP** of **VTA**.
 
 ---
 
-## ⚙️ Instellingen (selectie)
+## 🎹 Algemene sneltoetsen
 
-- **Omgeving**: live/test  
-- **Voorraad-modus (artikels)**: R/S/B  
-- **Detail als modal**: ja/nee  
-- **Standaard zoektype**: Standaard/Project/BP  
-- **BP Type (default)**: `""`, `C`, `S`  
-- **Taal (NL/EN)**  
-- **QSS-styles** live te bewerken
+| Locatie     | Toets          | Actie                    |
+|------------|---------------|--------------------------|
+| Hoofdscherm | `Ctrl + Enter` | Zoeken                   |
+|             | `Delete`       | Zoekveld leegmaken       |
+|             | `Esc`          | Venster sluiten          |
+
+---
+
+## ⚙️ Instellingen
+
+- Omgeving: live / test  
+- Standaard zoektype: Standaard / Project / BP / VTA  
+- BP Type default: `""`, `C`, `S`  
+- Taal: NL / EN  
+- QSS-styles live aanpasbaar  
+
+Instellingen worden opgeslagen in `settings.json`.
 
 ---
 
 ## 🔄 Updates
-
-- Automatische check bij opstart  
-- **Help → Over…** toont versie & “Update nu”  
-- Instellingen blijven bewaard
-
----
-
-## 🛠 Installatie
-
-- Windows `.exe` via PyInstaller
+- Automatische versiecheck bij opstart
+- **Help → Over…** toont huidige versie en updateknop
+- Instellingen blijven behouden
 
 ---
 
 ## 🐞 Bug of feature melden
-
-- Via **Rapporteren** → “Bug of feature melden…”  
-- Na verzenden wordt een GitHub-issue aangemaakt
+Via **Rapporteren → Bug of feature melden…**  
+Automatische GitHub-issue met logbestand.
 
 ---
 
 ## ℹ️ Contact
-
 Voor vragen of feedback: contacteer de ontwikkelaar.
+
+© CGK Group

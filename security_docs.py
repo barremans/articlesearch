@@ -1,42 +1,53 @@
-# security_docs.py
-# Sessie-lock voor ui_docs, met hetzelfde wachtwoord als BP (security_cc.password)
+"""
+security_docs.py
+Volledige AD-only beveiliging voor ui_docs.
+Geen wachtwoord, geen unlock prompt.
+Alleen bruikbaar als een geldige AD-verbinding actief is.
+"""
 
 from __future__ import annotations
-import os
+from auth import can_connect_to_ad
 
-# Interne sessiestatus voor dit venster (alleen zolang ui_docs open is)
-_UNLOCKED: bool = False
 
-def password() -> str:
+# ========================
+#  CORE FUNCTIONS
+# ========================
+
+def is_unlocked() -> bool:
     """
-    Wachtwoordbron:
-    1) DOCS_PASSWORD (optioneel override)
-    2) security_cc.password()  ← zelfde als BP
-    3) anders: leeg
+    Geeft True als AD-verbinding actief is.
+    Anders False (offline of geen AD).
     """
-    pw = os.environ.get("DOCS_PASSWORD", "").strip()
-    if pw:
-        return pw
     try:
-        import security_cc
-        return (security_cc.password() or "").strip()
+        return bool(can_connect_to_ad())
     except Exception:
-        return ""
+        return False
+
 
 def lock_disabled() -> bool:
     """
-    Dev-bypass via env var DOCS_LOCK_DISABLED=1 (optioneel).
+    Locking is alleen uitgeschakeld wanneer AD actief is.
+    Dus niet zomaar altijd True zoals in de stub.
     """
-    v = os.environ.get("DOCS_LOCK_DISABLED", "").strip().lower()
-    return v in {"1", "true", "yes", "y"}
+    return is_unlocked()
 
-def is_unlocked() -> bool:
-    return _UNLOCKED or lock_disabled()
+
+def password() -> str:
+    """
+    ui_docs gebruikt geen wachtwoord meer.
+    """
+    return ""
+
 
 def unlock():
-    global _UNLOCKED
-    _UNLOCKED = True
+    """
+    Geen actie nodig (compatibiliteit met oude code).
+    """
+    pass
+
 
 def relock():
-    global _UNLOCKED
-    _UNLOCKED = False
+    """
+    Geen actie nodig.
+    """
+    pass

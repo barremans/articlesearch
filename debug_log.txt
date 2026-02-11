@@ -1,0 +1,45 @@
+2026-02-09 13:56:16,313 [DEBUG] Found 1 RTs matching {'environment': 'login.microsoftonline.com', 'home_account_id': '********.526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296', 'client_id': '58f55e10-e404-4307-9fa2-7b40431782fe'}
+2026-02-09 13:56:16,313 [DEBUG] Generate or reuse correlation_id: 516b5332-77f3-4992-b750-30380b18650f
+2026-02-09 13:56:16,314 [DEBUG] Cache attempts an RT
+2026-02-09 13:56:16,510 [DEBUG] https://login.microsoftonline.com:443 "POST /526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/token HTTP/1.1" 200 5708
+2026-02-09 13:56:16,511 [DEBUG] event={
+    "client_id": "58f55e10-e404-4307-9fa2-7b40431782fe",
+    "data": {
+        "claims": null,
+        "refresh_token": "********",
+        "scope": [
+            "offline_access",
+            "openid",
+            "https://cgkgroupbvba.sharepoint.com/.default",
+            "profile"
+        ]
+    },
+    "environment": "login.microsoftonline.com",
+    "grant_type": "refresh_token",
+    "params": null,
+    "response": {
+        "access_token": "********",
+        "client_info": "eyJ1aWQiOiI4YTJjOTllYi02NTBjLTRiYjItODFjMS1mMjkzMTM5YTk2NGQiLCJ1dGlkIjoiNTI2YjMyZmEtOGNiMS00ZDZhLTllMmItZmQ0OGUyYTBlMjk2In0",
+        "expires_in": 3955,
+        "ext_expires_in": 3955,
+        "id_token": "********",
+        "scope": "https://cgkgroupbvba.sharepoint.com/Group.Read.All https://cgkgroupbvba.sharepoint.com/User.Read https://cgkgroupbvba.sharepoint.com/.default",
+        "token_type": "Bearer"
+    },
+    "scope": [
+        "https://cgkgroupbvba.sharepoint.com/Group.Read.All",
+        "https://cgkgroupbvba.sharepoint.com/User.Read",
+        "https://cgkgroupbvba.sharepoint.com/.default"
+    ],
+    "skip_account_creation": true,
+    "token_endpoint": "https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/token"
+}
+2026-02-09 13:56:18,316 [DEBUG] Starting new HTTPS connection (1): cgkgroupbvba.sharepoint.com:443
+2026-02-09 13:56:18,429 [DEBUG] https://cgkgroupbvba.sharepoint.com:443 "GET /sites/IT-team/_api/Web/getFolderByServerRelativeUrl('Gedeelde%20documenten%2FApplicaties%2FEvac_App%2FWeekLogs')/Files HTTP/1.1" 200 None
+2026-02-09 13:56:20,780 [DEBUG] Starting new HTTPS connection (1): cgkgroupbvba.sharepoint.com:443
+2026-02-09 13:56:20,884 [DEBUG] https://cgkgroupbvba.sharepoint.com:443 "GET /sites/IT-team/_api/Web/getFolderByServerRelativeUrl('Gedeelde%20documenten%2FApplicaties%2FEvac_App%2FWeekLogs')/Files HTTP/1.1" 200 None
+2026-02-09 13:56:20,900 [DEBUG] Starting new HTTPS connection (1): cgkgroupbvba.sharepoint.com:443
+2026-02-09 13:56:20,986 [DEBUG] https://cgkgroupbvba.sharepoint.com:443 "GET /sites/IT-team/_api/Web/GetFileById('3abcf4f5-8c8d-4b73-b116-3a7c4c119f5d')?$select=ServerRelativePath,Id HTTP/1.1" 200 None
+2026-02-09 13:56:20,994 [DEBUG] Starting new HTTPS connection (1): cgkgroupbvba.sharepoint.com:443
+2026-02-09 13:56:21,224 [DEBUG] https://cgkgroupbvba.sharepoint.com:443 "GET /sites/IT-team/_api/Web/GetFileById('3abcf4f5-8c8d-4b73-b116-3a7c4c119f5d')/$value HTTP/1.1" 200 89522
+2026-02-09 13:56:22,032 [INFO]  Excel verwerkt: C:\temp\Aanwezigheden_02-02-2026.xlsx

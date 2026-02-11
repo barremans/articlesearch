@@ -1,5 +1,5 @@
 {
-  "default_search_type": "BP",
+  "default_search_type": "Standaard",
   "environment": "live",
   "show_stock": "R",
   "detail_modal": false,
@@ -10,7 +10,7 @@
     "vta_cert",
     "art"
   ],
-  "bp_default_type": "",
+  "bp_default_type": "C",
   "label_settings": {
     "LABEL_WIDTH": 85.0,
     "LABEL_HEIGHT": 25.0,

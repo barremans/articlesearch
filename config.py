@@ -27,7 +27,11 @@ API_ENVIRONMENTS = {
         "bp_configP_Bp": "U63P1T",  #Bussiness partner min search data
         "so_configP_Bp": "OMW5IN",  #Bussiness partner  data
         "so_configP_Cc": "OLH3RP",  #CreditControl data
-        "so_configP_OE": "4AA8DF",  #Open Elements data       
+        "so_configP_CcV2": "0B7JWA",  #CreditControl data V2
+        "so_configP_CcBpV2": "HG443N",  #CreditControl data V2
+        "so_configP_OE": "4AA8DF",  #Open Elements data   
+        "vta_config_id": "G6HH9T", #VTA Info    
+        "pep_config_id": "FSOLI1", #Peppol fault info  
     }
 }
 
@@ -109,6 +113,18 @@ API_CLIENTS = {
             "client_secret": "ODkyMjg1NmUtMTgxNy00MTdkLTgyNWMtZDZkMTIzYjgxOTU4"
         }
     },
+    "CcV2": {
+    "live": {
+        "client_id": "CreditControl",
+        "client_secret": "ODkyMjg1NmUtMTgxNy00MTdkLTgyNWMtZDZkMTIzYjgxOTU4"
+    }
+    },
+        "CcBpV2": {
+    "live": {
+        "client_id": "CreditControl",
+        "client_secret": "ODkyMjg1NmUtMTgxNy00MTdkLTgyNWMtZDZkMTIzYjgxOTU4"
+    }
+    },
     "BpS": {
         "live": {
             "client_id": "BpSearchMin",
@@ -120,7 +136,19 @@ API_CLIENTS = {
             "client_id": "OpenElements",
             "client_secret": "YzRiOTZkNzQtNmZhMi00NjkzLWFhNzQtNGFiMTAwYzE1OTI1"
         }
-    }                           
+    }   ,
+        "VTA": {
+        "live": {
+            "client_id": "VTA",
+            "client_secret": "NjVhODc4NmYtZGQ5NC00MGRiLTk5OTItMGM1NWNkMDE3Yzg4"
+        }
+    } ,     
+        "PEP": {
+        "live": {
+            "client_id": "SmartlynxStatusInv",
+            "client_secret": "YTliODc0MDEtZjg5ZC00MDhiLTg3ZTUtN2U0M2Q0YjM1NzRk"
+        }
+    }                   
 #end
 }
 
@@ -134,3 +162,8 @@ CC_TAB_PASSWORD = os.getenv("CC_TAB_PASSWORD", "DcbBB12@@@@")
 # Dev-bypass: zet TRUE via config of via env var CC_LOCK_DISABLED in {1,true,yes,y}
 _env = os.getenv("CC_LOCK_DISABLED", "").strip().lower()
 CC_LOCK_DISABLED = _env in ("1", "true", "yes", "y")
+
+# -----------------------------
+# Netwerk / AD-status
+# -----------------------------
+OFFLINE_MODE = False

@@ -18,7 +18,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # CONFIG – PAS HIER AAN
 # =======================
 MODE = "raw"            # kies: "kind" of "raw"
-TEST = "cc"              # bij MODE="kind": kies uit "cc" | "bp" | "data" | "project"
+TEST = "PEP"              # bij MODE="kind": kies uit "cc" | "bp" | "data" | "project"
 
 # Opties voor kind-mode (zonder 'debug')
 KIND_OPTIONS = {
@@ -26,6 +26,18 @@ KIND_OPTIONS = {
         "zoekterm": "K07058",
         "mode": "",
         "is_closed": "",
+    },
+    "ccV2": {
+        "zoekterm": "K06714",  # ✅ add this line
+        "MultiKey":{
+        "@CardCode": "K06714",
+        "@Sales": "",
+        "@Docowner": "",
+        "@RiskCat": "",
+        "@MinPrUsed": "",
+        "@MaxPrUsed":"",
+        "@OrderB": "",
+                    }
     },
     "bp": {
         "zoekterm": "250201242",
@@ -47,13 +59,19 @@ KIND_OPTIONS = {
         "mode": "",
         "card_type": "",
     },
+        "VTA": {
+        "key": "252503655"
+    },
+        "FSOLI1": {
+        "key": "250700300"
+    },        
 }
 
 # Endpoint voor RAW-mode
 RAW_ENDPOINT = "datarequest"   # bv. "datarequest", "stockinfo", ...
 
 # Kies of je een custom payload wil plakken
-USE_CUSTOM_RAW = True
+USE_CUSTOM_RAW = False #True
 
 # 1) Zet USE_CUSTOM_RAW=True en plak hier je payload (exact wat je wil posten)
 CUSTOM_RAW_PAYLOAD = {
@@ -70,6 +88,18 @@ RAW_PAYLOAD_TEMPLATES = {
     "cc": {
         "ConfigurationID": "OLH3RP",     # vervang indien nodig
         "MultiKey": {"@key": "K07058"}
+    },
+    "ccV2": {
+    "ConfigurationID": API_ENVIRONMENTS[ENVIRONMENT].get("so_configP_CcV2", "0B7JWA"),
+        "MultiKey":{
+        "@CardCode": "K06714",
+        "@Sales": "",
+        "@Docowner": "",
+        "@RiskCat": "",
+        "@MinPrUsed": "",
+        "@MaxPrUsed":"",
+        "@OrderB": ""
+                    }
     },
     "bp": {
         "ConfigurationID": API_ENVIRONMENTS[ENVIRONMENT].get("so_configP_Bp", "C80TSJ"),
@@ -88,6 +118,16 @@ RAW_PAYLOAD_TEMPLATES = {
     "so": {
         "ConfigurationID": API_ENVIRONMENTS[ENVIRONMENT]["so_configP_id"],
         "MultiKey": {"@so": "250201242", "@status": "c"}
+    }
+    ,
+    "VTA": {
+        "ConfigurationID": API_ENVIRONMENTS[ENVIRONMENT]["vta_config_id"],
+        "Key":  "252503655"
+    }
+    ,
+    "PEP": {
+        "ConfigurationID": API_ENVIRONMENTS[ENVIRONMENT]["pep_config_id"],
+        "Key":  "250700300"
     }
 }
 # =======================
@@ -112,16 +152,17 @@ def run_kind():
 
     print(f"[INFO] MODE=kind | kind={TEST} | ENV={ENVIRONMENT}")
 
+    zoekterm = cfg.get("zoekterm") or cfg.get("MultiKey", {}).get("@CardCode", "")
     result = send_data_request(
-        zoekterm=cfg["zoekterm"],
-        mode=cfg["mode"],
+        zoekterm=zoekterm,
+        mode=cfg.get("mode", ""),
         project_search=(TEST == "project"),
-        is_closed=cfg["is_closed"],
+        is_closed=cfg.get("is_closed", ""),
         kind=TEST,
     )
-    # send_data_request retourneert al gemapte data (lijst of dict)
     wrapped = {"Data": result}
     print_result(wrapped)
+
 
 
 def run_raw():

@@ -2,7 +2,8 @@
 setlocal ENABLEEXTENSIONS ENABLEDELAYEDEXPANSION
 
 :: ============================================================
-:: Export Script - kies bron: huidige map of opgegeven map
+:: export_to_usb.bat
+::   Export Script - kies bron: huidige map of opgegeven map
 :: - Maakt requirements.txt (indien venv aanwezig)
 :: - Kopieert project (excl. map "zzz") naar USB
 :: - Neemt optioneel de venv mee

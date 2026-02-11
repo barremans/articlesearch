@@ -1,4 +1,5 @@
 # ui_docs_schema.py
+#v1.0.1
 from __future__ import annotations
 import pandas as pd
 import unicodedata
@@ -10,6 +11,7 @@ VISIBLE_ORDER = [
     "DocTotal", "PaidSum", "Outstanding",
     "OrderCount", "MaandenOud",
     "SalesOwner", "DocOwner",
+    "Comments", "ProjectBased", 
 ]
 
 # Alles buiten VISIBLE_ORDER tonen we niet.
@@ -18,6 +20,28 @@ HIDE_COLS = {
     "Buyer", "DeliveryCount", "DownPaymentCount", "ReturnCount",
     "InvoiceCount", "PurchaseOrderCount", "ReceiptCount",
 }
+
+# ---- Vertalingen voor UI ----
+TRANSLATIONS = {
+    "DocNum": "Documentnummer",
+    "CardCode": "Relatiecode",
+    "CardName": "Relatienaam",
+    "DocDate": "Documentdatum",
+    "DocDueDate": "Vervaldatum",
+    "DocTotal": "Totaalbedrag",
+    "PaidSum": "Betaald",
+    "Outstanding": "Openstaand",
+    "OrderCount": "Aantal orders",
+    "MaandenOud": "Leeftijd (mnd)",
+    "SalesOwner": "Verkoper",
+    "DocOwner": "Documenteigenaar",
+    "Comments": "Opmerkingen",     
+    "ProjectBased": "Projectgebonden", 
+}
+
+def get_visible_labels() -> list[str]:
+    """Geef de zichtbare kolomnamen met vertalingen."""
+    return [TRANSLATIONS.get(c, c) for c in VISIBLE_ORDER]
 
 # ---- Sorteerstand (kan door ui_docs gezet worden) ----
 _SORT_MODE = "cardname"  # standaard gevraagd: CardName → DocDueDate ↑ → MaandenOud ↑
@@ -52,17 +76,8 @@ def _stable_sort(df: pd.DataFrame, by: list[str], asc: list[bool]) -> pd.DataFra
     return df.sort_values(by=by, ascending=asc, na_position="last", kind="mergesort").reset_index(drop=True)
 
 def _sort_df(df: pd.DataFrame, mode: str) -> pd.DataFrame:
-    """
-    cardname   : CardName(nat.) ↑, DocDueDate ↑, MaandenOud ↑, CardCode ↑, DocNum ↑
-    cardcode   : CardCode ↑, CardName(nat.) ↑, DocDueDate ↑, MaandenOud ↑, DocNum ↑
-    docowner   : DocOwner ↑, CardName(nat.) ↑, DocDueDate ↑, MaandenOud ↑, DocNum ↑
-    salesowner : SalesOwner ↑, CardName(nat.) ↑, DocDueDate ↑, MaandenOud ↑, DocNum ↑
-    maandenoud : MaandenOud ↑, DocDueDate ↑, CardCode ↑, DocNum ↑
-    (↑ bij negatieve MaandenOud = meest negatief eerst, bv. -12 vóór -8)
-    """
     df2 = _coerce_for_sort(df)
 
-    # tijdelijke genormaliseerde key voor consistente groepering op naam
     if "CardName" in df2.columns:
         df2["__k_cardname"] = df2["CardName"].map(_norm_name)
     else:
@@ -92,7 +107,6 @@ def _sort_df(df: pd.DataFrame, mode: str) -> pd.DataFrame:
     if keys_exist:
         df2 = _stable_sort(df2, keys_exist, asc_trim)
 
-    # opruimen hulpkolom
     if "__k_cardname" in df2.columns:
         df2 = df2.drop(columns=["__k_cardname"])
 
