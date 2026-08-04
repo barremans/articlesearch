@@ -1,2 +1,2 @@
-12.1.2
-https://github.com/barremans/articlesearch/releases/download/v12.1.2/ArticleSearchSetup_12.1.2.exe
+15.0.0
+https://github.com/barremans/articlesearch/releases/download/v15.0.0/ArticleSearchSetup_15.0.0.exe
