@@ -79,9 +79,12 @@ if (-not (Test-Path $versionDir)) { New-Item -ItemType Directory -Path $versionD
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($versionTxt, "$version`n$downloadUrl", $utf8NoBom)
 
-# 7) Commit + push version.txt (geen -C nodig, we staan al in $Root via Set-Location)
-& git add "releases/latest/version.txt"
-& git commit -m "Update version.txt to $version" *> $null
+# 7) Commit + push version.py EN version.txt (geen -C nodig, we staan al in $Root)
+#    version.py werd hierboven al gelezen; dit commit 'm nu ook effectief,
+#    zodat de bump nooit meer enkel lokaal blijft staan (was de oorzaak van
+#    de version.py/version.txt-mismatch die eerder ontdekt werd).
+& git add "version.py" "releases/latest/version.txt"
+& git commit -m "Release $version - sync version.py and version.txt" *> $null
 # 'nothing to commit' is ok; push blijft veilig
 & git push
 
