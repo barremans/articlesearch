@@ -9,7 +9,12 @@ rem ================================================
 rem build_installer15.bat - Build + Inno Setup installer generator
 rem - Installeert ALTIJD in C:\ArticleSearch
 rem - Admin vereist (geschikt voor Intune SYSTEM deployment)
-rem - Met code signing (self-signed)
+rem - Signeren nu optioneel, via certificaatstore (naar Networkmap-patroon)
+rem   i.p.v. een los .pfx-bestand + plaintext wachtwoord - vermijdt de
+rem   folder-access-blokkades die MS Intune soms geeft op C:\certs.
+rem - Ondersteunt env vars voor niet-interactieve aanroep (via
+rem   build_and_publish.ps1's wrapper): AS_BUMP_PART, AS_MAKE_INSTALLER,
+rem   AS_DO_SIGN. Zonder deze vars: gewoon interactief zoals voorheen.
 rem ================================================
 
 rem 🧩 Basisconfig
@@ -17,6 +22,10 @@ set "PROJECT_NAME=ArticleSearch"
 set "SPEC_FILE=SearchArticle.spec"
 set "DST_FOLDER=dist"
 set "LOGFILE=build_log.txt"
+set "TIMESTAMP_URL=http://timestamp.sectigo.com"
+rem Optioneel: exacte certificaat-subject om te forceren i.p.v. automatisch
+rem beste certificaat (/a). Leeg = automatisch.
+set "SIGN_SUBJECT="
 
 rem ---- Python uit .venv prefereren ----
 set "PYEXE="
@@ -32,9 +41,30 @@ for %%I in ("%PYEXE%") do (
 echo [info] Python: %PYEXE%
 "%PYEXE%" -V >nul 2>&1 || (echo ❌ Geen werkende Python gevonden.& pause & exit /b 1)
 
+rem ================================================
+rem [S0] Signing - optioneel, default N (naar Networkmap-patroon)
+rem ================================================
+set "DO_SIGN=N"
+if defined AS_DO_SIGN set "DO_SIGN=%AS_DO_SIGN%"
+if defined AS_DO_SIGN echo [sign] Modus via parameter: %AS_DO_SIGN%
+if not defined AS_DO_SIGN set /p DO_SIGN=[S0] Binaries signen? [J/N] (standaard N): 
+if not defined DO_SIGN set "DO_SIGN=N"
+
+set "SIGNTOOL_EXE="
+if /I "%DO_SIGN%"=="J" call :FIND_SIGNTOOL
+if /I "%DO_SIGN%"=="J" if not defined SIGNTOOL_EXE echo [WAARSCHUWING] signtool.exe niet gevonden. Signing overgeslagen.
+if /I "%DO_SIGN%"=="J" if not defined SIGNTOOL_EXE set "DO_SIGN=N"
+if /I "%DO_SIGN%"=="J" if defined SIGNTOOL_EXE echo [sign] signtool: %SIGNTOOL_EXE%
+if /I "%DO_SIGN%"=="J" if defined SIGNTOOL_EXE echo [sign] Certificaatselectie: automatisch /a (certificaatstore, geen .pfx meer nodig)
+
 rem ---- Versie verhogen ----
-set /p PART_TO_BUMP=Welke versie wil je verhogen? (patch/minor/major) : 
-if "%PART_TO_BUMP%"=="" set "PART_TO_BUMP=patch"
+if defined AS_BUMP_PART (
+  set "PART_TO_BUMP=%AS_BUMP_PART%"
+  echo [0] 🔁 Versie-bump via parameter: %AS_BUMP_PART%
+) else (
+  set /p PART_TO_BUMP=Welke versie wil je verhogen? ^(patch/minor/major^) : 
+  if "%PART_TO_BUMP%"=="" set "PART_TO_BUMP=patch"
+)
 echo [0] 🔁 Versie verhogen via bump_version.py (%PART_TO_BUMP%)...
 "%PYEXE%" bump_version.py %PART_TO_BUMP% || (echo ❌ Versieverhoging mislukt.& pause & exit /b 1)
 
@@ -114,36 +144,31 @@ for %%F in (requirements.txt help.md settings.json) do (
 )
 > "%DST_FOLDER%\%BUILD_FOLDER%\version.txt" echo %NEW_VERSION%
 
-rem [5b] 🔏 Signen van de BINNEN-EXE
-set "SIGN_PFX=C:\certs\cgk_local_signing.pfx"
-set "SIGN_PWD=MijnSterkWachtwoord123"
-set "SIGNTOOL="
-if exist "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe" set "SIGNTOOL=C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
-if not defined SIGNTOOL set "SIGNTOOL=signtool.exe"
-
-if exist "%SIGN_PFX%" (
+rem [5b] 🔏 Signen van de BINNEN-EXE (optioneel, certificaatstore)
+if /I "%DO_SIGN%"=="J" (
   echo [5b] 🔏 Signen van %DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe ...
-  "%SIGNTOOL%" sign ^
-    /f "%SIGN_PFX%" /p "%SIGN_PWD%" ^
-    /fd SHA256 /td SHA256 ^
-    /tr http://timestamp.sectigo.com ^
-    "%DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe" || (
-      echo [WAARSCHUWING] Signen van app-EXE faalde.
-  )
+  call :SIGN_FILE "%DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe"
+  if errorlevel 1 echo [WAARSCHUWING] Signen van app-EXE faalde - build gaat wel verder ^(ongesigned^).
 ) else (
-  echo [INFO] Geen PFX gevonden op %SIGN_PFX% — oversla signen van app-EXE.
+  echo [INFO] Signing overgeslagen ^(DO_SIGN=%DO_SIGN%^).
 )
 
 rem ❓ Inno Setup?
+if defined AS_MAKE_INSTALLER (
+  set "MAKE_INSTALLER=%AS_MAKE_INSTALLER%"
+  echo [6] 📦 Installer via parameter: %AS_MAKE_INSTALLER%
+) else (
+  set "MAKE_INSTALLER=J"
+  set /p MAKE_INSTALLER=Ook Inno Setup installer bouwen? [J/N] : 
+)
 set "DO_ISCC=1"
-set /p MAKE_INSTALLER=Ook Inno Setup installer bouwen? [J/N] : 
 if /I "%MAKE_INSTALLER%"=="N" set "DO_ISCC=0"
 if "%DO_ISCC%"=="0" goto SHOW_OUTPUT
 
-rem 📝 Inno script genereren (zonder SignTool in .iss)
+rem 📝 Inno script genereren (ONGEWIJZIGD - zelfde werkende logica als voorheen)
 if not exist "%DST_FOLDER%" mkdir "%DST_FOLDER%" >nul 2>&1
 del /q "%ISS_FILE%" >nul 2>&1
-echo [6] 📝 Installer-script genereren...
+echo [6b] 📝 Installer-script genereren...
 
 >>"%ISS_FILE%" echo ; --- Inno Setup script, automatisch gegenereerd ---
 >>"%ISS_FILE%" echo [Setup]
@@ -156,7 +181,7 @@ echo [6] 📝 Installer-script genereren...
 >>"%ISS_FILE%" echo UsePreviousAppDir=no
 >>"%ISS_FILE%" echo DefaultGroupName=%PROJECT_NAME%
 >>"%ISS_FILE%" echo DisableProgramGroupPage=yes
->>"%ISS_FILE%" echo OutputDir=%DST_FOLDER%
+>>"%ISS_FILE%" echo OutputDir=.
 >>"%ISS_FILE%" echo OutputBaseFilename=%PROJECT_NAME%Setup_%NEW_VERSION%
 >>"%ISS_FILE%" echo Compression=lzma
 >>"%ISS_FILE%" echo SolidCompression=yes
@@ -185,7 +210,7 @@ echo [6] 📝 Installer-script genereren...
 >>"%ISS_FILE%" echo [Run]
 >>"%ISS_FILE%" echo Filename: "{app}\%PROJECT_NAME%.exe"; WorkingDir: "{app}"; Description: "Start %PROJECT_NAME%"; Flags: nowait postinstall skipifsilent
 
-rem 🔨 Inno Setup compileren
+rem 🔨 Inno Setup compileren (ONGEWIJZIGD)
 echo [7] 🔨 Inno Setup compileren...
 set "ISCC_EXE="
 if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" set "ISCC_EXE=C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
@@ -201,20 +226,15 @@ if errorlevel 1 (
 )
 echo ✅ Installer aangemaakt: %DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe
 
-rem [7b] 🔏 Post-sign: de INSTALLER zelf ondertekenen
-if exist "%DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe" (
-  if exist "%SIGN_PFX%" (
+rem [7b] 🔏 Post-sign: de INSTALLER zelf ondertekenen (optioneel, certificaatstore)
+if /I "%DO_SIGN%"=="J" (
+  if exist "%DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe" (
     echo [7b] 🔏 Signen van installer: %DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe ...
-    "%SIGNTOOL%" sign ^
-      /f "%SIGN_PFX%" /p "%SIGN_PWD%" ^
-      /fd SHA256 /td SHA256 ^
-      /tr http://timestamp.sectigo.com ^
-      "%DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe" || (
-        echo [WAARSCHUWING] Signen van installer faalde.
-    )
-  ) else (
-    echo [INFO] Geen PFX gevonden op %SIGN_PFX% — installer niet gesigned.
+    call :SIGN_FILE "%DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe"
+    if errorlevel 1 echo [WAARSCHUWING] Signen van installer faalde - installer blijft wel bruikbaar ^(ongesigned^).
   )
+) else (
+  echo [INFO] Installer-signing overgeslagen ^(DO_SIGN=%DO_SIGN%^).
 )
 
 :SHOW_OUTPUT
@@ -222,5 +242,47 @@ echo.
 echo 📂 Output-map: %DST_FOLDER%\%BUILD_FOLDER%
 echo 💡 Testen: "%DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe"
 echo 🧩 Installer (indien gebouwd): %DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe
-pause
+echo 🔏 Signing: %DO_SIGN%
+if not defined AS_BUMP_PART pause
 endlocal
+exit /b 0
+
+rem ================================================
+:FIND_SIGNTOOL
+set "SIGNTOOL_EXE="
+if exist "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" (
+  set "SIGNTOOL_EXE=C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe"
+  goto :eof
+)
+if exist "C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe" (
+  set "SIGNTOOL_EXE=C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe"
+  goto :eof
+)
+if exist "C:\Program Files\Windows Kits\10\bin\x64\signtool.exe" (
+  set "SIGNTOOL_EXE=C:\Program Files\Windows Kits\10\bin\x64\signtool.exe"
+  goto :eof
+)
+for /f "delims=" %%S in ('where signtool.exe 2^>nul') do (
+  set "SIGNTOOL_EXE=%%S"
+  goto :eof
+)
+goto :eof
+
+rem ================================================
+:SIGN_FILE
+if not exist "%~1" echo [FOUT] Bestand niet gevonden: %~1
+if not exist "%~1" exit /b 1
+if not defined SIGNTOOL_EXE (
+  echo [FOUT] signtool niet geconfigureerd.
+  exit /b 1
+)
+echo [sign] Bestand: %~1
+if defined SIGN_SUBJECT (
+  "%SIGNTOOL_EXE%" sign /fd SHA256 /td SHA256 /tr "%TIMESTAMP_URL%" /n "%SIGN_SUBJECT%" "%~1"
+) else (
+  "%SIGNTOOL_EXE%" sign /fd SHA256 /td SHA256 /tr "%TIMESTAMP_URL%" /a "%~1"
+)
+if errorlevel 1 echo [FOUT] signtool mislukt voor: %~1
+if errorlevel 1 exit /b 1
+echo [OK] Gesigned: %~1
+exit /b 0
