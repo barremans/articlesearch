@@ -1,1 +1,2 @@
 14.0.2
+https://github.com/barremans/articlesearch/releases/download/v12.1.0/ArticleSearchSetup_14.0.2.exe
