@@ -5,8 +5,14 @@
 #          via de ArtBpSearch-webservice (config KX9RLR). Gezocht wordt
 #          altijd op CardCode (uniek, @CardName blijft leeg). Gebruikt door
 #          ui_bp_articles_tab.py (tab "Artikels" in het BP-venster).
-# Version: 1.0.1
+# Version: 1.0.2
 # Author:  Bart Bossuyt
+# Changes: 1.0.2 — Documentatie bijgewerkt: "FrgnName" wordt hier nog steeds
+#                   opgehaald/doorgegeven (blijft deel van de API-respons),
+#                   maar wordt sinds ui_bp_articles_tab.py v1.3.0 niet meer
+#                   getoond in de UI (kolom "Omschrijving (Frgn)"
+#                   verwijderd op vraag van gebruiker). Geen functionele
+#                   wijziging in dit bestand.
 # Changes: 1.0.1 — Documentatie bijgewerkt: API-respons bevat nu ook
 #                   "SuppCatNum" (leveranciersartikelnummer). Geen
 #                   functionele wijziging in dit bestand (velden worden hier

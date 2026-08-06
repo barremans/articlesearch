@@ -1,11 +1,39 @@
-# github_cases.py
+# =============================================================================
+# ArticleSearch
+# File:    github_cases.py
+# Role:    show_github_cases() — toont open Issues + Pull Requests uit de
+#          repo (GitHubCasesClient) via Help-menu → GitHub Cases.
+# Version: 1.0.0
+# Author:  Bart Bossuyt
+# Changes: 1.0.0 — Eerste keer onder versiebeheer. BUGFIX/SECURITY:
+#                   hetzelfde hardcoded GitHub PAT als in
+#                   bug_report_dialog.py (v1.1.0) gaf op 2026-08-06 een
+#                   401 Unauthorized. Token komt nu uit dezelfde
+#                   omgevingsvariabele ARTICLESEARCH_GITHUB_PAT — één
+#                   token, één plek om te configureren/vervangen.
+#                   GitHubCasesClient.__init__() geeft een duidelijke
+#                   RuntimeError als de variabele ontbreekt/leeg is.
+# =============================================================================
 
+import os
 import requests
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QTextBrowser, QPushButton, QMessageBox
 
+# Zelfde omgevingsvariabele als bug_report_dialog.py — één GitHub PAT,
+# hergebruikt voor zowel het melden (BugDialog) als het bekijken (dit
+# bestand) van cases. Zie bug_report_dialog.py voor instructies om een
+# nieuw token aan te maken en de env var te zetten.
+GITHUB_PAT_ENV_VAR = "ARTICLESEARCH_GITHUB_PAT"
+
 class GitHubCasesClient:
     def __init__(self):
-        self.token = "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"
+        self.token = os.getenv(GITHUB_PAT_ENV_VAR, "").strip()
+        if not self.token:
+            raise RuntimeError(
+                f"Geen GitHub-token geconfigureerd. Stel de omgevings"
+                f"variabele '{GITHUB_PAT_ENV_VAR}' in met een geldig "
+                f"Personal Access Token (scope: repo) en herstart de app."
+            )
         self.owner = "barremans"
         self.repo = "articlesearch"
         self.api_base = f"https://api.github.com/repos/{self.owner}/{self.repo}"

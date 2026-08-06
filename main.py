@@ -1,5 +1,24 @@
-# main.py
-# V1.0.3
+# =============================================================================
+# ArticleSearch
+# File:    main.py
+# Role:    Entry point — hard security gate (offline-check, Azure AD-login
+#          met timeout, basis-groepscontrole), preload van API-tokens, start
+#          MainWindow (of NoAccessWindow bij geen toegang).
+# Version: 1.1.0
+# Author:  Bart Bossuyt
+# Changes: 1.1.0 — CC-ACCESS-1 vervolg: "CGK-APP-L6" toegevoegd aan
+#                   BASE_ACCESS_GROUPS. Ontbrak eerder — een gebruiker die
+#                   enkel lid is van CGK-APP-L6 kwam daardoor nooit door de
+#                   basis-toegangscontrole (has_base_access()) heen en
+#                   bereikte het BP-venster / de Credit Control-tab dus
+#                   nooit, ondanks dat CGK-APP-L6 wel is toegestaan in de
+#                   CC_ACCESS_GROUPS-check van ui_bp_cc_detail_tab.py
+#                   (v1.1.0). Zonder deze fix was die groep effectief dode
+#                   toegang.
+# Changes: 1.0.3 — Baseline (was al voorzien van informele versiecode
+#                   "V1.0.3" bovenaan) — vóór introductie van het
+#                   gestructureerde versiebeheer in commentaar.
+# =============================================================================
 import os
 import sys
 import threading
@@ -23,6 +42,7 @@ BASE_ACCESS_GROUPS = {
     "CGK-APP-L3",
     "CGK-APP-L4",
     "CGK-APP-L5",
+    "CGK-APP-L6",  # ✅ NIEUW (CC-ACCESS-1-fix): anders geen basistoegang mogelijk voor L6-leden
 }
 
 

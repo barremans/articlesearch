@@ -1,4 +1,31 @@
-# ui_bp_cc_detail_tab.py
+# =============================================================================
+# ArticleSearch
+# File:    ui_bp_cc_detail_tab.py
+# Role:    Credit Control-tab binnen BpWindow — wachtwoord/AD-vergrendeld,
+#          toont 5 detaillijsten (Orders/Leveringen/Voorschotten/Facturen/
+#          Kredietnota's) via CreditControlListsTab.
+# Version: 1.3.0
+# Author:  Bart Bossuyt
+# Changes: 1.3.0 — HERSTEL (CC-ACCESS-1): dit bestand was teruggevallen naar
+#                   een versie van vóór de CC-ACCESS-1-fix — twee losse
+#                   problemen hersteld:
+#                   (1) _ad_unlock_check() en de auto-unlock-poging in
+#                       __init__ controleerden enkel generieke AD-login
+#                       (get_auth_header() geeft geldige headers), niet de
+#                       vereiste groepen. Hersteld: expliciete controle op
+#                       CC_ACCESS_GROUPS (CGK-APP-L2, CGK-APP-L3,
+#                       CGK-APP-L4, CGK-APP-L6) via user_in_azure_group().
+#                   (2) set_from_json() vulde cc_lists.set_all() (de 5
+#                       detaillijsten) ONVOORWAARDELIJK, ongeacht
+#                       is_unlocked() — het exacte datalek van vóór de
+#                       eerdere fix. Hersteld: enkel vullen wanneer
+#                       is_unlocked() True is.
+#                   Bewust NIET aangepast: het financiële headerpaneel
+#                   (buiten dit bestand, in ui_bp_header_panel.py) blijft
+#                   voor iedereen zichtbaar — dat viel destijds expliciet
+#                   niet onder CC-ACCESS-1.
+# Changes: 1.0.0 — Baseline vóór introductie van versiebeheer in commentaar.
+# =============================================================================
 from typing import Optional, Callable, Any
 import os
 import datetime as _dt
@@ -16,11 +43,24 @@ from ui_bp_cc_lists_tab import CreditControlListsTab  # bevat de vijf subtabs
 
 from config import OFFLINE_MODE  # ✅ toevoegen
 from auth import get_auth_header, can_connect_to_ad  # (je hebt get_auth_header al)
-
+from permissions_azure import user_in_azure_group  # HERSTEL (CC-ACCESS-1)
 
 
 # Debug is volledig uitgezet (knop + UI verwijderd)
 DEBUG_DEFAULT = False
+
+# HERSTEL (CC-ACCESS-1): enkel deze Azure AD-groepen krijgen de 5
+# detaillijsten van Credit Control te zien binnen het BP-venster.
+CC_ACCESS_GROUPS = {"CGK-APP-L2", "CGK-APP-L3", "CGK-APP-L4", "CGK-APP-L6"}
+
+
+def _has_cc_access() -> bool:
+    """HERSTEL (CC-ACCESS-1): True als de gebruiker lid is van minstens
+    één van de CC_ACCESS_GROUPS (niet enkel 'is ingelogd via AD')."""
+    try:
+        return any(user_in_azure_group(g) for g in CC_ACCESS_GROUPS)
+    except Exception:
+        return False
 
 
 class CreditControlDetailTab(QWidget):
@@ -114,8 +154,10 @@ class CreditControlDetailTab(QWidget):
             self.lock()
         else:
             try:
-                headers = get_auth_header()
-                if headers and "Authorization" in headers:
+                # HERSTEL (CC-ACCESS-1): groepscontrole i.p.v. enkel
+                # generieke AD-login (elke ingelogde gebruiker kon anders
+                # onterecht meteen door de vergrendeling heen).
+                if _has_cc_access():
                     self._show_content()
                 else:
                     self.lock()
@@ -187,6 +229,14 @@ class CreditControlDetailTab(QWidget):
         if self.is_unlocked():
             self._show_content()
 
+        # HERSTEL (CC-ACCESS-1): dit was het eigenlijke datalek — de 5
+        # detaillijsten werden hier voorheen ONVOORWAARDELIJK gevuld,
+        # ongeacht is_unlocked(). Data zat dus al in de widgets, enkel
+        # visueel verborgen achter de vergrendel-stack (QStackedLayout
+        # toont enkel index 0, maar de data was al aanwezig in index 1).
+        if not self.is_unlocked():
+            return
+
         # Zet lijsten
         self.cc_lists.set_all(
             orders=(bp.get("ORDR") or []) if isinstance(bp, dict) else [],
@@ -208,7 +258,9 @@ class CreditControlDetailTab(QWidget):
         self.lbl_title.setText(f"Credit Control{suffix}")
 
     def _ad_unlock_check(self):
-        """Controleer of de gebruiker een geldige AD-token heeft."""
+        """HERSTEL (CC-ACCESS-1): controleert of de gebruiker lid is van
+        een toegelaten Azure AD-groep (CC_ACCESS_GROUPS) — niet enkel of
+        er een geldige AD-sessie bestaat."""
         from config import OFFLINE_MODE
         if OFFLINE_MODE:
             QMessageBox.warning(self, "Offline modus",
@@ -216,13 +268,13 @@ class CreditControlDetailTab(QWidget):
             return
 
         try:
-            headers = get_auth_header()
-            if headers and "Authorization" in headers:
+            if _has_cc_access():
                 self._show_content()
                 self.cc_lists.show_after_unlock(self._current_card_code or None)
             else:
-                raise RuntimeError("Geen geldige AD-sessie.")
+                raise RuntimeError(
+                    "Geen toegang — vereist lidmaatschap van "
+                    f"{', '.join(sorted(CC_ACCESS_GROUPS))}."
+                )
         except Exception as e:
-            QMessageBox.warning(self, "Geen toegang", f"AD-verificatie mislukt:\n{e}")
-
-
+            QMessageBox.warning(self, "Geen toegang", f"Toegangscontrole mislukt:\n{e}")

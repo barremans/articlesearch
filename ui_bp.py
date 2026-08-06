@@ -1,4 +1,43 @@
-# ui_bp.py
+# =============================================================================
+# ArticleSearch
+# File:    ui_bp.py
+# Role:    Business Partner-venster (QWidget) — zoeken op BP (CardCode/naam),
+#          headerpaneel + tabs (Adressen, Contacten, Credit Control, en
+#          nieuw: Artikels bij leveranciers). Async BP- en CC-ophaling via
+#          ThreadPoolExecutor + Qt-signals.
+# Version: 1.2.0
+# Author:  Bart Bossuyt
+# Changes: 1.2.0 — CC-ACCESS-1-correctie: een eerdere sessie schermde per
+#                   abuis ook de CC-fetch en het headerpaneel
+#                   (fill_financial_cc) af achter has_cc_access(). Op
+#                   uitdrukkelijke bevestiging van gebruiker ("header is
+#                   oke, dit is algemene financiële info") teruggedraaid —
+#                   de CC-call en het headerpaneel (Valuta, Kredietlimiet,
+#                   Balance, Beschikbaar krediet, ...) blijven bewust
+#                   onvoorwaardelijk voor alle gebruikers. **Enkel** de
+#                   CC-tab zelf (de 5 detaillijsten Orders/Leveringen/
+#                   Voorschotten/Facturen/Kredietnota's) blijft vergrendeld
+#                   voor wie geen CGK-APP-L2/L3/L4/L6 heeft — die logica
+#                   zit volledig in ui_bp_cc_detail_tab.py
+#                   (set_from_json() vult de 5 lijsten enkel bij
+#                   is_unlocked()). Ongebruikte has_cc_access()-import hier
+#                   weer verwijderd.
+# Changes: 1.1.1 — ART-BP-1 vervolg: CardType-veldnaam bevestigd via
+#                   ui_bp_header_panel.py (`core.get("CardType")`, met
+#                   "C"/"S" → map_card_type()) — geen functionele wijziging,
+#                   enkel de "aanname, te bevestigen"-opmerking bij
+#                   _use_record() weggehaald/bijgewerkt.
+# Changes: 1.1.0 — ART-BP-1: nieuwe tab "Artikels" toegevoegd (ui_bp_
+#                   articles_tab.py), enkel zichtbaar wanneer CardType van
+#                   het geselecteerde record "S" (leverancier) is (via
+#                   QTabWidget.setTabVisible — Qt ≥ 5.15). Lazy load: de
+#                   artikeldata wordt pas opgehaald bij de eerste klik op
+#                   deze tab (self.tabs.currentChanged), niet automatisch
+#                   bij het openen van de BP-kaart — sneller openen.
+#                   Zoekt altijd op CardCode.
+# Changes: 1.0.0 — Baseline: bestaande functionaliteit vóór introductie van
+#                   versiebeheer in commentaar.
+# =============================================================================
 import sys
 import requests
 from typing import Any
@@ -21,9 +60,10 @@ from config import API_ENVIRONMENTS, ENVIRONMENT
 from ui_bp_header_panel import HeaderPanel
 from ui_bp_addresses_tab import AddressesTab
 from ui_bp_contacts_tab import ContactsTab
+from ui_bp_articles_tab import ArticlesTab  # ✅ NIEUW (ART-BP-1)
 
 from cc_service import fetch_cc_data  # ongewijzigd laten
-from ui_bp_cc_detail_tab import CreditControlDetailTab  # Credit Control-tab
+from ui_bp_cc_detail_tab import CreditControlDetailTab  # Credit Control-tab (regelt zelf de CC-ACCESS-1-vergrendeling)
 
 # SSL warnings onderdrukken omdat verify=False gebruikt wordt bij requests
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -107,6 +147,13 @@ class BpWindow(QWidget):
         # Credit Control tab met wachtwoord
         self.cc_detail_tab = CreditControlDetailTab(self)
         self.tabs.addTab(self.cc_detail_tab, "Credit Control")
+
+        # ✅ NIEUW (ART-BP-1): Artikels-tab, enkel zichtbaar bij CardType == "S"
+        self.articles_tab = ArticlesTab(self)
+        self.tabs.addTab(self.articles_tab, "Artikels")
+        self._articles_tab_index = self.tabs.indexOf(self.articles_tab)
+        self.tabs.setTabVisible(self._articles_tab_index, False)
+        self.tabs.currentChanged.connect(self._on_tab_changed)
 
         root.addWidget(self.tabs, 1)
 
@@ -206,10 +253,18 @@ class BpWindow(QWidget):
         self.contacts_tab.clear()
         # CC-tab opruimen
         self.cc_detail_tab.clear()
+        # ✅ NIEUW (ART-BP-1): Artikels-tab opruimen + verbergen
+        self.articles_tab.clear()
+        self.tabs.setTabVisible(self._articles_tab_index, False)
 
     def _on_pick_changed(self, idx: int):
         if 0 <= idx < len(self.results):
             self._use_record(self.results[idx])
+
+    def _on_tab_changed(self, index: int):
+        """✅ NIEUW (ART-BP-1): lazy load — artikels pas ophalen bij klik op de tab."""
+        if index == self._articles_tab_index:
+            self.articles_tab.ensure_loaded()
 
     def _use_record(self, rec: dict):
         """
@@ -233,6 +288,20 @@ class BpWindow(QWidget):
         # Tab voorbereiden op dit record (loading-status)
         self.cc_detail_tab.set_loading(card_code)
 
+        # ✅ NIEUW (ART-BP-1): Artikels-tab enkel tonen bij leverancier (CardType == "S").
+        # Veldnaam "CardType" bevestigd via ui_bp_header_panel.py
+        # (core.get("CardType") → map_card_type()).
+        card_type = str(rec.get("CardType") or "").strip().upper()
+        is_supplier = card_type == "S"
+        self.tabs.setTabVisible(self._articles_tab_index, is_supplier)
+        self.articles_tab.set_card_code(card_code if is_supplier else "")
+
+        # CC async: header toont algemene financiële info voor IEDEREEN
+        # (dat is bewust géén CC-ACCESS-1-materie — op vraag van gebruiker
+        # blijft dit onvoorwaardelijk). Enkel de CC-tab zelf (5 detail-
+        # lijsten Orders/Leveringen/Voorschotten/Facturen/Kredietnota's) is
+        # vergrendeld voor wie geen CGK-APP-L2/L3/L4/L6 heeft — zie
+        # ui_bp_cc_detail_tab.py.
         self._fetch_cc_async(card_code)
 
     # ===================== ASYNC CC FETCH =====================
@@ -301,11 +370,14 @@ class BpWindow(QWidget):
         if card_code != self.current_card_code:
             return
 
-        # Headerpanel bijwerken indien data
+        # Headerpanel bijwerken indien data — algemene financiële info,
+        # bewust NIET gebonden aan CC-ACCESS-1 (bevestigd door gebruiker:
+        # "header is oke, dit is algemene financiële info").
         if cc:
             self.header_panel.fill_financial_cc(cc)
 
-        # Geef de CC-data door aan de CC-detailtab
+        # Geef de CC-data door aan de CC-detailtab (die zelf enkel de 5
+        # detaillijsten vult wanneer is_unlocked() — zie ui_bp_cc_detail_tab.py)
         self.cc_detail_tab.set_from_json(cc if isinstance(cc, dict) else {})
 
     # ===================== Proper afsluiten =====================
@@ -316,6 +388,8 @@ class BpWindow(QWidget):
         except TypeError:
             # Oudere Python zonder cancel_futures
             self._exec.shutdown(wait=False)
+        # ✅ NIEUW (ART-BP-1): eigen threadpool van de Artikels-tab afsluiten
+        self.articles_tab.shutdown()
         super().closeEvent(event)
 
 

@@ -1,4 +1,24 @@
-# bug_report_dialog.py
+# =============================================================================
+# ArticleSearch
+# File:    bug_report_dialog.py
+# Role:    BugDialog (QDialog) — laat de gebruiker een bug of feature-
+#          aanvraag melden; GitHubClient commit een bestand naar de repo
+#          en opent een Issue (bug) of Pull Request (feature) via de
+#          GitHub REST API. ⚠️ Bevat een hardcoded GitHub PAT — zie
+#          kanttekening bij updater.py (§ context-bestand, sessie 16),
+#          zelfde aanbeveling: liever via env var.
+# Version: 1.0.0
+# Author:  Bart Bossuyt
+# Changes: 1.0.0 — Eerste keer onder versiebeheer. BugDialog.__init__()
+#                   uitgebreid met optionele parameters initial_type
+#                   ("Bugmelding"/"Feature-aanvraag") en
+#                   initial_description — laat aanroepende code (bv. het
+#                   Peppol-controlescherm bij een onbekende foutcode) de
+#                   dialoog vooraf invullen. Backward-compatible: bestaande
+#                   aanroepen zonder deze parameters (BugDialog(parent))
+#                   werken ongewijzigd — velden blijven dan leeg zoals
+#                   voorheen.
+# =============================================================================
 import requests
 import base64
 import uuid
@@ -11,7 +31,7 @@ from PySide6.QtWidgets import (
 # GitHubClient klasse
 class GitHubClient:
     def __init__(self):
-        self.token = "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"
+        self.token = "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"
         self.owner = "barremans"
         self.repo = "articlesearch"
         self.base_branch = "main"
@@ -98,7 +118,7 @@ class GitHubClient:
 
 # BugDialog GUI
 class BugDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, initial_type: str | None = None, initial_description: str = ""):
         super().__init__(parent)
         self.setWindowTitle("Bug of Feature melden")
         self.setMinimumSize(400, 450)
@@ -108,6 +128,8 @@ class BugDialog(QDialog):
         layout.addWidget(QLabel("Type melding:"))
         self.type_select = QComboBox()
         self.type_select.addItems(["Bugmelding", "Feature-aanvraag"])
+        if initial_type in ("Bugmelding", "Feature-aanvraag"):
+            self.type_select.setCurrentText(initial_type)
         layout.addWidget(self.type_select)
 
         layout.addWidget(QLabel("Je naam:"))
@@ -116,6 +138,8 @@ class BugDialog(QDialog):
 
         layout.addWidget(QLabel("Omschrijf de melding:"))
         self.text_edit = QTextEdit()
+        if initial_description:
+            self.text_edit.setPlainText(initial_description)
         layout.addWidget(self.text_edit)
 
         submit_btn = QPushButton("Verzenden")
@@ -162,4 +186,3 @@ class BugDialog(QDialog):
             self.accept()
         except Exception as e:
             QMessageBox.critical(self, "GitHub Fout", str(e))
-

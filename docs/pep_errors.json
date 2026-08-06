@@ -1,0 +1,82 @@
+{
+  "GF": {
+    "TheCustomerIsNotActiveOnPeppol": {
+      "title": { "nl": "Klant niet actief op Peppol" },
+      "user_message": { "nl": "De klant is niet aangesloten/actief op Peppol. Dit document kan hierdoor niet automatisch verstuurd worden." },
+      "category": "business",
+      "severity": "error"
+    },
+    "EmailAddressIsNotvalid": {
+      "title": { "nl": "Ongeldig e-mailadres" },
+      "user_message": { "nl": "Het e-mailadres van de klant is ongeldig, waardoor het document niet verstuurd kon worden." },
+      "category": "business",
+      "severity": "error"
+    },
+    "TheCustomer_0_DoesNotHaveAValidEmailAddress": {
+      "title": { "nl": "Geen geldig e-mailadres" },
+      "user_message": { "nl": "Deze klant heeft geen geldig e-mailadres geregistreerd." },
+      "category": "business",
+      "severity": "error"
+    },
+    "DescriptionIsMandatoryForOrderLinesWithTotals": {
+      "title": { "nl": "Omschrijving ontbreekt" },
+      "user_message": { "nl": "Een omschrijving is verplicht voor elke orderlijn met een totaalbedrag. Vul de ontbrekende omschrijving aan op de brondocumentlijn." },
+      "category": "business",
+      "severity": "error"
+    },
+    "ListOfOrdersToSendIsRequired": {
+      "title": { "nl": "Geen documenten opgegeven" },
+      "user_message": { "nl": "Er is geen lijst van te versturen documenten meegegeven aan de aanvraag." },
+      "category": "technical",
+      "severity": "error"
+    },
+    "PleaseSupplyAValidPONumberInTheFieldYourReference": {
+      "title": { "nl": "Ongeldig PO-/ordernummer" },
+      "user_message": { "nl": "Voor deze klant is een geldig PO- of ordernummer vereist in het veld 'Uw referentie' (enkel cijfers). Controleer en corrigeer dit veld op het brondocument." },
+      "category": "business",
+      "severity": "error"
+    },
+    "This_0_WasAlreadySentLessThen_1_MinutesAgoTo_2_OrIsStillInTheQueue": {
+      "title": { "nl": "Recent al verstuurd / nog in wachtrij" },
+      "user_message": { "nl": "Dit document werd recent al verstuurd, of staat nog in de verwerkingswachtrij. Geen actie vereist — controleer bij twijfel de status later opnieuw." },
+      "category": "business",
+      "severity": "warning"
+    },
+    "invalidDateHeader": {
+      "title": { "nl": "Ongeldige request-timestamp (technisch)" },
+      "user_message": { "nl": "Technische fout bij het versturen (ongeldige timestamp). Geen actie van de gebruiker vereist — meld dit aan IT indien de fout blijft terugkomen." },
+      "category": "technical",
+      "severity": "error"
+    },
+    "invalidDigestHeader": {
+      "title": { "nl": "Ongeldige request-digest (technisch)" },
+      "user_message": { "nl": "Technische fout bij het versturen (ongeldige digest-header). Geen actie van de gebruiker vereist — meld dit aan IT indien de fout blijft terugkomen." },
+      "category": "technical",
+      "severity": "error"
+    },
+    "invalidSignature": {
+      "title": { "nl": "Ongeldige handtekening (technisch)" },
+      "user_message": { "nl": "Technische fout bij het versturen (handtekening kon niet geverifieerd worden). Geen actie van de gebruiker vereist — meld dit aan IT indien de fout blijft terugkomen." },
+      "category": "technical",
+      "severity": "error"
+    },
+    "invalidSignatureHeaderBackslashes": {
+      "title": { "nl": "Ongeldig handtekening-formaat (technisch)" },
+      "user_message": { "nl": "Technische fout bij het versturen (formaat handtekening-header). Geen actie van de gebruiker vereist — meld dit aan IT indien de fout blijft terugkomen." },
+      "category": "technical",
+      "severity": "error"
+    },
+    "invalidSignatureHeaderFormat": {
+      "title": { "nl": "Ongeldig handtekening-formaat (technisch)" },
+      "user_message": { "nl": "Technische fout bij het versturen (formaat handtekening-header). Geen actie van de gebruiker vereist — meld dit aan IT indien de fout blijft terugkomen." },
+      "category": "technical",
+      "severity": "error"
+    },
+    "invalidSignatureKeyId": {
+      "title": { "nl": "Ongeldige sleutel (technisch)" },
+      "user_message": { "nl": "Technische fout bij het versturen (certificaat/sleutel ongeldig of verlopen). Meld dit aan IT — mogelijk moet een certificaat vernieuwd worden." },
+      "category": "technical",
+      "severity": "error"
+    }
+  }
+}

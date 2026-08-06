@@ -1,4 +1,26 @@
-# ui_detail.py
+# =============================================================================
+# ArticleSearch
+# File:    ui_detail.py
+# Role:    Detail-popup venster voor een artikel (QDialog) — tabbladen LISA,
+#          SAP, Dimensions, Aankoop, Verkoop, Logistiek, Laatste aankoop,
+#          Afbeelding, ATP. Ontvangt de volledige ZStockInfoP-payload
+#          (detail_data) van ui_main.py en verdeelt de sub-secties over de
+#          tab-widgets.
+# Version: 1.1.0
+# Author:  Bart Bossuyt
+# Changes: 1.1.0 — Nieuwe tab "📐 Dimensions" toegevoegd, net na "SAP". Toont
+#                   MEASUREMENT_INFO (afmetingen/gewicht) uit de bestaande
+#                   ZStockInfoP-payload (config WEZ7CY) via de nieuwe
+#                   DimensionsTab-widget (ui_dimensions.py) — geen nieuwe
+#                   API-call/client nodig. Alt-sneltoetsen herverdeeld:
+#                   Alt+D nieuw voor Dimensions (tabindex 2); Alt+A/V/G/R/F/T
+#                   elk 1 index opgeschoven (was 2-7, wordt 3-8).
+# Changes: 1.0.0 — Baseline: bestaande functionaliteit vóór introductie van
+#                   versiebeheer in commentaar. Voorgeschiedenis (LISA/SAP/
+#                   Aankoop/Verkoop/Logistiek/Laatste aankoop/Afbeelding/ATP-
+#                   tabs, image-upload, ATP-tab) niet gedocumenteerd per
+#                   deelversie — vanaf nu wel.
+# =============================================================================
 import os
 import base64
 from PySide6.QtWidgets import (
@@ -13,6 +35,7 @@ from settings import load_detail_modal, load_detail_qss_path
 
 from ui_lisa import LisaTab
 from ui_sap import SapTab
+from ui_dimensions import DimensionsTab
 from ui_purchase import PurchaseTab
 from ui_sales import SalesTab
 from ui_lastpurch import LastPurchTab
@@ -57,6 +80,7 @@ class DetailWindow(QDialog):
 
         self._add_lisa_tab()
         self._add_sap_tab()
+        self._add_dimensions_tab()
         self._add_financial_purchase_tab()
         self._add_financial_sales_tab()
         self._add_logistics_tab()
@@ -78,14 +102,17 @@ class DetailWindow(QDialog):
                 pass
 
         # ALT-sneltoetsen voor tabnavigatie
+        # Volgorde tabs: LISA(0), SAP(1), Dimensions(2), Aankoop(3), Verkoop(4),
+        #                Logistiek(5), Laatste aankoop(6), Afbeelding(7), ATP(8)
         QShortcut(QKeySequence("Alt+L"), self).activated.connect(lambda: self.tabs.setCurrentIndex(0))
         QShortcut(QKeySequence("Alt+S"), self).activated.connect(lambda: self.tabs.setCurrentIndex(1))
-        QShortcut(QKeySequence("Alt+A"), self).activated.connect(lambda: self.tabs.setCurrentIndex(2))
-        QShortcut(QKeySequence("Alt+V"), self).activated.connect(lambda: self.tabs.setCurrentIndex(3))
-        QShortcut(QKeySequence("Alt+G"), self).activated.connect(lambda: self.tabs.setCurrentIndex(4))
-        QShortcut(QKeySequence("Alt+R"), self).activated.connect(lambda: self.tabs.setCurrentIndex(5))
-        QShortcut(QKeySequence("Alt+F"), self).activated.connect(lambda: self.tabs.setCurrentIndex(6))
-        QShortcut(QKeySequence("Alt+T"), self).activated.connect(lambda: self.tabs.setCurrentIndex(7))
+        QShortcut(QKeySequence("Alt+D"), self).activated.connect(lambda: self.tabs.setCurrentIndex(2))
+        QShortcut(QKeySequence("Alt+A"), self).activated.connect(lambda: self.tabs.setCurrentIndex(3))
+        QShortcut(QKeySequence("Alt+V"), self).activated.connect(lambda: self.tabs.setCurrentIndex(4))
+        QShortcut(QKeySequence("Alt+G"), self).activated.connect(lambda: self.tabs.setCurrentIndex(5))
+        QShortcut(QKeySequence("Alt+R"), self).activated.connect(lambda: self.tabs.setCurrentIndex(6))
+        QShortcut(QKeySequence("Alt+F"), self).activated.connect(lambda: self.tabs.setCurrentIndex(7))
+        QShortcut(QKeySequence("Alt+T"), self).activated.connect(lambda: self.tabs.setCurrentIndex(8))
 
 
     def _add_tab(self, title, data, headers, headers_map):
@@ -129,6 +156,13 @@ class DetailWindow(QDialog):
         tab = SapTab(raw_data)
         self.tabs.addTab(tab, "🏢 SAP")
 
+
+    def _add_dimensions_tab(self):
+        # MEASUREMENT_INFO zit als top-level dict in de ZStockInfoP-payload
+        # (zelfde niveau als STOCK, GROUP_INFO, EXTRA_INFO) — geen aparte API-call nodig.
+        data = self.detail_data.get("MEASUREMENT_INFO", {})
+        tab = DimensionsTab(data)
+        self.tabs.addTab(tab, "📐 Dimensions")
 
     def _add_financial_purchase_tab(self):
         data = self.detail_data.get("FIN", {}).get("PURCH", [])

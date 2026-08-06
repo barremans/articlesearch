@@ -1,4 +1,72 @@
-# ui_main.py 05022026_001
+# =============================================================================
+# ArticleSearch
+# File:    ui_main.py
+# Role:    Hoofdvenster (QMainWindow) — zoekscherm, resultatentabel, menu-
+#          balk, en het openen van alle submodules (Detail, BP, Project,
+#          VTA, Peppol, Timings, Elements, Credit Control).
+# Version: 1.3.0
+# Author:  Bart Bossuyt
+# Changes: 1.3.0 — WHATSNEW-1: "Wat is er nieuw?"-knop toegevoegd op 2
+#                   plekken. (1) Opstart-popup bij een beschikbare update:
+#                   de kale QMessageBox uit updater.py vervangen door een
+#                   eigen dialoog (_show_update_available_dialog) met
+#                   knoppen "Update nu" / "Wat is er nieuw?" / "Later" —
+#                   check_for_update() wordt nu via callback aangeroepen
+#                   (_check_for_update_startup) i.p.v. rechtstreeks.
+#                   (2) Help → Over...: naast de bestaande "Update nu"-knop
+#                   komt een gelijkaardige "Wat is er nieuw?"-knop, met
+#                   dezelfde enable/disable-callback. Beide plekken
+#                   hergebruiken één centrale dialoog (_show_whatsnew_dialog)
+#                   die de release notes (body) van de laatste GitHub
+#                   Release toont via updater.fetch_release_notes() —
+#                   remote content, niet te verwarren met de lokale
+#                   Changelog-dialoog (geschiedenis van de geïnstalleerde
+#                   versie, ongewijzigd). Fallback bij lege/ontbrekende
+#                   release notes: knop "Open op GitHub" (html_url).
+# Changes: 1.2.0 — MINWHS-KLEUR-1: de "Min.Whs"-kolom (QTYMININV, enkel
+#                   zichtbaar bij Toon voorraad = S) kleurt lichtgroen
+#                   wanneer de waarde > 0 — dit betekent dat het een
+#                   "standaard artikel" is. Tooltip op de cel legt dit
+#                   expliciet uit. KOLOMBREEDTE-1: alle kolommen in de
+#                   Artikel-resultatentabel zijn nu vrij versleepbaar en
+#                   dubbelklik-autofit-baar (QHeaderView.Interactive),
+#                   i.p.v. de vorige hardgecodeerde Stretch op kolomindex 2
+#                   — analoog aan het patroon in ui_bp_articles_tab.py.
+#                   Auto-fit op inhoud bij eerste weergave via
+#                   resizeColumnsToContents(); laatste kolom vult de
+#                   resterende ruimte (setStretchLastSection). Kolom 0
+#                   (checkbox "Selectie") blijft ResizeToContents. Let op:
+#                   net als in ui_bp_articles_tab.py gaan handmatige
+#                   kolombreedte-aanpassingen van de gebruiker verloren bij
+#                   een nieuwe zoekactie of sortering — bestaande, bewuste
+#                   beperking, hier niet aangepakt (niet gevraagd).
+# Changes: 1.1.1 — BUGFIX: searchtype-vergelijking in de no-stock-popup
+#                   (perform_search) gebruikte "Standaard", terwijl de
+#                   combobox self.search_type_select als itemtekst
+#                   "Artikel" gebruikt (addItems(["Artikel", "Project",
+#                   "BP", "VTA"])) — de voorwaarde was hierdoor nooit True
+#                   en de "geen voorraad"-melding verscheen nooit. Fix:
+#                   "Standaard" -> "Artikel". Popup-tekst tegelijk
+#                   uitgebreid met de instructie om "Toon voorraad" op "R"
+#                   te zetten en opnieuw te zoeken.
+# Changes: 1.1.0 — SORT-1: dubbelklik op kolomheader "Art.Nr.", "Qty",
+#                   "Prijs" of "Leverancier" in de Artikel-resultatentabel
+#                   sorteert nu op die kolom (numeriek voor Qty/Prijs,
+#                   alfabetisch voor Art.Nr./Leverancier). Tweede dubbelklik
+#                   op dezelfde kolom keert de richting om. Sorteert op de
+#                   ruwe data (vóór weergave-opmaak), niet op de getoonde
+#                   tekst. Sorteerstatus wordt gereset bij elke nieuwe
+#                   zoekactie. Enkel actief voor search-type "Artikel";
+#                   overige kolommen (Omschrijving, Vendor Nr., Magazijn,
+#                   Loc., Min.Whs, Max.Whs, Opmerking) blijven bewust
+#                   niet-sorteerbaar (op vraag van gebruiker, niet
+#                   gevraagd/nodig).
+# Changes: 1.0.0 — Baseline: bestaande functionaliteit vóór introductie van
+#                   versiebeheer in commentaar (voorheen enkel informele
+#                   datumcode "05022026_001" bovenaan). Voorgeschiedenis niet
+#                   gedocumenteerd per deelversie — vanaf nu wel.
+# =============================================================================
+import webbrowser
 import os
 import sys
 import json
@@ -16,7 +84,7 @@ from PySide6.QtWidgets import (
     QAbstractItemView, QTextEdit, QFileDialog,
     QGridLayout
 )
-from PySide6.QtGui import QShortcut, QKeySequence, QMovie, QIcon
+from PySide6.QtGui import QShortcut, QKeySequence, QMovie, QIcon, QColor
 from PySide6.QtCore import QEvent, Qt, QPoint, QTimer, QFileSystemWatcher, QMimeData
 
 from data_request import send_data_request
@@ -32,7 +100,7 @@ from settings import (
 from label.label_generator import generate_label
 from label.label_settings_dialog import LabelSettingsDialog
 from version import __version__
-from updater import check_for_update, download_latest_release
+from updater import check_for_update, download_latest_release, fetch_release_notes, OWNER, REPO
 from bug_report_dialog import BugDialog
 from github_cases import show_github_cases
 from file_editor_dialog import FileEditorDialog
@@ -61,6 +129,12 @@ logger.setLevel(logging.INFO)
 COLUMN_HEADERS_S = load_column_headers_s()
 COLUMN_HEADERS_DEFAULT = load_column_headers_default()
 
+# SORT-1: kolommen waarop dubbelklik-sortering is toegestaan in de Artikel-
+# resultatentabel. Matcht op de *weergegeven* headertekst (afkomstig uit
+# settings.load_column_headers_s()/_default()) — pas deze set aan indien de
+# labels in settings.py ooit hernoemd worden.
+SORTABLE_ARTICLE_HEADER_LABELS = {"Art.Nr.", "Qty", "Prijs", "Leverancier"}
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -77,6 +151,11 @@ class MainWindow(QMainWindow):
         # ✅ NIEUW: Peppol windows bijhouden zodat ze niet verdwijnen
         self.pep_windows = []
 
+        # SORT-1: state voor dubbelklik-sortering in de Artikel-resultatentabel
+        self._last_article_data = []       # ruwe data (list[dict]) van laatste zoekactie
+        self._last_article_columns = []    # data-keys in dezelfde volgorde als de kolommen
+        self._article_sort_state = {"column_index": None, "ascending": True}
+
         # ✅ Azure AD initialisatie
         try:
             _ = list_user_groups()
@@ -90,7 +169,10 @@ class MainWindow(QMainWindow):
         labels = get_labels(load_language())
         self.setStatusBar(QStatusBar(self))
 
-        QTimer.singleShot(1000, lambda: check_for_update(__version__, self))
+        # WHATSNEW-1: eigen dialoog i.p.v. de kale QMessageBox uit
+        # updater.py — via callback zodat wij de UI bepalen (knoppen
+        # "Update nu" / "Wat is er nieuw?" / "Later").
+        QTimer.singleShot(1000, self._check_for_update_startup)
         self.update_btn = QPushButton(labels["buttons"]["update_now"])
         self.update_btn.setEnabled(False)
         self.update_btn.clicked.connect(lambda: download_latest_release(self))
@@ -204,7 +286,7 @@ class MainWindow(QMainWindow):
         tools_menu.addAction("🕒 Timings (urenregistratie)").triggered.connect(self._open_timings_window)
 
         # ✅ NIEUW: Peppol check
-        tools_menu.addAction("📨 Peppol check").triggered.connect(self._open_peppol_check_window)
+        tools_menu.addAction("📨 API check").triggered.connect(self._open_peppol_check_window)
 
         report_menu = menubar.addMenu("&Rapporteren")
         report_menu.addAction("🐞 &Bug of feature melden...").triggered.connect(self._show_bug_report_dialog)
@@ -256,6 +338,10 @@ class MainWindow(QMainWindow):
         self.table.itemDoubleClicked.connect(self.handle_row_double_click)
         # ➕ Rechterklik-copy activeren
         self._add_context_menu_to_table()
+
+        # SORT-1: dubbelklik op kolomheader (Art.Nr./Qty/Prijs/Leverancier) sorteert
+        self.table.horizontalHeader().setSectionsClickable(True)
+        self.table.horizontalHeader().sectionDoubleClicked.connect(self._on_table_header_double_clicked)
 
         self.collect_button = QPushButton("Voeg toe aan lijst")
         self.clear_collected_button = QPushButton("Leeg lijst")
@@ -397,9 +483,14 @@ class MainWindow(QMainWindow):
                 kind=request_kind,
                 bp_type=bp_type
             )
-            # --- ✅ Controle op lege resultaten bij Standaard + Toon voorraad = S ---
+            # --- ✅ Controle op lege resultaten bij Artikel + Toon voorraad = S ---
+            # BUGFIX (v1.1.1): vergeleek voorheen met "Standaard", maar de
+            # combobox self.search_type_select gebruikt als itemtekst
+            # "Artikel" (zie addItems() hierboven) — hierdoor werd deze
+            # voorwaarde nooit True en verscheen de "geen voorraad"-melding
+            # nooit.
             show_stock = self.show_stock_select.currentText()
-            if searchtype == "Standaard" and show_stock == "S" and (not data or len(data) == 0):
+            if searchtype == "Artikel" and show_stock == "S" and (not data or len(data) == 0):
                 self.table.setRowCount(0)
                 self.table.setColumnCount(1)
                 self.table.setHorizontalHeaderLabels(["Geen voorraad"])
@@ -414,7 +505,10 @@ class MainWindow(QMainWindow):
                 QMessageBox.information(
                     self,
                     "Geen voorraad",
-                    "⚠️ Er is geen voorraad aanwezig voor de opgegeven zoekterm."
+                    "⚠️ Er is geen voorraad aanwezig voor deze zoekterm bij \"Toon voorraad = S\".\n\n"
+                    "Dit betekent niet noodzakelijk dat het artikel niet bestaat: "
+                    "zet \"Toon voorraad\" op \"R\" en zoek opnieuw om artikelinformatie "
+                    "zonder voorraadfilter te bekijken."
                 )
 
                 self.loading_movie.stop()
@@ -453,6 +547,9 @@ class MainWindow(QMainWindow):
         elif is_bp:
             self.populate_bp_table(data)
         else:
+            # SORT-1: nieuwe zoekactie -> sorteerstatus/-indicator resetten
+            self._article_sort_state = {"column_index": None, "ascending": True}
+            self.table.horizontalHeader().setSortIndicatorShown(False)
             self.populate_table(data)
 
         # stop spinner
@@ -470,15 +567,30 @@ class MainWindow(QMainWindow):
             originele_columns = list(COLUMN_HEADERS_DEFAULT.keys())
             header_labels = ["Selectie"] + list(COLUMN_HEADERS_DEFAULT.values())
 
+        # SORT-1: onthouden voor _on_table_header_double_clicked (kolomindex -> data-key)
+        self._last_article_data = data
+        self._last_article_columns = originele_columns
+
         self.table.setRowCount(len(data))
         self.table.setColumnCount(len(header_labels))
         self.table.setHorizontalHeaderLabels(header_labels)
 
+        # KOLOMBREEDTE-1: alle kolommen (behalve de checkbox-kolom) vrij
+        # versleepbaar + dubbelklik-autofit, i.p.v. de vorige hardgecodeerde
+        # Stretch op kolomindex 2 — analoog aan ui_bp_articles_tab.py.
         header = self.table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         for idx in range(1, len(header_labels)):
-            mode = QHeaderView.Stretch if idx == 2 else QHeaderView.ResizeToContents
-            header.setSectionResizeMode(idx, mode)
+            header.setSectionResizeMode(idx, QHeaderView.Interactive)
+        header.setStretchLastSection(True)
+
+        # MINWHS-KLEUR-1: kolomindex van "Min.Whs" (QTYMININV) bepalen —
+        # enkel aanwezig wanneer show_stock == "S".
+        try:
+            min_whs_col_offset = originele_columns.index("QTYMININV") + 1
+        except ValueError:
+            min_whs_col_offset = None
+        MIN_WHS_STANDAARD_KLEUR = QColor("#d9f2d9")  # lichtgroen
 
         for row, item in enumerate(data):
             checkbox = QCheckBox()
@@ -489,11 +601,87 @@ class MainWindow(QMainWindow):
                 val = f"{val:.2f}" if isinstance(val, float) else str(val or "")
                 cell = QTableWidgetItem(val)
                 cell.setToolTip(val)
+
+                # MINWHS-KLEUR-1: Min.Whs > 0 => "standaard artikel",
+                # lichtgroen gemarkeerd + duidelijke tooltip.
+                if min_whs_col_offset is not None and col_offset == min_whs_col_offset:
+                    try:
+                        is_standaard_artikel = float(str(val).replace(",", ".")) > 0
+                    except (TypeError, ValueError):
+                        is_standaard_artikel = False
+                    if is_standaard_artikel:
+                        cell.setBackground(MIN_WHS_STANDAARD_KLEUR)
+                        cell.setToolTip(f"{val}\n✅ Standaard artikel (Min.Whs > 0)")
+
                 self.table.setItem(row, col_offset, cell)
+
+        # KOLOMBREEDTE-1: eerste weergave auto-fitten op inhoud (Excel-
+        # gevoel), blijft nadien manueel aanpasbaar door de gebruiker.
+        self.table.resizeColumnsToContents()
 
         self.result_count_label.setText(f"Aantal resultaten: {len(data)}")
         if data:
             self.table.selectRow(0)
+
+        # SORT-1: sorteerpijltje in header herstellen na herbouw van de tabel
+        col_idx = self._article_sort_state.get("column_index")
+        if col_idx is not None:
+            order = Qt.AscendingOrder if self._article_sort_state["ascending"] else Qt.DescendingOrder
+            header = self.table.horizontalHeader()
+            header.setSortIndicatorShown(True)
+            header.setSortIndicator(col_idx, order)
+
+    def _on_table_header_double_clicked(self, logical_index: int):
+        """
+        SORT-1: sorteert de Artikel-resultatentabel bij dubbelklik op een
+        toegestane kolomheader (Art.Nr. / Qty / Prijs / Leverancier).
+        Sorteert op de ruwe data (vóór weergave-opmaak). Tweede dubbelklik
+        op dezelfde kolom keert de richting om.
+        """
+        # Enkel actief voor de standaard Artikel-resultatentabel
+        if self.search_type_select.currentText() != "Artikel":
+            return
+        if logical_index == 0 or not self._last_article_columns:
+            return  # kolom 0 = Selectie-checkbox, niet sorteerbaar
+
+        header_item = self.table.horizontalHeaderItem(logical_index)
+        header_label = header_item.text() if header_item else ""
+        if header_label not in SORTABLE_ARTICLE_HEADER_LABELS:
+            return  # enkel Art.Nr., Qty, Prijs, Leverancier zijn sorteerbaar
+
+        col_key_index = logical_index - 1
+        if col_key_index >= len(self._last_article_columns):
+            return
+        col_key = self._last_article_columns[col_key_index]
+
+        # Richting bepalen: zelfde kolom -> omkeren, andere kolom -> oplopend starten
+        if self._article_sort_state.get("column_index") == logical_index:
+            ascending = not self._article_sort_state["ascending"]
+        else:
+            ascending = True
+        self._article_sort_state = {"column_index": logical_index, "ascending": ascending}
+
+        def _sort_key(record):
+            val = record.get(col_key)
+            if val is None:
+                return (1, "")  # None's altijd achteraan, ongeacht sorteerrichting
+            if isinstance(val, (int, float)):
+                return (0, val)
+            try:
+                return (0, float(val))  # numerieke waarde als tekst opgeslagen
+            except (TypeError, ValueError):
+                return (0, str(val).lower())
+
+        try:
+            self._last_article_data.sort(key=_sort_key, reverse=not ascending)
+        except TypeError:
+            # Fallback bij gemengde types (numeriek + tekst) in dezelfde kolom
+            self._last_article_data.sort(
+                key=lambda rec: str(rec.get(col_key, "")).lower(),
+                reverse=not ascending
+            )
+
+        self.populate_table(self._last_article_data)
 
     def populate_bp_table(self, data: list):
         """BP-weergave: alleen CardCode, CardName, FederalTaxID, ContactPerson."""
@@ -891,6 +1079,92 @@ class MainWindow(QMainWindow):
         if os.path.exists(path):
             self._on_qss_file_changed(path)
 
+    # --------------- WHATSNEW-1: update-popup + "Wat is er nieuw?" ---------------
+    def _check_for_update_startup(self):
+        """Opstart-check (1s na start) — toont bij een nieuwere versie een
+        eigen dialoog i.p.v. de kale QMessageBox uit updater.py."""
+        check_for_update(__version__, self, self._on_startup_update_check_result)
+
+    def _on_startup_update_check_result(self, is_newer: bool):
+        if is_newer:
+            self._show_update_available_dialog()
+
+    def _show_update_available_dialog(self):
+        """Dialoog bij opstart wanneer een nieuwere versie beschikbaar is:
+        knoppen 'Update nu', 'Wat is er nieuw?' en 'Later'."""
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Nieuwe versie beschikbaar")
+        layout = QVBoxLayout(dialog)
+
+        layout.addWidget(QLabel(
+            f"Er is een nieuwe versie van Artikelzoeker beschikbaar.\n"
+            f"Je huidige versie: {__version__}"
+        ))
+
+        btn_row = QHBoxLayout()
+        update_btn = QPushButton("Update nu")
+        update_btn.clicked.connect(lambda: download_latest_release(dialog))
+        whatsnew_btn = QPushButton("Wat is er nieuw?")
+        whatsnew_btn.clicked.connect(lambda: self._show_whatsnew_dialog(parent=dialog))
+        later_btn = QPushButton("Later")
+        later_btn.clicked.connect(dialog.reject)
+
+        btn_row.addWidget(update_btn)
+        btn_row.addWidget(whatsnew_btn)
+        btn_row.addStretch()
+        btn_row.addWidget(later_btn)
+        layout.addLayout(btn_row)
+
+        dialog.setLayout(layout)
+        dialog.exec()
+
+    def _show_whatsnew_dialog(self, parent=None):
+        """WHATSNEW-1: toont de release notes (body) van de laatste GitHub
+        Release — remote content, niet te verwarren met de lokale
+        Changelog-dialoog (_show_changelog_dialog) die de geschiedenis van
+        de al geïnstalleerde versie toont. Wordt aangeroepen vanuit zowel
+        de opstart-popup (_show_update_available_dialog) als Help → Over...
+        (_show_about_dialog) — één centrale implementatie."""
+        dialog = QDialog(parent or self)
+        dialog.setWindowTitle("Wat is er nieuw?")
+        dialog.resize(700, 500)
+        layout = QVBoxLayout(dialog)
+
+        notes_view = QTextBrowser()
+        notes_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        layout.addWidget(notes_view)
+
+        html_url = f"https://github.com/{OWNER}/{REPO}/releases/latest"
+        try:
+            info = fetch_release_notes()
+            html_url = info.get("html_url", html_url)
+            body = info.get("body", "")
+            if body:
+                notes_view.setHtml(markdown.markdown(body, extensions=['tables']))
+            else:
+                notes_view.setPlainText(
+                    "ℹ️ Geen release notes ingevuld voor deze release.\n\n"
+                    "Klik op \"Open op GitHub\" voor meer info."
+                )
+        except Exception as e:
+            notes_view.setPlainText(
+                f"❌ Kon release notes niet ophalen:\n{e}\n\n"
+                "Klik op \"Open op GitHub\" om de releasepagina te bekijken."
+            )
+
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        open_gh_btn = QPushButton("Open op GitHub")
+        open_gh_btn.clicked.connect(lambda: webbrowser.open(html_url))
+        close_btn = QPushButton("Sluiten")
+        close_btn.clicked.connect(dialog.accept)
+        btn_row.addWidget(open_gh_btn)
+        btn_row.addWidget(close_btn)
+        layout.addLayout(btn_row)
+
+        dialog.setLayout(layout)
+        dialog.exec()
+
     # Changelog & Help & About
     def _show_changelog_dialog(self):
         dialog = QDialog(self)
@@ -959,12 +1233,25 @@ class MainWindow(QMainWindow):
         version_label.setStyleSheet("color: gray;")
         layout.addWidget(version_label)
 
+        btn_row = QHBoxLayout()
         self.update_btn = QPushButton("Update nu")
         self.update_btn.setEnabled(False)
         self.update_btn.clicked.connect(lambda: download_latest_release(dialog))
-        layout.addWidget(self.update_btn)
+        btn_row.addWidget(self.update_btn)
 
-        check_for_update(__version__, dialog, lambda ok: self.update_btn.setEnabled(ok))
+        # WHATSNEW-1: enkel actief zodra check_for_update() een nieuwere
+        # versie meldt — zelfde callback als de "Update nu"-knop hierboven.
+        whatsnew_btn = QPushButton("Wat is er nieuw?")
+        whatsnew_btn.setEnabled(False)
+        whatsnew_btn.clicked.connect(lambda: self._show_whatsnew_dialog(parent=dialog))
+        btn_row.addWidget(whatsnew_btn)
+        layout.addLayout(btn_row)
+
+        def _on_check_result(is_newer: bool):
+            self.update_btn.setEnabled(is_newer)
+            whatsnew_btn.setEnabled(is_newer)
+
+        check_for_update(__version__, dialog, _on_check_result)
 
         dialog.setLayout(layout)
         dialog.exec()

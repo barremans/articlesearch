@@ -1,11 +1,33 @@
-# settings.py
+# =============================================================================
+# ArticleSearch
+# File:    settings.py
+# Role:    Persistente gebruikersinstellingen (settings.json) — environment,
+#          show_stock, kolomheaders, taal, BP-default-type, label-
+#          instellingen, default search-type, tab-volgorde, QSS-paden.
+# Version: 1.1.0
+# Author:  Bart Bossuyt
+# Changes: 1.1.0 — BUGFIX: default_search_type gebruikte "Standaard" als
+#                   geldige/standaardwaarde, terwijl de combobox in
+#                   ui_main.py (self.search_type_select) als itemtekst
+#                   "Artikel" gebruikt — de opgeslagen standaard-zoektype-
+#                   instelling kon hierdoor nooit effectief matchen met de
+#                   UI. Aangepast: DEFAULT_SETTINGS["default_search_type"],
+#                   load_default_search_type() en save_default_search_type()
+#                   gebruiken nu "Artikel" i.p.v. "Standaard". Bestaande
+#                   settings.json met de oude waarde "Standaard" valt
+#                   automatisch terug op "Artikel" via de validatie in
+#                   load_default_search_type() — geen migratie nodig.
+# Changes: 1.0.0 — Baseline: bestaande functionaliteit vóór introductie van
+#                   versiebeheer in commentaar. Voorgeschiedenis niet
+#                   gedocumenteerd per deelversie — vanaf nu wel.
+# =============================================================================
 import json
 import os
 
 SETTINGS_FILE = "settings.json"
 
 DEFAULT_SETTINGS = {
-    "default_search_type": "Standaard",
+    "default_search_type": "Artikel",
     "environment": "live",
     "show_stock": "S",
     "detail_modal": False,
@@ -263,12 +285,13 @@ def save_detail_modal(val: bool):
 
 def load_default_search_type() -> str:
     val = load_settings().get("default_search_type", DEFAULT_SETTINGS["default_search_type"])
-    # alleen geldige types toelaten
-    return val if val in ("Standaard", "Project", "BP", "VTA") else "Standaard"
+    # alleen geldige types toelaten — moet matchen met de itemtekst in
+    # ui_main.py: self.search_type_select.addItems(["Artikel", "Project", "BP", "VTA"])
+    return val if val in ("Artikel", "Project", "BP", "VTA") else "Artikel"
 
 def save_default_search_type(val: str):
-    if val not in ("Standaard", "Project", "BP", "VTA"):
-        val = "Standaard"
+    if val not in ("Artikel", "Project", "BP", "VTA"):
+        val = "Artikel"
     settings = load_settings()
     settings["default_search_type"] = val
     save_settings(settings)

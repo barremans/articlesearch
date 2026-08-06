@@ -4,5 +4,6 @@
  'DATA',
  [('docs\\changelog.md', 'docs\\changelog.md', 'DATA'),
   ('docs\\help.md', 'docs\\help.md', 'DATA'),
+  ('docs\\pep_errors.json', 'docs\\pep_errors.json', 'DATA'),
   ('docs\\.vscode\\launch.json', 'docs\\.vscode\\launch.json', 'DATA'),
   ('docs\\.vscode\\settings.json', 'docs\\.vscode\\settings.json', 'DATA')])

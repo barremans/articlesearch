@@ -1,5 +1,124 @@
 # 📝 Changelog
 
+## [15.0.2] - 2026-08-06
+
+### ✨ Nieuw
+- 📄 **Peppol-controlescherm volledig herontworpen**: overzichtelijke
+  documentinfo (documenttype, klantnaam + code, klantreferentie) i.p.v.
+  een kale DocEntry/Status-lijst.
+- 🚦 **Duidelijke statusindicator** (✅ Voltooid / ⚠️ Waarschuwing /
+  🔴 Fout / ⏳ Wachtend/onbekend) bovenaan het scherm, die rekening houdt
+  met de ernst van de onderliggende foutmelding — niet enkel met de rauwe
+  taakstatus.
+- 🈯 **Foutmeldingen worden nu leesbaar vertaald** i.p.v. rauwe,
+  technische JSON-tekst te tonen.
+- 🔁 **Herhaalde identieke foutmeldingen** (retries) worden automatisch
+  samengevoegd tot 1 regel met een pogingenteller, i.p.v. dezelfde fout
+  meermaals te tonen.
+- ⚠️ **Onbekende foutcodes duidelijk gemarkeerd**, met de mogelijkheid om
+  de volledige foutmelding te kopiëren en rechtstreeks te melden via
+  GitHub — zodat nieuwe foutcodes sneller aan de vertaallijst toegevoegd
+  kunnen worden.
+
+### 🛠 Verbeterd
+- **Peppol-detailweergave:** een dubbelklik op een statusregel toont nu
+  altijd de volledige foutmelding (voorheen afgekapt in de tabel).
+- **Robuustere verwerking** van onvolledige/afgekapte foutberichten
+  vanuit de API — het scherm blijft correct werken ook als een
+  foutmelding technisch niet perfect is opgebouwd.
+
+### 🐞 Bugfix
+- **Kritieke fix:** herkende Peppol-foutcodes werden door een foutieve
+  opzoeklogica nooit correct vertaald — dit zat al sinds de eerste versie
+  van het Peppol-scherm.
+- **Statusicoon-fix:** een onschuldige waarschuwing (bv. "document reeds
+  verstuurd/in wachtrij") werd voorheen onterecht als blokkerende fout
+  getoond.
+
+### 🔒 Security
+- **GitHub-integratie:** de sleutel voor het melden van bugs/features via
+  GitHub wordt nu veilig via een systeeminstelling geladen i.p.v.
+  hardcoded in de broncode te staan.
+
+---
+
+## [15.0.0] - 2026-08-04
+
+> Verzamelentry voor alles wat sinds `[9.1.0]` in de app terechtkwam maar
+> nog niet in dit lokale changelog stond (sessies 1–17). Eventuele
+> tussenliggende versienummers die niet apart in de ontwikkelcontext zijn
+> vastgelegd, worden hier niet los vermeld.
+
+### ✨ Nieuw
+- 📐 **Dimensions-tab** (DIM-1) toegevoegd aan het artikel-detailvenster
+  (`ui_detail.py`), net na de tab "SAP". Toont afmetingen/gewicht
+  (Verkoop-, Verpakkings- en Inventaris-eenheden) uit de al bestaande
+  `MEASUREMENT_INFO`-data — **geen extra API-call** nodig.
+- 🔀 **Kolomsortering Artikel-resultaten** (SORT-1): dubbelklik op de
+  kolomkop van **Art.Nr., Leverancier** (alfabetisch) of **Qty, Prijs**
+  (numeriek) sorteert de tabel. Tweede dubbelklik op dezelfde kolom keert
+  de richting om; sortering wordt gereset bij elke nieuwe zoekopdracht.
+  Enkel actief voor zoektype **Artikel**.
+- 🏭 **Artikels-tab bij leveranciers** (ART-BP-1): nieuwe tab "Artikels" in
+  het Business Partner-venster, zichtbaar wanneer de kaart een leverancier
+  is. Toont alle artikelen gekoppeld aan die leverancier (incl.
+  leveranciersartikelnummer, laatste inkoopprijs, afname laatste 6/12
+  maand), met eigen zoekbalk, eigen verzamel-/kopieerlijst en
+  dubbelklik-sortering op prijs en afnamehoeveelheden.
+- 🔒 **Toegangsbeperking Credit Control-tab** (CC-ACCESS-1): de 5
+  detaillijsten (Orders, Leveringen, Voorschotten, Facturen,
+  Kredietnota's) in de CC-tab van het BP-venster zijn nu enkel zichtbaar
+  voor leden van Azure AD-groepen **CGK-APP-L2, L3, L4 of L6**. De
+  algemene financiële kopgegevens (kredietlimiet, saldo, status, ...)
+  blijven zichtbaar voor iedereen.
+- 🟢 **Visuele markering "Standaard artikel"** (MINWHS-KLEUR-1): in de
+  Artikel-resultatentabel krijgt de cel "Min.Whs" een lichtgroene
+  achtergrond + tooltip wanneer de waarde groter is dan 0.
+- ↔️ **Vrij versleepbare kolommen** (KOLOMBREEDTE-1): kolombreedtes in de
+  Artikel-resultatentabel zijn nu manueel aanpasbaar en dubbelklik-autofit
+  ondersteund (net als Excel), i.p.v. een vast uitgerekte kolom.
+- 🆕 **"Wat is er nieuw?"-knop** (WHATSNEW-1): zowel bij de opstart-melding
+  van een beschikbare update als in Help → Over... kan de gebruiker nu de
+  release notes van de laatste GitHub Release bekijken, met terugval naar
+  een link naar GitHub als er geen beschrijving beschikbaar is.
+
+---
+
+### 🛠 Verbeterd
+- **Artikels-tab (BP):** zoekbalk toegevoegd (filtert op Art.Nr.,
+  Leverancier Art.Nr. en Omschrijving), naar analogie van de bestaande
+  zoekfunctie in de Addresses- en Contacts-tabs.
+- **Artikels-tab (BP):** kolommen CardCode/CardName en Omschrijving (Frgn)
+  niet langer getoond — overbodig binnen de kaart van één leverancier.
+- **Artikels-tab (BP):** kolombreedtes en stretch-gedrag werken nu op
+  kolomsleutel i.p.v. vaste kolomindex, zodat toekomstige kolomtoevoegingen
+  de lay-out niet meer verstoren.
+
+---
+
+### 🐞 Bugfix
+- **"Geen voorraad"-melding verscheen nooit:** de vergelijking gebruikte
+  intern nog `"Standaard"` terwijl de zoektype-keuzelijst effectief
+  `"Artikel"` als waarde gebruikt. Gecorrigeerd in `ui_main.py`,
+  `settings.py` en `settings_dialog.py`; bestaande instellingen met de
+  oude waarde vallen automatisch terug op `"Artikel"`.
+- **Kritieke fix toegangscontrole:** de Azure AD-groep `CGK-APP-L6`
+  ontbrak in de basis-toegangscontrole (`main.py`), waardoor leden van
+  die groep de applicatie zelf nooit konden openen — ook niet met
+  geldige Credit Control-rechten.
+
+---
+
+### 🔒 Security
+- **Datalek in Credit Control-tab gedicht:** financiële detaildata
+  (orders, leveringen, voorschotten, facturen, kredietnota's) werd voorheen
+  altijd opgehaald en ingeladen, ongeacht rechten — enkel visueel verborgen
+  achter het vergrendelscherm. Nu wordt enkel de daadwerkelijke vulling van
+  de 5 detaillijsten achter de rechtencontrole geplaatst; de algemene
+  financiële kopgegevens blijven bewust voor iedereen zichtbaar.
+
+---
+
 ## [9.0.5] - 2026-02-03
 
 ## [9.1.0] - 2026-02-09

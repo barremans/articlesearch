@@ -1,4 +1,22 @@
-# settings_dialog.py
+# =============================================================================
+# ArticleSearch
+# File:    settings_dialog.py
+# Role:    Modaal "Instellingen"-venster (QDialog) — omgeving, toon voorraad,
+#          detail-als-modal, standaard zoektype, taal, BP-default-type,
+#          tab-volgorde.
+# Version: 1.1.0
+# Author:  Bart Bossuyt
+# Changes: 1.1.0 — BUGFIX: dropdown "Standaard zoektype" bood "Standaard"
+#                   aan als item, terwijl de combobox in ui_main.py
+#                   (self.search_type_select) als itemtekst "Artikel"
+#                   gebruikt. Items aangepast naar ["Artikel", "Project",
+#                   "BP", "VTA"] zodat de instelling effectief kan matchen.
+#                   Zie ook settings.py v1.1.0 (zelfde fix, achterliggende
+#                   load/save-functies).
+# Changes: 1.0.0 — Baseline: bestaande functionaliteit vóór introductie van
+#                   versiebeheer in commentaar. Voorgeschiedenis niet
+#                   gedocumenteerd per deelversie — vanaf nu wel.
+# =============================================================================
 
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QComboBox, QCheckBox, QPushButton, QListWidget, QListWidgetItem, QMessageBox
 
@@ -34,9 +52,10 @@ def show_settings_dialog(parent):
     modal = QCheckBox("Toon detail als modal dialoog")
     modal.setChecked(load_detail_modal())
 
-    # Standaard zoektype (nu met BP)
+    # Standaard zoektype (moet matchen met de itemtekst in
+    # ui_main.py: self.search_type_select.addItems(["Artikel", "Project", "BP", "VTA"]))
     search_type_default = QComboBox()
-    search_type_default.addItems(["Standaard", "Project", "BP", "VTA"])
+    search_type_default.addItems(["Artikel", "Project", "BP", "VTA"])
     search_type_default.setCurrentText(load_default_search_type())
     
     # Taal

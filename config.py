@@ -1,4 +1,23 @@
-# config.py
+# =============================================================================
+# ArticleSearch
+# File:    config.py
+# Role:    Centrale configuratie — omgevingen (test/live), ConfigurationID's
+#          per databron (API_ENVIRONMENTS) en OAuth-achtige clients per
+#          databron (API_CLIENTS). ⚠️ Bevat base64-encoded client secrets —
+#          zie §7 (Beveiliging) in het context-bestand.
+# Version: 1.1.0
+# Author:  Bart Bossuyt
+# Changes: 1.1.0 — ART-BP-1: nieuwe databron "ArtBpSearch" toegevoegd —
+#                   artikels gekoppeld aan een leverancier (BP), opgevraagd
+#                   via CardCode. Nieuwe config-key `artbp_configP_id`
+#                   ("KX9RLR") in API_ENVIRONMENTS["live"], nieuwe client
+#                   `API_CLIENTS["ArtBpSearch"]["live"]`. Enkel "live"
+#                   voorzien (consistent met overige niet-basis databronnen
+#                   zoals Project/Atp/Po/So/Bp/Cc/BpS/OE/VTA/PEP — geen
+#                   test-config gekend/aangeleverd).
+# Changes: 1.0.0 — Baseline: bestaande functionaliteit vóór introductie van
+#                   versiebeheer in commentaar.
+# =============================================================================
 from settings import load_environment
 import os  # <<< toegevoegd voor env vars
 
@@ -32,6 +51,7 @@ API_ENVIRONMENTS = {
         "so_configP_OE": "4AA8DF",  #Open Elements data   
         "vta_config_id": "G6HH9T", #VTA Info    
         "pep_config_id": "FSOLI1", #Peppol fault info  
+        "artbp_configP_id": "KX9RLR", #Artikels gekoppeld aan leverancier (ArtBpSearch)
     }
 }
 
@@ -148,7 +168,13 @@ API_CLIENTS = {
             "client_id": "SmartlynxStatusInv",
             "client_secret": "YTliODc0MDEtZjg5ZC00MDhiLTg3ZTUtN2U0M2Q0YjM1NzRk"
         }
-    }                   
+    }                   ,
+        "ArtBpSearch": {
+        "live": {
+            "client_id": "ArtBpSearch",
+            "client_secret": "NjI2NmZhY2MtNGY0MC00YTViLTlkODUtYTRlMThiZGIxYjcx"
+        }
+    }
 #end
 }
 
