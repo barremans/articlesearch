@@ -2,11 +2,26 @@
 # ArticleSearch
 # File:    updater.py
 # Role:    Update-check tegen GitHub — leest version.txt (releases/latest/)
-#          voor de versievergelijking, en (nieuw) de release notes van de
-#          laatste GitHub Release via de Releases API voor "Wat is er
-#          nieuw?".
-# Version: 1.1.0
+#          voor de versievergelijking, en de release notes van de laatste
+#          GitHub Release via de Releases API voor "Wat is er nieuw?".
+# Version: 1.2.0
 # Author:  Bart Bossuyt
+# Changes: 1.2.0 — BUGFIX: "Wat is er nieuw?" gaf 401 Bad credentials
+#                   (bevestigd via screenshot, 2026-08-06). Oorzaak: het
+#                   hardcoded PAT is verlopen/ingetrokken — zelfde onderlig-
+#                   gende probleem als bij bug_report_dialog.py/
+#                   github_cases.py (sessie 20). Fix: _headers_releases_api()
+#                   stuurt nu GEEN Authorization-header meer mee. De repo
+#                   (barremans/articlesearch) staat op Public, en het
+#                   ophalen van releases (GET .../releases/latest) is puur
+#                   lezen — dat werkt bij GitHub altijd anoniem, ongeacht
+#                   tokenstatus. "Openbaar zetten" was dus niet nodig (was
+#                   al Public); het probleem zat uitsluitend in het
+#                   onnodig meesturen van een kapot token bij een call die
+#                   geen auth nodig heeft.
+#                   TOKEN/_headers_api() (Contents API, version.txt-
+#                   fallback) bewust ongewijzigd gelaten — buiten scope van
+#                   deze fix, en niet de bron van deze foutmelding.
 # Changes: 1.1.0 — WHATSNEW-1: nieuwe functie fetch_release_notes() — haalt
 #                   tag_name/body/html_url op van de laatste gepubliceerde
 #                   GitHub Release (Releases API, GET .../releases/latest).
@@ -38,6 +53,12 @@ CONTENTS_VERSION_URL = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{R
 RELEASES_API_LATEST = f"https://api.github.com/repos/{OWNER}/{REPO}/releases/latest"
 
 # ZET DIT IN: token met scope 'repo' (PAT classic)
+# LET OP (v1.2.0): dit token gaf op 2026-08-06 een 401 Bad credentials bij
+# de Releases API — vermoedelijk verlopen/ingetrokken. Wordt sinds v1.2.0
+# niet meer gebruikt voor fetch_release_notes() (zie _headers_releases_api),
+# maar staat nog wel achter _headers_api() (Contents API-fallback voor
+# version.txt bij een eventuele private repo). Aanbeveling blijft: via env
+# var beheren i.p.v. hardcoded, en tijdig vernieuwen op GitHub.
 TOKEN = "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"
 
 def _headers_raw():
@@ -55,11 +76,15 @@ def _headers_api():
 # JSON-object terug (tag_name/body/html_url), dus GEEN "v3.raw" Accept-
 # header (die zou enkel platte bestandsinhoud teruggeven, zoals bij
 # _headers_api() hierboven voor de Contents API).
+#
+# v1.2.0: bewust GEEN Authorization-header meer. Het ophalen van een
+# publieke release is een puur leesverkeer-endpoint en werkt bij GitHub
+# altijd anoniem — een (kapot) token zou de hele request onnodig laten
+# falen met 401, ook al zou het zonder token gewoon lukken. Mocht de repo
+# ooit terug Private worden, moet hier weer een geldig token toegevoegd
+# worden (analoog aan _headers_api()).
 def _headers_releases_api():
-    h = {"Accept": "application/vnd.github+json"}
-    if TOKEN:
-        h["Authorization"] = f"token {TOKEN}"
-    return h
+    return {"Accept": "application/vnd.github+json"}
 
 
 def fetch_release_notes(timeout=8) -> dict:

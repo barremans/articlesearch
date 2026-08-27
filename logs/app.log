@@ -15469,3 +15469,397 @@ KeyError: 'Eindt_min'
 [INFO] 2026-08-06 13:42:28 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
 [INFO] 2026-08-06 13:42:53 - [SmartlynxStatusInv] Token aanvragen bij https://api.cgk-group.com/api/account/login...
 [INFO] 2026-08-06 13:42:53 - [SmartlynxStatusInv] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-06 14:06:27 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A52171&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=EwKBzorQxAeTXlPR&code_challenge=dcdy4xm8ir-6PnkLuyJ_33fCJBlJJ7MDV88L6ghfXNc&code_challenge_method=S256&nonce=5de365723ca1ccf59d8ab327ca663970a9f0f91e9b4336eee814b862b8883ec7&client_info=1&prompt=select_account
+[INFO] 2026-08-06 14:07:13 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A57077&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=gRuCtOimErBfkaWI&code_challenge=crAyeJyJB_DMaXpTEc2ps7fVOAtrELNpDcx2itv_SxI&code_challenge_method=S256&nonce=1e49b897599c56a62b84f61c3f68cb8bbe2ad6d1c476cac217879bebe9e141e5&client_info=1&prompt=select_account
+[INFO] 2026-08-06 14:07:16 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-06 14:07:16 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-06 14:07:16 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-06 14:07:16 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-06 14:07:16 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-06 14:18:03 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A60948&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=vHglnsiboKNmtYCa&code_challenge=1p_2eO9sCqmbs7RHMe_H17KWtmSVo_fjpvVdxsIcrCg&code_challenge_method=S256&nonce=45cb99140df0a764f890208ad57daff5d0b3fdfb49a7ca5b3b9658e081ded054&client_info=1&prompt=select_account
+[INFO] 2026-08-06 14:18:07 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-06 14:18:07 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-06 14:18:07 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-06 14:18:07 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-06 14:18:07 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-06 14:18:56 - [SmartlynxStatusInv] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-06 14:18:56 - [SmartlynxStatusInv] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-06 14:57:31 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A49675&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=gtYKbUJrmyjApeOo&code_challenge=xKBVbabHPl6NLTXUrZznBHNtpZyVXbcH2YMEYjjlYDI&code_challenge_method=S256&nonce=063199a3f3c7f0e193a757124b0157f125c7e5780bf35b39833c9c5991a77cda&client_info=1&prompt=select_account
+[INFO] 2026-08-06 14:57:35 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-06 14:57:35 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-06 14:57:35 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-06 14:57:35 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-06 14:57:35 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-06 14:58:25 - [SmartlynxStatusInv] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-06 14:58:25 - [SmartlynxStatusInv] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-26 16:08:48 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A56664&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=eWMfCmkhgBpJqcIV&code_challenge=M2LvGZ7HI9v-gXYOjH-w0lGyEexqne-HwsHDrzldRmk&code_challenge_method=S256&nonce=25c531e7ad458a2a8fff046dd4e5d2d18f48caa9515cdd5f05f138340b8e585b&client_info=1&prompt=select_account
+[INFO] 2026-08-26 16:08:53 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-26 16:08:53 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-26 16:08:53 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-26 16:08:53 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-26 16:08:53 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-26 16:09:49 - [DuePaymentDetail] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-26 16:09:50 - [DuePaymentDetail] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-26 16:09:50 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=UIY02H | MultiKey={'@months': '24', '@cardcode': 'K09413', '@due': ''}
+[INFO] 2026-08-26 16:10:23 - [DuePaymentOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-26 16:10:23 - [DuePaymentOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-26 16:10:23 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=YCT5LR | MultiKey={'@months': '24', '@cardcode': 'K09413'}
+[INFO] 2026-08-26 16:14:02 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=UIY02H | MultiKey={'@months': '24', '@cardcode': '', '@due': '0'}
+[INFO] 2026-08-27 07:40:35 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A65502&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=qBzTpvMYRtEUAaHe&code_challenge=VQE-3pX6UFAnC9j-V3V8B1OL8o16uSYaP_7WRz9mE00&code_challenge_method=S256&nonce=caabef02c543f78fad28a1e2aec96c57c0e5b1ecf96311ba2755ae20191de3fd&client_info=1&prompt=select_account
+[INFO] 2026-08-27 07:40:38 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:40:49 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:40:49 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-27 07:40:49 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:40:49 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:42:06 - [DuePaymentDetail] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:42:06 - [DuePaymentDetail] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:42:06 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=UIY02H | MultiKey={'@months': '24', '@cardcode': '', '@due': ''}
+[INFO] 2026-08-27 07:46:56 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A58982&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=ylXomsULQwOqdHgj&code_challenge=H8CcE5AvCsyOZRdYKHjrkL-heeKt7i27_YPAkM8UiOY&code_challenge_method=S256&nonce=af007e68e0551fdab78e9bd2a7568f5070b4d4beeb43ed9b7d0058484c076130&client_info=1&prompt=select_account
+[INFO] 2026-08-27 07:47:01 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:47:01 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:47:01 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-27 07:47:01 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:47:01 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:47:56 - [DuePaymentDetail] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:47:56 - [DuePaymentDetail] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:47:56 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=UIY02H | MultiKey={'@months': '24', '@cardcode': '', '@due': ''}
+[INFO] 2026-08-27 07:48:00 - [DuePaymentOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:48:00 - [DuePaymentOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:48:00 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=YCT5LR | MultiKey={'@months': '24', '@cardcode': 'K23811'}
+[INFO] 2026-08-27 07:48:07 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=YCT5LR | MultiKey={'@months': '24', '@cardcode': 'K24094'}
+[INFO] 2026-08-27 07:48:23 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=YCT5LR | MultiKey={'@months': '24', '@cardcode': 'K503560'}
+[INFO] 2026-08-27 07:48:27 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=YCT5LR | MultiKey={'@months': '24', '@cardcode': 'K21747'}
+[INFO] 2026-08-27 07:48:41 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=YCT5LR | MultiKey={'@months': '24', '@cardcode': 'K13763'}
+[INFO] 2026-08-27 07:48:45 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=YCT5LR | MultiKey={'@months': '24', '@cardcode': 'K13763'}
+[INFO] 2026-08-27 07:53:47 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A63754&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=rSDoxyvWMBlsRzFX&code_challenge=KS1rjwP3q9LPNdTYjTKY8Bfpsb_wO9IViHUl28DyWpM&code_challenge_method=S256&nonce=d97187daeb2153c413ef7d8d88599d0097bc53b378c9a785e4d5f11489853d04&client_info=1&prompt=select_account
+[INFO] 2026-08-27 07:53:57 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:53:57 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:53:57 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-27 07:53:57 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:53:57 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:54:24 - [DuePaymentDetail] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:54:24 - [DuePaymentDetail] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:54:24 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=UIY02H | MultiKey={'@months': '24', '@cardcode': '', '@due': ''}
+[INFO] 2026-08-27 07:54:32 - [DuePaymentOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:54:32 - [DuePaymentOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:54:32 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=YCT5LR | MultiKey={'@months': '24', '@cardcode': 'K05863'}
+[INFO] 2026-08-27 07:56:00 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A64097&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=IsfyRqWirNBHQYnc&code_challenge=FNI_C9Hps0guMMT-t369Llz-TkPbgtT39vx7oHNJkcA&code_challenge_method=S256&nonce=1168f2130f1f5d667ff47e46eb12bee55ef2a77c662643271767127a60af82d4&client_info=1&prompt=select_account
+[INFO] 2026-08-27 07:56:04 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:56:04 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:56:04 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-27 07:56:04 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:56:04 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:56:11 - [DuePaymentDetail] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:56:11 - [DuePaymentDetail] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:56:11 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=UIY02H | MultiKey={'@months': '24', '@cardcode': '', '@due': ''}
+[INFO] 2026-08-27 07:56:16 - [DuePaymentOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:56:16 - [DuePaymentOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:56:16 - URL=https://api.cgk-group.com/api/datarequest | ConfigurationID=YCT5LR | MultiKey={'@months': '24', '@cardcode': 'K14531'}
+[INFO] 2026-08-27 07:57:07 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A64576&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=rNdCWTBhAFQHuIOg&code_challenge=Heo7gfE6eic7kGp4ZUd1pjyHpH9IHjbWakdvaLiHXFU&code_challenge_method=S256&nonce=841bc1b12f85b20ee48c46a14a41da9b345baaf835f9221e837b9d5948a8b13a&client_info=1&prompt=select_account
+[INFO] 2026-08-27 07:57:11 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:57:11 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 07:57:11 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-27 07:57:11 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 07:57:11 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 08:02:31 - Zoekactie: type=Artikel | kind=data | term='512%' | mode='AND' | bp_type=''
+[INFO] 2026-08-27 08:02:31 - ENV=live
+[INFO] 2026-08-27 08:02:31 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2026-08-27 08:02:31 - Kind=data | project_search=False
+[INFO] 2026-08-27 08:02:31 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP",
+  "so_configP_CcV2": "0B7JWA",
+  "so_configP_CcBpV2": "HG443N",
+  "so_configP_OE": "4AA8DF",
+  "vta_config_id": "G6HH9T",
+  "pep_config_id": "FSOLI1",
+  "artbp_configP_id": "KX9RLR",
+  "duepayment_detail_configP_id": "UIY02H",
+  "duepayment_overview_configP_id": "YCT5LR"
+}
+[INFO] 2026-08-27 08:02:31 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2026-08-27 08:02:31 - Auth client: DEFAULT
+[INFO] 2026-08-27 08:02:31 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2026-08-27 08:02:31 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "512%",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2026-08-27 08:02:32 - HTTP 200
+[INFO] 2026-08-27 08:02:41 - Zoekactie: type=Artikel | kind=data | term='215.%' | mode='AND' | bp_type=''
+[INFO] 2026-08-27 08:02:41 - ENV=live
+[INFO] 2026-08-27 08:02:41 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2026-08-27 08:02:41 - Kind=data | project_search=False
+[INFO] 2026-08-27 08:02:41 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP",
+  "so_configP_CcV2": "0B7JWA",
+  "so_configP_CcBpV2": "HG443N",
+  "so_configP_OE": "4AA8DF",
+  "vta_config_id": "G6HH9T",
+  "pep_config_id": "FSOLI1",
+  "artbp_configP_id": "KX9RLR",
+  "duepayment_detail_configP_id": "UIY02H",
+  "duepayment_overview_configP_id": "YCT5LR"
+}
+[INFO] 2026-08-27 08:02:41 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2026-08-27 08:02:41 - Auth client: DEFAULT
+[INFO] 2026-08-27 08:02:41 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2026-08-27 08:02:41 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "215.%",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2026-08-27 08:02:41 - HTTP 200
+[INFO] 2026-08-27 08:02:49 - Zoekactie: type=Artikel | kind=data | term='512%.' | mode='AND' | bp_type=''
+[INFO] 2026-08-27 08:02:49 - ENV=live
+[INFO] 2026-08-27 08:02:49 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2026-08-27 08:02:49 - Kind=data | project_search=False
+[INFO] 2026-08-27 08:02:49 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP",
+  "so_configP_CcV2": "0B7JWA",
+  "so_configP_CcBpV2": "HG443N",
+  "so_configP_OE": "4AA8DF",
+  "vta_config_id": "G6HH9T",
+  "pep_config_id": "FSOLI1",
+  "artbp_configP_id": "KX9RLR",
+  "duepayment_detail_configP_id": "UIY02H",
+  "duepayment_overview_configP_id": "YCT5LR"
+}
+[INFO] 2026-08-27 08:02:49 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2026-08-27 08:02:49 - Auth client: DEFAULT
+[INFO] 2026-08-27 08:02:49 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2026-08-27 08:02:49 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "512%.",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2026-08-27 08:02:49 - HTTP 200
+[INFO] 2026-08-27 08:09:15 - Zoekactie: type=Artikel | kind=data | term='512.%' | mode='AND' | bp_type=''
+[INFO] 2026-08-27 08:09:15 - ENV=live
+[INFO] 2026-08-27 08:09:15 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2026-08-27 08:09:15 - Kind=data | project_search=False
+[INFO] 2026-08-27 08:09:15 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP",
+  "so_configP_CcV2": "0B7JWA",
+  "so_configP_CcBpV2": "HG443N",
+  "so_configP_OE": "4AA8DF",
+  "vta_config_id": "G6HH9T",
+  "pep_config_id": "FSOLI1",
+  "artbp_configP_id": "KX9RLR",
+  "duepayment_detail_configP_id": "UIY02H",
+  "duepayment_overview_configP_id": "YCT5LR"
+}
+[INFO] 2026-08-27 08:09:15 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2026-08-27 08:09:15 - Auth client: DEFAULT
+[INFO] 2026-08-27 08:09:15 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2026-08-27 08:09:15 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "512.%",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2026-08-27 08:09:15 - HTTP 200
+[INFO] 2026-08-27 08:09:38 - Zoekactie: type=Artikel | kind=data | term='151.%' | mode='AND' | bp_type=''
+[INFO] 2026-08-27 08:09:38 - ENV=live
+[INFO] 2026-08-27 08:09:38 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2026-08-27 08:09:38 - Kind=data | project_search=False
+[INFO] 2026-08-27 08:09:38 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP",
+  "so_configP_CcV2": "0B7JWA",
+  "so_configP_CcBpV2": "HG443N",
+  "so_configP_OE": "4AA8DF",
+  "vta_config_id": "G6HH9T",
+  "pep_config_id": "FSOLI1",
+  "artbp_configP_id": "KX9RLR",
+  "duepayment_detail_configP_id": "UIY02H",
+  "duepayment_overview_configP_id": "YCT5LR"
+}
+[INFO] 2026-08-27 08:09:38 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2026-08-27 08:09:38 - Auth client: DEFAULT
+[INFO] 2026-08-27 08:09:38 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2026-08-27 08:09:38 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "151.%",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2026-08-27 08:09:38 - HTTP 200
+[INFO] 2026-08-27 08:09:41 - Detail voor 151.40/50K genormaliseerd: type=dict, keys=[]
+[INFO] 2026-08-27 08:09:41 - Detail payload type=dict keys=[]
+[INFO] 2026-08-27 08:10:19 - Detail voor 151.BAS.5/50 genormaliseerd: type=dict, keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-27 08:10:19 - Detail payload type=dict keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-27 08:33:11 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A52328&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=xKANWYqIDsVFUQSL&code_challenge=3nBwohBEEmUgGD8_WoNOZIgcybFVT82u7DWqSKyhNkU&code_challenge_method=S256&nonce=53c29320bc1dcb06c75f1d265374896b99cb721f89c74c9aceedcf685140c89c&client_info=1&prompt=select_account
+[INFO] 2026-08-27 08:33:15 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 08:33:15 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 08:33:15 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-27 08:33:15 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 08:33:15 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 08:33:49 - Zoekactie: type=Artikel | kind=data | term='152.%' | mode='AND' | bp_type=''
+[INFO] 2026-08-27 08:33:49 - ENV=live
+[INFO] 2026-08-27 08:33:49 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2026-08-27 08:33:49 - Kind=data | project_search=False
+[INFO] 2026-08-27 08:33:49 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP",
+  "so_configP_CcV2": "0B7JWA",
+  "so_configP_CcBpV2": "HG443N",
+  "so_configP_OE": "4AA8DF",
+  "vta_config_id": "G6HH9T",
+  "pep_config_id": "FSOLI1",
+  "artbp_configP_id": "KX9RLR",
+  "duepayment_detail_configP_id": "UIY02H",
+  "duepayment_overview_configP_id": "YCT5LR"
+}
+[INFO] 2026-08-27 08:33:49 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2026-08-27 08:33:49 - Auth client: DEFAULT
+[INFO] 2026-08-27 08:33:49 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2026-08-27 08:33:49 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "152.%",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2026-08-27 08:33:49 - HTTP 200
+[INFO] 2026-08-27 08:33:53 - Detail voor 152.PPECO200515 genormaliseerd: type=dict, keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-27 08:33:53 - Detail payload type=dict keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-27 08:34:48 - Detail voor 152.PPECO200515 genormaliseerd: type=dict, keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-27 08:34:48 - Detail payload type=dict keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-27 08:46:15 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A57570&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=GQtIBpgXdvjwmaRr&code_challenge=Yk_t6-3ZpzKbYh6otIONV7y_O0E0umfq5SIMDpvi5b4&code_challenge_method=S256&nonce=bd3802ecbf5765d252840ed944bc9581569f30e5a9854d85241ec1619f98fdf6&client_info=1&prompt=select_account
+[INFO] 2026-08-27 08:46:19 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 08:46:19 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 08:46:19 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-27 08:46:19 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-27 08:46:19 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-27 08:46:42 - Zoekactie: type=Artikel | kind=data | term='152.PPECO200515' | mode='AND' | bp_type=''
+[INFO] 2026-08-27 08:46:42 - ENV=live
+[INFO] 2026-08-27 08:46:42 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2026-08-27 08:46:42 - Kind=data | project_search=False
+[INFO] 2026-08-27 08:46:42 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP",
+  "so_configP_CcV2": "0B7JWA",
+  "so_configP_CcBpV2": "HG443N",
+  "so_configP_OE": "4AA8DF",
+  "vta_config_id": "G6HH9T",
+  "pep_config_id": "FSOLI1",
+  "artbp_configP_id": "KX9RLR",
+  "duepayment_detail_configP_id": "UIY02H",
+  "duepayment_overview_configP_id": "YCT5LR"
+}
+[INFO] 2026-08-27 08:46:42 - Config key gekozen: data_config_id => 9423TC
+[INFO] 2026-08-27 08:46:42 - Auth client: DEFAULT
+[INFO] 2026-08-27 08:46:42 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2026-08-27 08:46:42 - Payload:
+{
+  "ConfigurationID": "9423TC",
+  "DatabaseName": "SBOCGKLIVE",
+  "DatabaseAlias": "",
+  "MultiKey": {
+    "@zoekterm": "152.PPECO200515",
+    "@mode": "AND",
+    "@show_stock": "R"
+  }
+}
+[INFO] 2026-08-27 08:46:42 - HTTP 200
+[INFO] 2026-08-27 08:46:45 - Detail voor 152.PPECO200515 genormaliseerd: type=dict, keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-27 08:46:45 - Detail payload type=dict keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']

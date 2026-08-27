@@ -6,8 +6,40 @@
 #          Afbeelding, ATP. Ontvangt de volledige ZStockInfoP-payload
 #          (detail_data) van ui_main.py en verdeelt de sub-secties over de
 #          tab-widgets.
-# Version: 1.1.0
+# Version: 1.3.0
 # Author:  Bart Bossuyt
+# Changes: 1.3.0 — BUGFIX vervolg (screenshot Bart Bossuyt, artikel
+#                   152.PPECO200515): Beschrijving werd al correct
+#                   vooringevuld (v1.2.0), maar VENDORID/VENDORNAME bleven
+#                   leeg zodra er nog geen aankoophistorie (RET) was — een
+#                   nieuw artikel heeft immers nog geen "Laatste aankoop".
+#                   Nieuwe constructor-parameters vendor_hint_id/
+#                   vendor_hint_name (meegegeven vanuit ui_main.py's
+#                   zoekresultaat-rij: "Vendor Nr"/"Leverancier"-kolommen,
+#                   SuppCatNum/SUPPLIERIDPRODUCT/SUPPLIERNAME — velden die
+#                   niet in de ZStockInfoP-detailpayload zelf zitten).
+#                   _open_image_uploader() gebruikt deze nu als 2e fallback-
+#                   laag, vóór de RET-fallback: OITMI-waarde > vendor_hint
+#                   (zoekresultaat-rij) > RET (laatste aankoop). Zie
+#                   ui_main.py v1.5.0 voor de aanroepende kant.
+# Changes: 1.2.0 — BUGFIX (bugmelding Bart Bossuyt, 2026-08-25): OITMI
+#                   Upload-dialoog opende met lege velden Beschrijving/
+#                   VENDORID/VENDORNAME zodra een artikel nog geen bestaande
+#                   afbeelding-record had (img_data leeg) — _open_image_
+#                   uploader() gaf in dat geval altijd lege strings door.
+#                   Nu: fallback naar reeds gekende artikelgegevens, ENKEL
+#                   wanneer het overeenkomstige OITMI-veld zelf leeg is
+#                   (bestaande OITMI-waarden hebben nog steeds voorrang):
+#                     - Beschrijving  <- self.detail_data["ItemName"]
+#                       (eigen omschrijving, al aanwezig in de payload)
+#                     - VENDORID      <- meest recente "RET"-record
+#                       (Laatste aankoop, zelfde payload)["VendorNum"]
+#                       (leveranciersartikelnummer)
+#                     - VENDORNAME    <- idem ["CardName"] (leveranciersnaam)
+#                   Geen nieuwe API-call nodig — RET/ItemName zitten al in
+#                   detail_data. "Meest recente" RET-record bepaald via
+#                   max(DocDate), met fallback op eerste rij indien DocDate
+#                   ontbreekt/onvergelijkbaar.
 # Changes: 1.1.0 — Nieuwe tab "📐 Dimensions" toegevoegd, net na "SAP". Toont
 #                   MEASUREMENT_INFO (afmetingen/gewicht) uit de bestaande
 #                   ZStockInfoP-payload (config WEZ7CY) via de nieuwe
@@ -53,7 +85,8 @@ def safe_base64_decode(data: bytes) -> bytes:
 
 
 class DetailWindow(QDialog):
-    def __init__(self, parent=None, item_code=None, detail_data: dict = None):
+    def __init__(self, parent=None, item_code=None, detail_data: dict = None,
+                 vendor_hint_id: str = "", vendor_hint_name: str = ""):
         super().__init__(parent)
         self.setWindowFlags(
             Qt.Dialog |
@@ -66,6 +99,11 @@ class DetailWindow(QDialog):
 
         self.item_code = item_code
         self.detail_data = detail_data or {}
+        # Vendor-hints uit de zoekresultaat-rij (ui_main.py) — "Vendor Nr"/
+        # "Leverancier"-kolommen, niet aanwezig in detail_data zelf. Enkel
+        # gebruikt als fallback bij het vooraf invullen van OITMI Upload.
+        self.vendor_hint_id = (vendor_hint_id or "").strip()
+        self.vendor_hint_name = (vendor_hint_name or "").strip()
         self.setWindowTitle(f"Detail: {item_code}")
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "assets", "mark.png")))
 
@@ -263,12 +301,35 @@ class DetailWindow(QDialog):
         raw_blob = img_data.get("OITMI_IMAGE", "")
         cleaned_blob = safe_base64_cleanup(raw_blob) if raw_blob else ""
 
+        # --- Fallback-gegevens vanuit het eigen artikel (al aanwezig in
+        #     detail_data — geen extra API-call nodig), enkel gebruikt
+        #     wanneer het overeenkomstige OITMI-veld zelf nog leeg is. ---
+        own_description = self.detail_data.get("ItemName", "")
+
+        last_purch = self.detail_data.get("RET", []) or []
+        last_purch_record = {}
+        if last_purch:
+            try:
+                # Meest recente aankoop op basis van DocDate
+                last_purch_record = max(last_purch, key=lambda r: r.get("DocDate") or "")
+            except Exception:
+                last_purch_record = last_purch[0]
+
+        fallback_vendor_id = last_purch_record.get("VendorNum", "")   # leveranciersartikelnummer (RET)
+        fallback_vendor_name = last_purch_record.get("CardName", "")  # leveranciersnaam (RET)
+
+        description = img_data.get("OITMI_DESCRIPTION", "") or own_description
+        # Volgorde: bestaande OITMI-waarde > "Vendor Nr"/"Leverancier" uit de
+        # zoekresultaat-rij (meest specifiek per artikel) > laatste aankoop (RET).
+        vendor_id = img_data.get("OITMI_VENDORID", "") or self.vendor_hint_id or fallback_vendor_id
+        vendor_name = img_data.get("OITMI_VENDORNAME", "") or self.vendor_hint_name or fallback_vendor_name
+
         uploader = ImageUploader(
             parent=self,
             item_code=img_data.get("OITMI_ITRMID", self.item_code),
-            description=img_data.get("OITMI_DESCRIPTION", ""),
-            vendor_id=img_data.get("OITMI_VENDORID", ""),
-            vendor_name=img_data.get("OITMI_VENDORNAME", ""),
+            description=description,
+            vendor_id=vendor_id,
+            vendor_name=vendor_name,
             weblink=img_data.get("OITMI_WEBLINK", ""),
             original_blob=cleaned_blob,
             oitmi_id=str(img_data.get("OITMI_ID", "")),

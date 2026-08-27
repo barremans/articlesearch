@@ -4,8 +4,26 @@
 # Role:    Hoofdvenster (QMainWindow) — zoekscherm, resultatentabel, menu-
 #          balk, en het openen van alle submodules (Detail, BP, Project,
 #          VTA, Peppol, Timings, Elements, Credit Control).
-# Version: 1.3.0
+# Version: 1.5.0
 # Author:  Bart Bossuyt
+# Changes: 1.5.0 — BUGFIX (vervolg OITMI-Upload-prefill): VENDORID/
+#                   VENDORNAME bleven leeg in de OITMI Upload-dialoog
+#                   wanneer een artikel nog geen aankoophistorie (RET) had
+#                   — de "Vendor Nr"-kolom uit de zoekresultatentabel zelf
+#                   (SuppCatNum/SUPPLIERIDPRODUCT + SUPPLIERNAME) werd
+#                   nergens doorgegeven aan DetailWindow. handle_row_
+#                   double_click() geeft nu vendor_hint_id/vendor_hint_name
+#                   mee vanuit de ruwe rijdata (self._last_article_data,
+#                   al aanwezig sinds SORT-1) — geen extra API-call nodig.
+#                   Zie ui_detail.py v1.3.0 voor de bijhorende fallback-
+#                   volgorde.
+# Changes: 1.4.0 — PaymentsDue: nieuw submenu-item "Betalingsgedrag..." onder
+#                   Export, naast "Open Elements" en "Open Credit Control
+#                   (CC BP)". Opent DuePaymentWindow (ui_duepayment.py) —
+#                   zelfde AD-toegangscontrole als "Open Elements"
+#                   (GPP_Finance) en zelfde offline-check, via nieuwe
+#                   handler _open_duepayment_window() (analoog
+#                   _open_docs_window()). Nieuwe import: DuePaymentWindow.
 # Changes: 1.3.0 — WHATSNEW-1: "Wat is er nieuw?"-knop toegevoegd op 2
 #                   plekken. (1) Opstart-popup bij een beschikbare update:
 #                   de kale QMessageBox uit updater.py vervangen door een
@@ -113,6 +131,7 @@ from ui_docs import DocsWindow
 from ui_vta import PoWidget
 from ui_CcBP import CreditControlWindow
 from ui_peppol import PepWidget  # ✅ NIEUW: Peppol check venster
+from ui_duepayment import DuePaymentWindow  # ✅ NIEUW: Betalingsgedrag & Openstaande Posten
 from config import OFFLINE_MODE
 from settings import load_column_headers_s, load_column_headers_default
 
@@ -150,6 +169,9 @@ class MainWindow(QMainWindow):
 
         # ✅ NIEUW: Peppol windows bijhouden zodat ze niet verdwijnen
         self.pep_windows = []
+
+        # ✅ NIEUW: PaymentsDue-vensters bijhouden zodat ze niet verdwijnen
+        self.duepayment_windows = []
 
         # SORT-1: state voor dubbelklik-sortering in de Artikel-resultatentabel
         self._last_article_data = []       # ruwe data (list[dict]) van laatste zoekactie
@@ -279,6 +301,7 @@ class MainWindow(QMainWindow):
         export_menu = menubar.addMenu("&Export")
         export_menu.addAction("Open &Elements").triggered.connect(self._open_docs_window)
         export_menu.addAction("Open Credit Control (CC BP)").triggered.connect(self._open_ccbp_window)
+        export_menu.addAction("Betalingsgedrag...").triggered.connect(self._open_duepayment_window)
         export_menu.addSeparator()
 
         # --- Tools ---
@@ -879,6 +902,17 @@ class MainWindow(QMainWindow):
         # Kolom 1 bevat ItemCode (kolom 0 is checkbox)
         item_code = self.table.item(row, 1).text()
         self.table.clearSelection()
+
+        # Vendor-hints uit de ruwe zoekresultaat-rij (SuppCatNum/SUPPLIERIDPRODUCT
+        # = leveranciersartikelnummer, SUPPLIERNAME = leveranciersnaam — enkel
+        # aanwezig bij Toon voorraad = S). Deze velden zitten NIET in de
+        # ZStockInfoP-detailpayload (get_item_detail_stockinfo), vandaar hier
+        # apart meegeven aan DetailWindow t.b.v. de OITMI Upload-prefill.
+        raw_rows = getattr(self, "_last_article_data", None) or []
+        raw_row = raw_rows[row] if 0 <= row < len(raw_rows) else {}
+        vendor_hint_id = str(raw_row.get("SuppCatNum") or raw_row.get("SUPPLIERIDPRODUCT") or "").strip()
+        vendor_hint_name = str(raw_row.get("SUPPLIERNAME") or "").strip()
+
         try:
             raw_detail = get_item_detail_stockinfo(item_code)
 
@@ -891,7 +925,13 @@ class MainWindow(QMainWindow):
                 list(detail_data.keys())[:10] if isinstance(detail_data, dict) else "n/a",
             )
 
-            dialog = DetailWindow(parent=self, item_code=item_code, detail_data=detail_data or {})
+            dialog = DetailWindow(
+                parent=self,
+                item_code=item_code,
+                detail_data=detail_data or {},
+                vendor_hint_id=vendor_hint_id,
+                vendor_hint_name=vendor_hint_name,
+            )
             dialog.show()
             self._reposition_detail(dialog)
             self.detail_windows.append(dialog)
@@ -1411,6 +1451,51 @@ class MainWindow(QMainWindow):
                 self,
                 "Fout",
                 f"Kon 'Elements' openen:\n{e}"
+            )
+
+    def _open_duepayment_window(self):
+        """Opent 'Betalingsgedrag & Openstaande Posten' (PaymentsDue) vanuit Export — zelfde AD-rechten als Open Elements."""
+        from config import OFFLINE_MODE
+        from permissions_azure import user_in_azure_group  # lokale import voor zekerheid
+
+        # 🔒 Offline check
+        if OFFLINE_MODE:
+            QMessageBox.warning(
+                self,
+                "Offline modus",
+                "De module 'Betalingsgedrag' is niet beschikbaar in offline-modus."
+            )
+            return
+
+        required_group = "GPP_Finance"  # zelfde vereiste groep als Open Elements
+
+        try:
+            if not user_in_azure_group(required_group):
+                QMessageBox.warning(
+                    self,
+                    "Geen toegang",
+                    f"U behoort niet tot de vereiste Azure AD-groep:\n\n{required_group}\n\n"
+                    "Neem contact op met IT indien u toegang nodig heeft."
+                )
+                return
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Azure AD fout",
+                f"Kon groepsrechten niet controleren:\n{e}"
+            )
+            return
+
+        # ✅ Toegang OK ➜ venster openen
+        try:
+            w = DuePaymentWindow()
+            w.showMaximized()
+            self.duepayment_windows.append(w)
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Fout",
+                f"Kon 'Betalingsgedrag' openen:\n{e}"
             )
 
     def _open_ccbp_window(self):

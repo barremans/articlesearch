@@ -7,6 +7,16 @@
 # dat publish_and_update.ps1/.bat eerder had (verkeerd C:\searcharticle
 # resp. C:\articlesearch i.p.v. het echte C:\searcharticle_code).
 # Vervangt publish_and_update.ps1 en publish_and_update.bat volledig.
+#
+# v1.1 (2026-08-27): BUGFIX - 'git push' aan het einde gaf geen foutmelding
+# meer bij een mislukte push (bv. non-fast-forward), waardoor version.py/
+# releases/latest/version.txt lokaal gecommit bleven maar nooit naar GitHub
+# gepusht werden - terwijl de Release + het asset (via 'gh', los van git
+# push) wél online kwamen. Resultaat: de Release zag er compleet uit op
+# GitHub, maar de app bleef de oude versie zien (leest version.txt via
+# raw.githubusercontent.com, niet de GitHub Release zelf). Nu wordt de
+# exitcode van 'git push' expliciet gecontroleerd, met een duidelijke
+# foutmelding die uitlegt wat er wel/niet online staat.
 
 param(
     [string]$Owner = "barremans",
@@ -85,8 +95,19 @@ $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 #    de version.py/version.txt-mismatch die eerder ontdekt werd).
 & git add "version.py" "releases/latest/version.txt"
 & git commit -m "Release $version - sync version.py and version.txt" *> $null
-# 'nothing to commit' is ok; push blijft veilig
+# 'nothing to commit' geeft git commit exitcode 1 - dat is OK, vandaar geen
+# check hierop. git push WEL expliciet controleren: dit faalde eerder
+# STIL (bv. non-fast-forward omdat origin/main ondertussen nieuwere commits
+# had dan de lokale branch) - de Release + het asset staan dan wel online
+# (die lopen via 'gh', volledig los van git push), maar version.py/
+# version.txt blijven in dat geval enkel LOKAAL gecommit, en de app ziet de
+# nieuwe versie dan nooit (leest immers de raw versie van version.txt op
+# GitHub, niet de lokale werkmap).
 & git push
+if ($LASTEXITCODE -ne 0) {
+    throw "git push MISLUKT (exitcode $LASTEXITCODE). De GitHub Release en de installer-asset staan wel al online (die gaan via 'gh', los van git push), maar version.py/releases/latest/version.txt zijn enkel LOKAAL gecommit en NIET naar GitHub gepusht - de app detecteert de nieuwe versie hierdoor niet. Los het pushprobleem op (bv. eerst 'git pull --rebase origin main') en run dan handmatig: git push"
+}
+Write-Host "[OK] version.py/version.txt succesvol gepusht naar $Owner/$Repo."
 
 Write-Host ""
 Write-Host "============================================================"

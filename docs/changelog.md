@@ -1,5 +1,44 @@
 # 📝 Changelog
 
+## [15.1.0] - 2026-08-27
+
+### ✨ Nieuw
+- 💳 **Betalingsgedrag & Openstaande Posten** — nieuw scherm via
+  **Export → Betalingsgedrag...** (zelfde toegangsrechten als Open
+  Elements). Twee tabbladen:
+  - **Klanten**: gemiddeld betaalgedrag per klant (aantal documenten,
+    gemiddeld aantal dagen tot betaling, gemiddeld verschil t.o.v. de
+    vervaldatum, totaalbedragen) — filterbaar op aantal maanden,
+    klantcode en betaalgedrag (alle klanten / enkel slechte betalers /
+    enkel op tijd of vroeger).
+  - **Facturen**: alle individuele facturen/voorschotten in de gekozen
+    periode — filterbaar op aantal maanden, klantcode en op "Verschil
+    vervaldatum" (alles / enkel te laat betaald / enkel correct betaald).
+  - **Dubbelklik op een klant** in de Klanten-tab springt automatisch naar
+    de Facturen-tab, gefilterd op die klant.
+  - **Zoekbalk** per tabblad filtert live over alle kolommen; kolomkoppen
+    zijn klikbaar om te sorteren.
+  - **Export** naar CSV, Excel, of beide tegelijk — per tabblad apart of
+    beide tabbladen ineens. De map met het geëxporteerde bestand wordt na
+    export automatisch geopend, en de laatst gebruikte exportmap wordt
+    onthouden voor de volgende keer.
+  - Ingevulde maanden/klantcode op de Klanten-tab worden automatisch
+    overgenomen naar de Facturen-tab.
+  - **Sneltoetsen**: `Ctrl+Enter` (ophalen), `Ctrl+E` (exporteren),
+    `Alt+1`/`Alt+2` (wissel tabblad), `Esc` (sluiten).
+
+### 🐞 Bugfix
+- 🖼️ **Afbeelding uploaden (detailvenster)**: de velden Beschrijving,
+  Leveranciersartikelnummer en Leveranciersnaam worden nu automatisch
+  vooraf ingevuld op basis van de reeds gekende artikelgegevens (eigen
+  omschrijving, gegevens uit de zoekresultaten en/of de laatste aankoop)
+  wanneer er nog geen eerdere afbeelding-informatie voor dat artikel
+  bestaat. Voordien bleven deze velden in dat geval leeg en moest alles
+  manueel ingetikt worden. Reeds bestaande waarden worden nooit
+  overschreven.
+
+---
+
 ## [15.0.2] - 2026-08-06
 
 ### ✨ Nieuw

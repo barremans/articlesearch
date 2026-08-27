@@ -1,7 +1,7 @@
 # 📦 Artikelzoeker – Help
 
-**Versie:** 9.0.5  
-**Laatste update:** februari 2026  
+**Versie:** 15.1.0  
+**Laatste update:** augustus 2026  
 
 De applicatie laat je toe om **artikels**, **projectitems**, **business partners (BP)**, **VTA's**, **openstaande documenten**, **Credit Control (CC BP)** én **Urenregistraties** te consulteren en te verwerken.  
 Werkt **online** via de Windows `.exe` (PyInstaller) met **Azure AD-beveiliging**.
@@ -15,6 +15,7 @@ Werkt **online** via de Windows `.exe` (PyInstaller) met **Azure AD-beveiliging*
 - **Export** →  
   - **Open Elements** – openstaande documenten  
   - **Open Credit Control (CC BP)**  
+  - **Betalingsgedrag...** – gemiddeld betaalgedrag per klant en detail per factuur *(nieuw)*  
 - **Applicaties** →  
   - **Urenregistratie Downloader + Verwerker** *(nieuw)*  
 - **Rapporteren** → Bug/feature melden, open cases  
@@ -94,6 +95,54 @@ Open via **Export → Open Credit Control (CC BP)**
 | `Ctrl + D`     | Filters wissen     |
 | `Ctrl + Enter` | Data vernieuwen    |
 | `Esc`          | Venster sluiten   |
+
+---
+
+## 💰 Betalingsgedrag & Openstaande Posten
+
+Open via **Export → Betalingsgedrag...**
+
+### 🔒 Beveiliging
+- Zelfde toegangsvoorwaarde als Open Elements: enkel voor gebruikers in
+  **Azure AD-groep "GPP_Finance"**.
+- Offline gebruik is niet toegestaan.
+
+### 📊 Functionaliteit
+Het venster bevat twee tabbladen. Er wordt **niets automatisch opgehaald**
+bij het openen — klik telkens op **Ophalen** om de gekozen filters te
+bevragen.
+
+**Tabblad "Klanten"** *(standaard geopend)* — één rij per klant:
+- Filters: **aantal maanden**, **klantcode**, en **betaalgedrag**
+  (alle klanten / enkel slechte betalers / enkel op tijd of vroeger)
+- Toont o.a. aantal documenten, gemiddeld aantal dagen tot betaling,
+  gemiddeld verschil t.o.v. de vervaldatum, totaalbedragen
+- **Dubbelklik op een klant** → springt automatisch naar het tabblad
+  "Facturen", gefilterd op die klant, en haalt meteen de bijhorende
+  facturen op
+
+**Tabblad "Facturen"** — één rij per factuur/voorschot:
+- Filters: **aantal maanden**, **klantcode**, en **verschil vervaldatum**
+  (alles / enkel te laat betaald / enkel correct betaald)
+- Het aantal maanden en de klantcode van het tabblad "Klanten" worden
+  automatisch overgenomen naar dit tabblad
+
+**Beide tabbladen:**
+- **Zoekbalk** filtert live over alle kolommen
+- Klik op een kolomkop om te **sorteren**
+- **Exporteer...** (huidig tabblad) of **Exporteer alles** (beide
+  tabbladen samen) — kies nadien **CSV**, **Excel (XLSX)**, of **beide**.
+  Na het opslaan wordt de map met het bestand automatisch geopend, en de
+  laatst gebruikte map wordt onthouden voor de volgende export.
+
+### ⌨️ Sneltoetsen
+| Toets            | Actie                          |
+|------------------|---------------------------------|
+| `Ctrl + Enter`   | Ophalen (actief tabblad)       |
+| `Ctrl + E`       | Exporteer... (actief tabblad)  |
+| `Alt + 1`        | Wissel naar tabblad "Klanten"  |
+| `Alt + 2`        | Wissel naar tabblad "Facturen" |
+| `Esc`            | Venster sluiten                |
 
 ---
 

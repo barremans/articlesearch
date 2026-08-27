@@ -5,8 +5,17 @@
 #          per databron (API_ENVIRONMENTS) en OAuth-achtige clients per
 #          databron (API_CLIENTS). ⚠️ Bevat base64-encoded client secrets —
 #          zie §7 (Beveiliging) in het context-bestand.
-# Version: 1.1.0
+# Version: 1.2.0
 # Author:  Bart Bossuyt
+# Changes: 1.2.0 — PaymentsDue: nieuwe databron "Betalingsgedrag & Open-
+#                   staande Posten" toegevoegd (Export-menu). 2 nieuwe
+#                   config-keys in API_ENVIRONMENTS["live"]:
+#                   `duepayment_detail_configP_id` ("UIY02H", 1 rij per
+#                   klant/gemiddelden) en `duepayment_overview_configP_id`
+#                   ("YCT5LR", 1 rij per document). 2 nieuwe clients in
+#                   API_CLIENTS: "DuePaymentDetail" en "DuePaymentOverview"
+#                   — elk hun eigen OAuth-client, enkel "live" (consistent
+#                   met de overige niet-basis databronnen).
 # Changes: 1.1.0 — ART-BP-1: nieuwe databron "ArtBpSearch" toegevoegd —
 #                   artikels gekoppeld aan een leverancier (BP), opgevraagd
 #                   via CardCode. Nieuwe config-key `artbp_configP_id`
@@ -52,6 +61,8 @@ API_ENVIRONMENTS = {
         "vta_config_id": "G6HH9T", #VTA Info    
         "pep_config_id": "FSOLI1", #Peppol fault info  
         "artbp_configP_id": "KX9RLR", #Artikels gekoppeld aan leverancier (ArtBpSearch)
+        "duepayment_detail_configP_id": "UIY02H", #PaymentsDue - per klant/gemiddelden (Detail)
+        "duepayment_overview_configP_id": "YCT5LR", #PaymentsDue - per document (Overview)
     }
 }
 
@@ -173,6 +184,18 @@ API_CLIENTS = {
         "live": {
             "client_id": "ArtBpSearch",
             "client_secret": "NjI2NmZhY2MtNGY0MC00YTViLTlkODUtYTRlMThiZGIxYjcx"
+        }
+    }                   ,
+        "DuePaymentDetail": {
+        "live": {
+            "client_id": "DuePaymentDetail",
+            "client_secret": "N2I3MDNjZjgtOTRmMy00NzY0LTk4MTYtYTY2N2IwMWQwZGZi"
+        }
+    }                   ,
+        "DuePaymentOverview": {
+        "live": {
+            "client_id": "DuePaymentOverview",
+            "client_secret": "ZTM3OTAwNDktMzg3Mi00MTQwLTkxMTMtZDljMDMyOTcwY2Qx"
         }
     }
 #end

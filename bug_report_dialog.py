@@ -4,11 +4,19 @@
 # Role:    BugDialog (QDialog) — laat de gebruiker een bug of feature-
 #          aanvraag melden; GitHubClient commit een bestand naar de repo
 #          en opent een Issue (bug) of Pull Request (feature) via de
-#          GitHub REST API. ⚠️ Bevat een hardcoded GitHub PAT — zie
-#          kanttekening bij updater.py (§ context-bestand, sessie 16),
-#          zelfde aanbeveling: liever via env var.
-# Version: 1.0.0
+#          GitHub REST API. ⚠️ Bevat een hardcoded GitHub PAT — bewuste
+#          keuze (zelfde patroon als config.py/updater.py) zodat dit ook
+#          werkt op machines waar de app via de setup geïnstalleerd wordt,
+#          zonder per-machine configuratiestap (env var).
+# Version: 1.1.0
 # Author:  Bart Bossuyt
+# Changes: 1.1.0 — Documentatie-update: het hardcoded token gaf op
+#                   2026-08-06 tijdelijk een 401 (zie sessie 20), maar is
+#                   door de gebruiker bevestigd als momenteel geldig/
+#                   werkend token — zelfde token nu ook hergebruikt in
+#                   github_cases.py (v1.1.0), i.p.v. de tussentijdse
+#                   env-var-aanpak daar. Geen functionele wijziging aan dit
+#                   bestand.
 # Changes: 1.0.0 — Eerste keer onder versiebeheer. BugDialog.__init__()
 #                   uitgebreid met optionele parameters initial_type
 #                   ("Bugmelding"/"Feature-aanvraag") en
@@ -31,7 +39,7 @@ from PySide6.QtWidgets import (
 # GitHubClient klasse
 class GitHubClient:
     def __init__(self):
-        self.token = "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"
+        self.token = "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"
         self.owner = "barremans"
         self.repo = "articlesearch"
         self.base_branch = "main"

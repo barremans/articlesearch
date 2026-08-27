@@ -3,37 +3,49 @@
 # File:    github_cases.py
 # Role:    show_github_cases() — toont open Issues + Pull Requests uit de
 #          repo (GitHubCasesClient) via Help-menu → GitHub Cases.
-# Version: 1.0.0
+# Version: 1.1.0
 # Author:  Bart Bossuyt
+# Changes: 1.1.0 — Token terug hardcoded i.p.v. via omgevingsvariabele
+#                   ARTICLESEARCH_GITHUB_PAT. Reden: de app wordt via een
+#                   setup/installer verspreid naar andere machines, waar
+#                   het niet haalbaar is om per machine manueel een env var
+#                   te configureren — dat gaf daar de "Geen GitHub-token
+#                   geconfigureerd"-foutmelding (v1.0.0). Zelfde patroon en
+#                   zelfde token als GitHubClient in bug_report_dialog.py
+#                   (v1.0.0) — één token, hardcoded op beide plekken, zodat
+#                   "Open cases tonen" en "Meld via GitHub" consistent
+#                   werken zonder extra installatiestap. Bevestigd door
+#                   gebruiker (2026-08-06) dat dit token momenteel geldig/
+#                   werkend is — de eerdere 401-melding uit sessie 20 was
+#                   dus vermoedelijk tijdelijk of aan een ander token
+#                   gekoppeld. Zie ⚠️ kanttekening in bug_report_dialog.py:
+#                   nog steeds een hardcoded secret in de broncode, met de
+#                   bekende afweging (leesbaar te extraheren uit de
+#                   installer) — bewuste keuze van de gebruiker, consistent
+#                   met de rest van het project (config.py, updater.py).
 # Changes: 1.0.0 — Eerste keer onder versiebeheer. BUGFIX/SECURITY:
 #                   hetzelfde hardcoded GitHub PAT als in
 #                   bug_report_dialog.py (v1.1.0) gaf op 2026-08-06 een
-#                   401 Unauthorized. Token komt nu uit dezelfde
+#                   401 Unauthorized. Token kwam toen uit een
 #                   omgevingsvariabele ARTICLESEARCH_GITHUB_PAT — één
 #                   token, één plek om te configureren/vervangen.
-#                   GitHubCasesClient.__init__() geeft een duidelijke
-#                   RuntimeError als de variabele ontbreekt/leeg is.
+#                   GitHubCasesClient.__init__() gaf een duidelijke
+#                   RuntimeError als de variabele ontbrak/leeg was.
+#                   (Teruggedraaid in v1.1.0, zie hierboven.)
 # =============================================================================
 
-import os
 import requests
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QTextBrowser, QPushButton, QMessageBox
 
-# Zelfde omgevingsvariabele als bug_report_dialog.py — één GitHub PAT,
-# hergebruikt voor zowel het melden (BugDialog) als het bekijken (dit
-# bestand) van cases. Zie bug_report_dialog.py voor instructies om een
-# nieuw token aan te maken en de env var te zetten.
-GITHUB_PAT_ENV_VAR = "ARTICLESEARCH_GITHUB_PAT"
+# Zelfde token als GitHubClient in bug_report_dialog.py — hergebruikt voor
+# zowel het melden (BugDialog) als het bekijken (dit bestand) van cases.
+# Hardcoded (i.p.v. env var) zodat dit ook werkt op machines waar de app
+# via de setup geïnstalleerd wordt, zonder extra configuratiestap.
+TOKEN = "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"
 
 class GitHubCasesClient:
     def __init__(self):
-        self.token = os.getenv(GITHUB_PAT_ENV_VAR, "").strip()
-        if not self.token:
-            raise RuntimeError(
-                f"Geen GitHub-token geconfigureerd. Stel de omgevings"
-                f"variabele '{GITHUB_PAT_ENV_VAR}' in met een geldig "
-                f"Personal Access Token (scope: repo) en herstart de app."
-            )
+        self.token = "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"
         self.owner = "barremans"
         self.repo = "articlesearch"
         self.api_base = f"https://api.github.com/repos/{self.owner}/{self.repo}"
