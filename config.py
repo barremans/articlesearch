@@ -5,8 +5,22 @@
 #          per databron (API_ENVIRONMENTS) en OAuth-achtige clients per
 #          databron (API_CLIENTS). ⚠️ Bevat base64-encoded client secrets —
 #          zie §7 (Beveiliging) in het context-bestand.
-# Version: 1.2.0
+# Version: 1.3.0
 # Author:  Bart Bossuyt
+# Changes: 1.3.0 — Prod Stock Overview (nieuwe search-type "Prod"): 2 nieuwe
+#                   config-keys in API_ENVIRONMENTS["live"]:
+#                   `prod_dataset_configP_id` ("BAEIG0", dataset opvragen/
+#                   aanmaken/bijwerken) en `prod_stock_configP_id`
+#                   ("VX3PMC", artikel-stock-overzicht per dataset). Nieuwe
+#                   key `prod_dataset_import_path` (vast pad voor de
+#                   create/update-call, buiten het generieke
+#                   /api/datarequest-endpoint om — zie prod_info.py). 2
+#                   nieuwe clients in API_CLIENTS: "ProdDataset" (client_id
+#                   "Datasetprod") en "ProdStock" (client_id
+#                   "ProdStockOverview"). Bevestigd door gebruiker:
+#                   verwijderen van een dataset is niet mogelijk — enkel
+#                   LOCK=1 zetten wanneer een dataset niet meer gebruikt
+#                   wordt (geen aparte delete-config/endpoint nodig).
 # Changes: 1.2.0 — PaymentsDue: nieuwe databron "Betalingsgedrag & Open-
 #                   staande Posten" toegevoegd (Export-menu). 2 nieuwe
 #                   config-keys in API_ENVIRONMENTS["live"]:
@@ -63,6 +77,9 @@ API_ENVIRONMENTS = {
         "artbp_configP_id": "KX9RLR", #Artikels gekoppeld aan leverancier (ArtBpSearch)
         "duepayment_detail_configP_id": "UIY02H", #PaymentsDue - per klant/gemiddelden (Detail)
         "duepayment_overview_configP_id": "YCT5LR", #PaymentsDue - per document (Overview)
+        "prod_dataset_configP_id": "BAEIG0",  #Prod Stock Overview - dataset opvragen/aanmaken/bijwerken
+        "prod_stock_configP_id": "VX3PMC",    #Prod Stock Overview - artikel-stock-overzicht
+        "prod_dataset_import_path": "/api/import/DATAPROD/U/dbname/SBOCGKLIVE",  #vast pad, geen /api/datarequest
     }
 }
 
@@ -196,6 +213,18 @@ API_CLIENTS = {
         "live": {
             "client_id": "DuePaymentOverview",
             "client_secret": "ZTM3OTAwNDktMzg3Mi00MTQwLTkxMTMtZDljMDMyOTcwY2Qx"
+        }
+    }                   ,
+        "ProdDataset": {
+        "live": {
+            "client_id": "Datasetprod",
+            "client_secret": "Yzk0YjUwNzEtMzRkZC00Y2VhLTgwMzYtOWU4YjM1OTRkOWQ2"
+        }
+    }                   ,
+        "ProdStock": {
+        "live": {
+            "client_id": "ProdStockOverview",
+            "client_secret": "NmVlYWRlMjMtODk3ZC00MWM0LWE1ODktMjM0ZjBmMzdhYTkz"
         }
     }
 #end

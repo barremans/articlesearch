@@ -3,9 +3,20 @@
 # File:    settings.py
 # Role:    Persistente gebruikersinstellingen (settings.json) — environment,
 #          show_stock, kolomheaders, taal, BP-default-type, label-
-#          instellingen, default search-type, tab-volgorde, QSS-paden.
-# Version: 1.1.0
+#          instellingen, default search-type, tab-volgorde, QSS-paden,
+#          Prod Stock Overview-defaults (dataset/eigenaar/magazijn).
+# Version: 1.2.0
 # Author:  Bart Bossuyt
+# Changes: 1.2.0 — Prod Stock Overview (nieuwe search-type "Prod"): 3 nieuwe
+#                   instellingen + load/save-functies toegevoegd:
+#                   prod_default_dataset_name, prod_default_dataset_owner
+#                   (samen bepalen welke dataset(s) standaard getoond/
+#                   geselecteerd worden in de dataset-keuzelijst in
+#                   ui_main.py), en prod_default_warehouse (standaard
+#                   magazijnfilter in ui_prod_stock.py: "" = alle
+#                   magazijnen, of één van Stock_Algemeen/Stock_Antwerpen/
+#                   Stock_Miami). "Prod" toegevoegd aan de geldige waarden
+#                   van default_search_type (load_/save_default_search_type).
 # Changes: 1.1.0 — BUGFIX: default_search_type gebruikte "Standaard" als
 #                   geldige/standaardwaarde, terwijl de combobox in
 #                   ui_main.py (self.search_type_select) als itemtekst
@@ -34,6 +45,9 @@ DEFAULT_SETTINGS = {
     "language": "NL",
     "tab_order": ["vta", "install", "vta_cert", "art"],
     "bp_default_type": "",  # <-- NIEUW: default BP-type ("", "C", "S")
+    "prod_default_dataset_name": "",   # Prod Stock Overview: standaard dataset (naam)
+    "prod_default_dataset_owner": "",  # Prod Stock Overview: standaard eigenaar (filter)
+    "prod_default_warehouse": "",      # Prod Stock Overview: standaard magazijn ("" = alle)
     "label_settings": {
         "LABEL_WIDTH": 85.0,
         "LABEL_HEIGHT": 25.0,
@@ -286,11 +300,11 @@ def save_detail_modal(val: bool):
 def load_default_search_type() -> str:
     val = load_settings().get("default_search_type", DEFAULT_SETTINGS["default_search_type"])
     # alleen geldige types toelaten — moet matchen met de itemtekst in
-    # ui_main.py: self.search_type_select.addItems(["Artikel", "Project", "BP", "VTA"])
-    return val if val in ("Artikel", "Project", "BP", "VTA") else "Artikel"
+    # ui_main.py: self.search_type_select.addItems(["Artikel", "Project", "BP", "VTA", "Prod"])
+    return val if val in ("Artikel", "Project", "BP", "VTA", "Prod") else "Artikel"
 
 def save_default_search_type(val: str):
-    if val not in ("Artikel", "Project", "BP", "VTA"):
+    if val not in ("Artikel", "Project", "BP", "VTA", "Prod"):
         val = "Artikel"
     settings = load_settings()
     settings["default_search_type"] = val
@@ -371,4 +385,38 @@ def save_bp_default_type(val: str):
         return
     settings = load_settings()
     settings["bp_default_type"] = val
+    save_settings(settings)
+
+
+# --- NIEUW: Prod Stock Overview default dataset/eigenaar/magazijn ---
+def load_prod_default_dataset_name() -> str:
+    """Standaard dataset-naam voor de dataset-keuzelijst (search-type 'Prod')."""
+    return load_settings().get("prod_default_dataset_name", DEFAULT_SETTINGS["prod_default_dataset_name"])
+
+def save_prod_default_dataset_name(val: str):
+    settings = load_settings()
+    settings["prod_default_dataset_name"] = (val or "").strip()
+    save_settings(settings)
+
+def load_prod_default_dataset_owner() -> str:
+    """Standaard eigenaar-filter voor de dataset-keuzelijst (search-type 'Prod')."""
+    return load_settings().get("prod_default_dataset_owner", DEFAULT_SETTINGS["prod_default_dataset_owner"])
+
+def save_prod_default_dataset_owner(val: str):
+    settings = load_settings()
+    settings["prod_default_dataset_owner"] = (val or "").strip()
+    save_settings(settings)
+
+def load_prod_default_warehouse() -> str:
+    """Standaard magazijnfilter in ui_prod_stock.py ('' = alle magazijnen)."""
+    val = load_settings().get("prod_default_warehouse", DEFAULT_SETTINGS["prod_default_warehouse"])
+    valid = ("", "Stock_Algemeen", "Stock_Antwerpen", "Stock_Miami")
+    return val if val in valid else ""
+
+def save_prod_default_warehouse(val: str):
+    valid = ("", "Stock_Algemeen", "Stock_Antwerpen", "Stock_Miami")
+    if val not in valid:
+        val = ""
+    settings = load_settings()
+    settings["prod_default_warehouse"] = val
     save_settings(settings)

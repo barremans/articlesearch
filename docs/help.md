@@ -1,9 +1,9 @@
 # 📦 Artikelzoeker – Help
 
-**Versie:** 15.1.0  
+**Versie:** 15.3.0  
 **Laatste update:** augustus 2026  
 
-De applicatie laat je toe om **artikels**, **projectitems**, **business partners (BP)**, **VTA's**, **openstaande documenten**, **Credit Control (CC BP)** én **Urenregistraties** te consulteren en te verwerken.  
+De applicatie laat je toe om **artikels**, **projectitems**, **business partners (BP)**, **VTA's**, **openstaande documenten**, **Credit Control (CC BP)**, **Productie Stock Overview** én **Urenregistraties** te consulteren en te verwerken.  
 Werkt **online** via de Windows `.exe` (PyInstaller) met **Azure AD-beveiliging**.
 
 ---
@@ -11,13 +11,13 @@ Werkt **online** via de Windows `.exe` (PyInstaller) met **Azure AD-beveiliging*
 ## 🧭 Navigatie & menu
 
 - **Bestand** → Afsluiten  
-- **Instellingen** → Omgeving, (BP/VTA) defaults, QSS-styles, taal, zoektype  
+- **Instellingen** → Omgeving, (BP/VTA/Prod) defaults, QSS-styles, taal, zoektype, datasets beheren  
 - **Export** →  
   - **Open Elements** – openstaande documenten  
   - **Open Credit Control (CC BP)**  
-  - **Betalingsgedrag...** – gemiddeld betaalgedrag per klant en detail per factuur *(nieuw)*  
+  - **Betalingsgedrag...** – gemiddeld betaalgedrag per klant en detail per factuur  
 - **Applicaties** →  
-  - **Urenregistratie Downloader + Verwerker** *(nieuw)*  
+  - **Urenregistratie Downloader + Verwerker**  
 - **Rapporteren** → Bug/feature melden, open cases  
 - **Help** → Help, Over…, Changelog  
 
@@ -30,18 +30,22 @@ Werkt **online** via de Windows `.exe` (PyInstaller) met **Azure AD-beveiliging*
 
 1. **Zoekterm** invullen  
 2. **Type** kiezen:
-   - `Standaard` – zoekt artikels  
+   - `Artikel` – zoekt artikels  
    - `Project` – zoekt in projectartikelen  
    - `BP` – zoekt Business Partners (klanten/leveranciers)  
    - `VTA` – zoekt VTA-documenten  
-3. **Modus** *(Standaard/BP)*: `AND` of `OR`  
+   - `Prod` – toont het **Productie Stock Overview** voor een gekozen dataset *(nieuw)*  
+3. **Modus** *(Artikel/BP)*: `AND` of `OR`  
 4. **Tweede keuzelijst**:
-   - **Standaard**: *Toon voorraad* → `R` (regulier), `S` (voorraad), `B` (beide)  
+   - **Artikel**: *Toon voorraad* → `R` (regulier), `S` (voorraad), `B` (beide)  
    - **BP**: *Type* → `""` (alle), `C` (Customer), `S` (Supplier)  
 5. Klik op **Zoeken** (`Ctrl + Enter`)
 
 > Bij **VTA** opent automatisch het **VTA-venster**, vult het nummer in en haalt de data op.  
 > Het hoofdzoekveld wordt daarna **leeggemaakt** en **focus hersteld**.
+>
+> Bij **Prod** verschijnt i.p.v. het zoekterm-veld een **dataset-keuzelijst** —
+> zie de aparte sectie hieronder.
 
 ---
 
@@ -56,6 +60,73 @@ Werkt **online** via de Windows `.exe` (PyInstaller) met **Azure AD-beveiliging*
 - **Sneltoetsen**:
   - `Ctrl + D` → veld wissen en focus terug  
   - `Ctrl + Enter` → data ophalen  
+
+---
+
+## 🏭 Productie Stock Overview
+
+Zoektype **Prod** — toont het stock-overzicht van alle artikelen in een
+gekozen **dataset** (een genoemde, herbruikbare lijst artikelnummers,
+bv. "Wekelijkse HDPE" of "Draai"). De resultaten verschijnen **inline in
+het hoofdscherm** (geen apart pop-upvenster), in dezelfde resultatentabel
+als Artikel/BP — inclusief de "Selectie"-checkboxkolom, dus ook hier kan
+je rijen **toevoegen aan de lijst** en kopiëren naar Outlook/Word zoals
+gewoonlijk.
+
+### Gebruik
+1. Kies **Search-type: Prod**.
+2. Kies een **Dataset** in de keuzelijst (naam + eigenaar).
+3. Optioneel: kies een **Magazijn** (Alle magazijnen / Algemeen /
+   Antwerpen / Miami) — dit wisselt enkel welke Stock-kolom(men) getoond
+   worden, **zonder** de data opnieuw op te halen.
+4. Klik op **Zoeken** (`Ctrl + Enter`) om de stock-data effectief op te
+   halen. De tabel staat standaard gesorteerd op **Art.Nr.**
+5. Gebruik het **Filter**-veld om live te filteren op art.nr. of
+   omschrijving binnen de al opgehaalde data (geen nieuwe API-call).
+6. **Exporteer naar Excel** exporteert de huidige (gefilterde) weergave.
+
+Klik op de kolomkop **"Art.Nr."** of **"Omschrijving"** om te sorteren
+(nogmaals klikken keert de richting om) — zelfde principe als bij de
+Artikel-tabel.
+
+### Kleurcodering
+- 🟢 **Min. SAP > 0** → lichtgroene celachtergrond ("standaard artikel").
+- 🔴 **Stock Algemeen < 1** → lichtrode celachtergrond (aandachtspunt).
+- 🟡 **Stock vandaag < Min. SAP** → gele celachtergrond (te weinig
+  actuele voorraad t.o.v. het ingestelde minimum).
+
+### Dataset-selectie: standaardwaarden
+Welke datasets in de keuzelijst verschijnen — en welke standaard
+geselecteerd is — hangt af van de instellingen (zie hieronder):
+- Een **standaard dataset** ingesteld → die staat automatisch
+  geselecteerd (uit de volledige lijst).
+- Enkel een **standaard eigenaar** ingesteld (geen dataset) → de
+  keuzelijst toont enkel datasets van die eigenaar.
+- Geen van beide ingesteld → volledige lijst, geen automatische keuze.
+
+Gedeactiveerde datasets (zie hieronder — "Lock") verschijnen niet in de
+keuzelijst.
+
+### Datasets beheren
+Via **Instellingen → Datasets beheren...** open je het beheerscherm:
+- **Nieuw...** / **Bewerken...** — naam, eigenaar en artikelnummers
+  instellen. Plak een lijst artikelnummers (gescheiden door spatie, tab,
+  puntkomma, komma of regeleinde, of een mix) — dit wordt **automatisch**
+  omgezet naar één lange, komma-gescheiden lijst. De knop
+  **"Normaliseren"** doet dit ook manueel voor reeds getypte/geladen
+  inhoud.
+- **Verwijderen bestaat niet** — vink **"Gedeactiveerd"** aan om een
+  dataset niet langer in de keuzelijst te tonen (i.p.v. te verwijderen).
+- **Gewijzigd door** en **Gewijzigd op** worden automatisch gevuld —
+  respectievelijk je Windows-gebruikersnaam (niet aanpasbaar) en het
+  tijdstip van opslaan.
+
+### ⌨️ Sneltoetsen
+| Toets          | Actie                                   |
+|----------------|------------------------------------------|
+| `Ctrl + Enter` | Zoeken (data ophalen voor gekozen dataset) |
+| `Ctrl + E`     | Exporteer naar Excel                    |
+| `Delete`       | Filter wissen                           |
 
 ---
 
@@ -248,7 +319,7 @@ Open via **Export → Open Elements**
 | `/`      | Leveranciersreferentie (SuppCatNum)            | `/2109009` |
 | `-`      | Exact woord                                    | `-T-stuk` |
 
-> Prefixen gelden niet voor **BP** of **VTA**.
+> Prefixen gelden niet voor **BP**, **VTA** of **Prod**.
 
 ---
 
@@ -265,8 +336,12 @@ Open via **Export → Open Elements**
 ## ⚙️ Instellingen
 
 - Omgeving: live / test  
-- Standaard zoektype: Standaard / Project / BP / VTA  
+- Standaard zoektype: Artikel / Project / BP / VTA / Prod  
 - BP Type default: `""`, `C`, `S`  
+- **Productie Stock Overview**: standaard dataset, standaard eigenaar
+  (filtert de keuzelijst wanneer geen dataset gekozen is; beide zijn
+  keuzelijsten, geen vrije tekst), standaard magazijn — plus de knop
+  **"Datasets beheren..."**  
 - Taal: NL / EN  
 - QSS-styles live aanpasbaar  
 

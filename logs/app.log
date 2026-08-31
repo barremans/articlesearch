@@ -15863,3 +15863,322 @@ KeyError: 'Eindt_min'
 [INFO] 2026-08-27 08:46:42 - HTTP 200
 [INFO] 2026-08-27 08:46:45 - Detail voor 152.PPECO200515 genormaliseerd: type=dict, keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
 [INFO] 2026-08-27 08:46:45 - Detail payload type=dict keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-28 13:08:14 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A58236&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=silVYCKLMxUuXaqt&code_challenge=rrBBQuizX7Dc7TxrCOMICBip4-d_SkKH61FK3BFbgwc&code_challenge_method=S256&nonce=14b6f3308e7adc78bbed3c0fe2dd7cd9b3e014aff9ab4f5f3df0b37062335c52&client_info=1&prompt=select_account
+[INFO] 2026-08-28 13:08:19 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 13:08:30 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 13:08:30 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-28 13:08:30 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 13:08:30 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 13:08:51 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 13:08:51 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 13:08:51 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:08:52 - HTTP 200
+[INFO] 2026-08-28 13:08:59 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 13:08:59 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 13:08:59 - Stock-overzicht opvragen | #items=3
+[INFO] 2026-08-28 13:09:00 - HTTP 200
+[INFO] 2026-08-28 13:09:22 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:09:22 - HTTP 200
+[INFO] 2026-08-28 13:09:42 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:09:43 - HTTP 200
+[INFO] 2026-08-28 13:10:50 - Dataset opslaan | CODE=1 NAME='Wekelijkse HDPE' OWNER='BBossuyt' #items=57
+[INFO] 2026-08-28 13:10:53 - HTTP 200
+[INFO] 2026-08-28 13:10:55 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:10:56 - HTTP 200
+[INFO] 2026-08-28 13:11:28 - Dataset opslaan | CODE=2 NAME='Draai' OWNER='BBossuyt' #items=36
+[INFO] 2026-08-28 13:11:34 - HTTP 200
+[INFO] 2026-08-28 13:11:35 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:11:35 - HTTP 200
+[INFO] 2026-08-28 13:12:06 - Dataset opslaan | CODE=3 NAME='Frees' OWNER='BBossuyt' #items=58
+[INFO] 2026-08-28 13:12:08 - HTTP 200
+[INFO] 2026-08-28 13:12:10 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:12:10 - HTTP 200
+[INFO] 2026-08-28 13:12:28 - Dataset opslaan | CODE=4 NAME='PP' OWNER='BBossuyt' #items=46
+[INFO] 2026-08-28 13:12:30 - HTTP 200
+[INFO] 2026-08-28 13:12:31 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:12:32 - HTTP 200
+[INFO] 2026-08-28 13:12:56 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:12:56 - HTTP 200
+[INFO] 2026-08-28 13:13:25 - Stock-overzicht opvragen | #items=36
+[INFO] 2026-08-28 13:13:25 - HTTP 200
+[INFO] 2026-08-28 13:15:28 - Zoekactie: type=BP | kind=bp | term='be' | mode='AND' | bp_type=''
+[INFO] 2026-08-28 13:15:28 - ENV=live
+[INFO] 2026-08-28 13:15:28 - URL=https://api.cgk-group.com/api/datarequest
+[INFO] 2026-08-28 13:15:28 - Kind=bp | project_search=False
+[INFO] 2026-08-28 13:15:28 - ENV mapping: {
+  "base_url": "https://api.cgk-group.com",
+  "data_config_id": "9423TC",
+  "stock_config_id": "6DIRXZ",
+  "stock_configP_id": "WEZ7CY",
+  "project_configP_id": "AXF4GX",
+  "atp_configP_id": "1IZDVW",
+  "po_configP_id": "3EGOKM",
+  "so_configP_id": "C80TSJ",
+  "bp_configP_Bp": "U63P1T",
+  "so_configP_Bp": "OMW5IN",
+  "so_configP_Cc": "OLH3RP",
+  "so_configP_CcV2": "0B7JWA",
+  "so_configP_CcBpV2": "HG443N",
+  "so_configP_OE": "4AA8DF",
+  "vta_config_id": "G6HH9T",
+  "pep_config_id": "FSOLI1",
+  "artbp_configP_id": "KX9RLR",
+  "duepayment_detail_configP_id": "UIY02H",
+  "duepayment_overview_configP_id": "YCT5LR",
+  "prod_dataset_configP_id": "BAEIG0",
+  "prod_stock_configP_id": "VX3PMC",
+  "prod_dataset_import_path": "/api/import/DATAPROD/U/dbname/SBOCGKLIVE"
+}
+[INFO] 2026-08-28 13:15:28 - Config key gekozen: bp_configP_Bp => U63P1T
+[INFO] 2026-08-28 13:15:28 - [BpSearchMin] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 13:15:28 - [BpSearchMin] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 13:15:28 - Auth client: BpS (BP zoeklijst)
+[INFO] 2026-08-28 13:15:28 - Auth=Bearer eyJhbGciOiJIU...
+[INFO] 2026-08-28 13:15:28 - Payload:
+{
+  "ConfigurationID": "U63P1T",
+  "MultiKey": {
+    "@zoekterm": "be",
+    "@mode": "AND",
+    "@card_type": ""
+  }
+}
+[INFO] 2026-08-28 13:15:28 - HTTP 200
+[INFO] 2026-08-28 13:16:03 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:16:03 - HTTP 200
+[INFO] 2026-08-28 13:16:07 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-28 13:16:07 - HTTP 200
+[INFO] 2026-08-28 13:23:11 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A61610&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=jBYDzeJRaUGiNrSl&code_challenge=f_ZDn78uI3BI0Eu6o6glb1gGXOlzq97xkOFcHeYQMBo&code_challenge_method=S256&nonce=1962a43fcebb43d36bc41b0215c89d227afcec6314f5aea8bebce0700a66b21c&client_info=1&prompt=select_account
+[INFO] 2026-08-28 13:23:16 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 13:23:16 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 13:23:16 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-28 13:23:16 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 13:23:16 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 13:23:36 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 13:23:36 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 13:23:36 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 13:23:36 - HTTP 200
+[INFO] 2026-08-28 13:23:41 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 13:23:42 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 13:23:42 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-28 13:23:42 - HTTP 200
+[INFO] 2026-08-28 14:39:53 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 14:39:53 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 14:39:54 - Detail voor 40.2.1.10 genormaliseerd: type=dict, keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-28 14:39:54 - Detail payload type=dict keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-28 14:40:11 - [AtpWhs] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 14:40:11 - [AtpWhs] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 14:44:33 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 14:44:33 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 14:44:33 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 14:44:33 - HTTP 200
+[INFO] 2026-08-28 14:45:17 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 14:45:17 - HTTP 200
+[INFO] 2026-08-28 14:45:33 - Dataset opslaan | CODE=1 NAME='Wekelijkse HDPE' OWNER='Andy P' #items=57
+[INFO] 2026-08-28 14:45:36 - HTTP 200
+[INFO] 2026-08-28 14:45:37 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 14:45:38 - HTTP 200
+[INFO] 2026-08-28 14:45:45 - Dataset opslaan | CODE=4 NAME='PP' OWNER='Andy P' #items=46
+[INFO] 2026-08-28 14:45:48 - HTTP 200
+[INFO] 2026-08-28 14:45:49 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 14:45:50 - HTTP 200
+[INFO] 2026-08-28 14:45:57 - Dataset opslaan | CODE=3 NAME='Frees' OWNER='Andy P' #items=58
+[INFO] 2026-08-28 14:45:59 - HTTP 200
+[INFO] 2026-08-28 14:46:01 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 14:46:01 - HTTP 200
+[INFO] 2026-08-28 14:46:09 - Dataset opslaan | CODE=2 NAME='Draai' OWNER='Andy P' #items=36
+[INFO] 2026-08-28 14:46:11 - HTTP 200
+[INFO] 2026-08-28 14:46:14 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 14:46:14 - HTTP 200
+[INFO] 2026-08-28 14:50:48 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A50143&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=tdcwQpNBCuTWPUfG&code_challenge=ht81ABOo2g5iDNMlrSKn0dDr_HMFPmWTb7G9XXvusFA&code_challenge_method=S256&nonce=15c59fcfb22d78de5efaece70608add0e29918b11dfd0dfd086a5242ade1b781&client_info=1&prompt=select_account
+[INFO] 2026-08-28 14:50:52 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 14:50:52 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 14:50:52 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-28 14:50:52 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 14:50:52 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 14:51:07 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 14:51:07 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 14:51:07 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 14:51:07 - HTTP 200
+[INFO] 2026-08-28 14:51:13 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 14:51:13 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 14:51:13 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-28 14:51:13 - HTTP 200
+[INFO] 2026-08-28 14:52:42 - Stock-overzicht opvragen | #items=58
+[INFO] 2026-08-28 14:52:42 - HTTP 200
+[INFO] 2026-08-28 14:55:52 - Stock-overzicht opvragen | #items=36
+[INFO] 2026-08-28 14:55:52 - HTTP 200
+[INFO] 2026-08-28 14:56:07 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-28 14:56:07 - HTTP 200
+[INFO] 2026-08-28 14:57:50 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 14:57:50 - HTTP 200
+[INFO] 2026-08-28 14:57:58 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-28 14:57:59 - HTTP 200
+[INFO] 2026-08-28 15:00:05 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 15:00:05 - HTTP 200
+[INFO] 2026-08-28 15:01:11 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 15:01:12 - HTTP 200
+[INFO] 2026-08-28 15:05:03 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A57896&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=HOamsWkVLlgUvbKC&code_challenge=U3LFjHlU4iLv8quFWKFHeHdYHWhmQPLj3An_izqJm9Q&code_challenge_method=S256&nonce=ab08eee66153af985dff52fe6e04722d8cfce8d4da75e12fb178304c3cc82c7e&client_info=1&prompt=select_account
+[INFO] 2026-08-28 15:05:29 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:05:29 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:05:29 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-28 15:05:29 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:05:29 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:05:47 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:05:47 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:05:47 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 15:05:48 - HTTP 200
+[INFO] 2026-08-28 15:06:59 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 15:06:59 - HTTP 200
+[INFO] 2026-08-28 15:07:00 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:07:00 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:07:00 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-28 15:07:01 - HTTP 200
+[INFO] 2026-08-28 15:08:07 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A56758&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=hylZijgHdaoTtFGx&code_challenge=4VFv6YFhtqzm4NmGOBL3dXYfrskt-paH61IxL82134w&code_challenge_method=S256&nonce=1b52838ee344a785e3e8dc8a356c8cbb7acce11c728f98b02871486118b31057&client_info=1&prompt=select_account
+[INFO] 2026-08-28 15:08:10 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:08:10 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:08:10 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-28 15:08:10 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:08:10 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:08:20 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:08:20 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:08:20 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 15:08:20 - HTTP 200
+[INFO] 2026-08-28 15:08:22 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:08:22 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:08:22 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-28 15:08:22 - HTTP 200
+[INFO] 2026-08-28 15:13:43 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A60026&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=ibxQcARwEBtNVqzD&code_challenge=b9YPyTE1qoANKwD8KFM4_jV1zQ0crVK6WU-f0DdleHc&code_challenge_method=S256&nonce=a1d681aef4fba0a402deba96cc3c609fa81c6e8f5d076389651802de73600343&client_info=1&prompt=select_account
+[INFO] 2026-08-28 15:13:47 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:13:47 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:13:47 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-28 15:13:47 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:13:47 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:13:53 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:13:53 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:13:53 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 15:13:54 - HTTP 200
+[INFO] 2026-08-28 15:14:22 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A61820&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=ugREdAKXDjzfMlFh&code_challenge=cMv6wdT3K-Bh3usu-4_2Sc6TP3vaH0KwmfIqagHKZDc&code_challenge_method=S256&nonce=1fe0196ec5b97846e4c412afee9771b5b9b17fe536119469fe57570997b3c6fd&client_info=1&prompt=select_account
+[INFO] 2026-08-28 15:14:24 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:14:24 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:14:24 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-28 15:14:24 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:14:24 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:14:25 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:14:25 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:14:25 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 15:14:25 - HTTP 200
+[INFO] 2026-08-28 15:14:33 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-28 15:14:33 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-28 15:14:33 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-28 15:14:33 - HTTP 200
+[INFO] 2026-08-28 15:15:36 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 15:15:36 - HTTP 200
+[INFO] 2026-08-28 15:15:42 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-28 15:15:42 - HTTP 200
+[INFO] 2026-08-31 07:52:04 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A63302&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=vtDfmGphUKjxBHTq&code_challenge=OB6zCnjOFaOSSgXErNe3-uQ2dfCXM6O_NlXJUkBcFjQ&code_challenge_method=S256&nonce=8b2e6bcd4181bf921c9bfc54afd13089c6dc467c54823b197df232838519102d&client_info=1&prompt=select_account
+[INFO] 2026-08-31 07:52:09 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:52:09 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:52:09 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-31 07:52:09 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:52:09 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:52:10 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:52:10 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:52:10 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 07:52:10 - HTTP 200
+[INFO] 2026-08-31 07:52:47 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:52:47 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:52:47 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-31 07:52:47 - HTTP 200
+[INFO] 2026-08-31 07:55:44 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 07:55:44 - HTTP 200
+[INFO] 2026-08-31 07:56:24 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A62599&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=TBwLNktsKPADhXbv&code_challenge=I2ONk1CNSU0flyDK9Bmum9ka87TBwhL96t0U07-FdEU&code_challenge_method=S256&nonce=5e87b525de38cfddfb0121502460761f416ab68f458d2b07dc17a5c1e1e23bc0&client_info=1&prompt=select_account
+[INFO] 2026-08-31 07:56:29 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:56:29 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:56:29 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-31 07:56:29 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:56:29 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:56:29 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:56:29 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:56:29 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 07:56:30 - HTTP 200
+[INFO] 2026-08-31 07:56:40 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:56:40 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:56:40 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-31 07:56:41 - HTTP 200
+[INFO] 2026-08-31 07:57:16 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A53923&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=YfXxjhGniWUmrRkB&code_challenge=PpYjAVYEJR0Hz2kYDvYytY1OC-qixltVqCEZ9N0wsTA&code_challenge_method=S256&nonce=d9879ea1f5155c1c5dfa7c3146ad96d3e3be81c9179758598883e3ddd2c97ff5&client_info=1&prompt=select_account
+[INFO] 2026-08-31 07:57:20 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:57:20 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:57:20 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-31 07:57:20 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:57:20 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:57:20 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:57:20 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:57:20 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 07:57:21 - HTTP 200
+[INFO] 2026-08-31 07:57:38 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 07:57:38 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 07:57:38 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-31 07:57:39 - HTTP 200
+[INFO] 2026-08-31 08:01:33 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A63763&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=wMJgraLRlPenfjvy&code_challenge=vrw2W-bVkmIc4GKQ_hx-iJ3-5HwVXx19BbNzFeQba5A&code_challenge_method=S256&nonce=d3f894bb1220919b14e5286459dbeb089b6b3eb14daec820e7f1819216c15ed6&client_info=1&prompt=select_account
+[INFO] 2026-08-31 08:01:38 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:01:38 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:01:38 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-31 08:01:38 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:01:38 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:01:38 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:01:38 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:01:38 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:01:38 - HTTP 200
+[INFO] 2026-08-31 08:01:53 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:01:53 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:01:53 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-31 08:01:53 - HTTP 200
+[INFO] 2026-08-31 08:02:08 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:02:08 - HTTP 200
+[INFO] 2026-08-31 08:02:21 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:02:21 - HTTP 200
+[INFO] 2026-08-31 08:02:27 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:02:27 - HTTP 200
+[INFO] 2026-08-31 08:04:01 - Dataset opslaan | CODE=1 NAME='Wekelijkse HDPE' OWNER='Andy P' #items=57
+[INFO] 2026-08-31 08:04:18 - HTTP 200
+[INFO] 2026-08-31 08:04:46 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:04:48 - HTTP 200
+[INFO] 2026-08-31 08:06:57 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A57737&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=eduyBWPHcNnVwlqZ&code_challenge=zJYrmhVFnSPd33yYL9PbBx_1rImHIbBd3kO8Gz0qHlE&code_challenge_method=S256&nonce=09b55b014b9d5daffeb13229a1dac60f25432c3718c94e5086f80fde0260b7ae&client_info=1&prompt=select_account
+[INFO] 2026-08-31 08:07:01 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:07:01 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:07:01 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-31 08:07:01 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:07:01 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:07:01 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:07:02 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:07:02 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:07:02 - HTTP 200
+[INFO] 2026-08-31 08:07:17 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:07:17 - HTTP 200
+[INFO] 2026-08-31 08:07:20 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:07:20 - HTTP 200
+[INFO] 2026-08-31 08:07:33 - Dataset opslaan | CODE=4 NAME='PP' OWNER='Andy P' #items=46
+[INFO] 2026-08-31 08:07:36 - HTTP 200
+[INFO] 2026-08-31 08:08:32 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:08:32 - HTTP 200
+[INFO] 2026-08-31 08:08:52 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:08:52 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:08:52 - Stock-overzicht opvragen | #items=46
+[INFO] 2026-08-31 08:08:53 - HTTP 200
+[INFO] 2026-08-31 08:11:25 - Open a browser on this device to visit: https://login.microsoftonline.com/526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296/oauth2/v2.0/authorize?client_id=58f55e10-e404-4307-9fa2-7b40431782fe&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A53638&scope=Group.Read.All+User.Read+offline_access+openid+profile&state=QHhKuWwSIiFsaOPm&code_challenge=JYptvZRs8nH7gdkA7fmymMlwCfxDpFLdVBo5IVWSShQ&code_challenge_method=S256&nonce=5559c7cbdfc5500d530863747e1ae1b199892a94783945ea27d194fe1b81fce9&client_info=1&prompt=select_account
+[INFO] 2026-08-31 08:11:29 - [ArticleSearch] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:11:29 - [ArticleSearch] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:11:29 - [Startup] Vooraf token laden voor StockInfo...
+[INFO] 2026-08-31 08:11:29 - [StockInfo] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:11:29 - [StockInfo] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:11:30 - [Datasetprod] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:11:30 - [Datasetprod] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:11:30 - Datasets opvragen | name='' owner=''
+[INFO] 2026-08-31 08:11:30 - HTTP 200
+[INFO] 2026-08-31 08:12:01 - [ProdStockOverview] Token aanvragen bij https://api.cgk-group.com/api/account/login...
+[INFO] 2026-08-31 08:12:01 - [ProdStockOverview] Token ontvangen (vervalt in 1800s) | type=Bearer
+[INFO] 2026-08-31 08:12:01 - Stock-overzicht opvragen | #items=57
+[INFO] 2026-08-31 08:12:01 - HTTP 200
+[INFO] 2026-08-31 08:13:08 - Detail voor 40.2.1.44 genormaliseerd: type=dict, keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']
+[INFO] 2026-08-31 08:13:08 - Detail payload type=dict keys=['InternalID', 'externalID', 'ItemCode', 'ItemName', 'FrgnName', 'CodeBars', 'UserText', 'SerialNum', 'CreateDate', 'UpdateDate']

@@ -1,5 +1,5 @@
 {
-  "default_search_type": "Standaard",
+  "default_search_type": "Prod",
   "environment": "live",
   "show_stock": "R",
   "detail_modal": false,
@@ -11,6 +11,9 @@
     "art"
   ],
   "bp_default_type": "",
+  "prod_default_dataset_name": "Wekelijkse HDPE",
+  "prod_default_dataset_owner": "Andy P",
+  "prod_default_warehouse": "Stock_Algemeen",
   "label_settings": {
     "LABEL_WIDTH": 85.0,
     "LABEL_HEIGHT": 25.0,

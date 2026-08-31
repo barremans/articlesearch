@@ -1,5 +1,88 @@
 # 📝 Changelog
 
+## [15.3.0] - 2026-08-31
+
+### ✨ Nieuw
+- 🏭 **Productie Stock Overview**: nieuwe kolom **"Opmerking"** (vrije
+  tekst, tot 255 tekens) tussen "Niet CGK" en "Stock Algemeen" — breder
+  getoond dan de standaard auto-fit-breedte.
+- 🔤 **Kolomsortering**: klik op de kolomkop **"Art.Nr."** of
+  **"Omschrijving"** om te sorteren (nogmaals klikken keert de richting
+  om) — zelfde principe als bij de Artikel-tabel. De tabel staat na het
+  ophalen/filteren voortaan **standaard gesorteerd op Art.Nr.**
+
+### 🛠 Verbeterd
+- ⚙️ Instellingen: "Standaard dataset" en "Standaard eigenaar" (Productie
+  Stock Overview) zijn nu zuivere keuzelijsten i.p.v. vrij te typen tekst
+  — zelfde stijl als "Standaard magazijn". De reeds opgeslagen waarde
+  valt niet langer stilzwijgend weg wanneer de datasetlijst (tijdelijk)
+  niet beschikbaar is.
+- 🔒 Datasetbeheer: **"Gewijzigd door"** is nu read-only en toont altijd
+  de huidige Windows-gebruiker.
+- 🕒 Datasetbeheer: **"Gewijzigd op"** (DS_ChangeDate) wordt automatisch
+  bijgewerkt met het huidige tijdstip bij elke create/update — geen
+  aparte actie nodig.
+- 📏 Productie Stock Overview: kolombreedte van **"LISA Qty"** veel
+  smaller gemaakt (staat meestal leeg/kort).
+
+### 🐞 Bugfix
+- Datasetbeheer: een geplakte/genormaliseerde lijst artikelnummers kreeg
+  bij het **opslaan** alsnog automatisch regeleindes terug in
+  `DS_ArtNbr` (ondanks een correct genormaliseerd invoerveld) — nu
+  opgelost, opgeslagen artikelnummers zijn voortaan een zuivere
+  komma-gescheiden lijst zonder enters.
+- Productie Stock Overview: **"LISA Qty"** bleef de volledige
+  overblijvende tabelbreedte opvullen ondanks een ingestelde smallere
+  breedte (de laatste kolom werd altijd uitgerekt) — nu opgelost.
+
+---
+
+## [15.2.1] - 2026-08-28
+
+### ✨ Nieuw
+- 🟡 **Productie Stock Overview**: extra kleurregel — **"Stock vandaag"**
+  krijgt een gele celachtergrond wanneer die waarde lager is dan
+  **"Min. SAP"** op diezelfde rij, naast de bestaande regels (Min. SAP > 0
+  → groen, Stock Algemeen < 1 → rood).
+
+---
+
+## [15.2.0] - 2026-08-28
+
+### ✨ Nieuw
+- 🏭 **Productie Stock Overview** — nieuw search-type **"Prod"** in het
+  hoofdscherm, naast Artikel/Project/BP/VTA. Toont het stock-overzicht van
+  alle artikelen in een gekozen **dataset** — **inline in het bestaande
+  hoofdscherm**, geen apart pop-upvenster:
+  - **Dataset-keuzelijst**: naam + eigenaar, met standaardselectie/-filter
+    instelbaar via Instellingen (standaard dataset en/of standaard
+    eigenaar).
+  - **Magazijnfilter** (Alle magazijnen / Stock Algemeen / Stock Antwerpen
+    / Stock Miami) en een live **tekstfilter** op art.nr./omschrijving —
+    beide wijzigen enkel de weergave van de al opgehaalde data, geen
+    nieuwe API-call.
+  - **Kleurcodering**: 🟢 Min. SAP > 0 (lichtgroen), 🔴 Stock Algemeen < 1
+    (lichtrood).
+  - **Exporteer naar Excel** van de huidige (gefilterde) weergave.
+  - Resultaten verschijnen in dezelfde tabel als Artikel/BP, inclusief de
+    "Selectie"-checkboxkolom — dus ook hier bruikbaar met de bestaande
+    "Voeg toe aan lijst"/kopieer-naar-Outlook-flow.
+  - **Sneltoetsen**: `Ctrl+Enter` (data ophalen), `Ctrl+E` (exporteren),
+    `Delete` (filter wissen).
+- 🗂️ **Datasets beheren** (Instellingen → "Datasets beheren...") —
+  datasets aanmaken/bijwerken (naam, eigenaar, artikelnummers).
+  Verwijderen bestaat niet: een dataset "deactiveren" gebeurt via een
+  **Lock**-checkbox, waardoor hij niet meer in de dataset-keuzelijst
+  verschijnt.
+  - **Plak-normalisatie**: een geplakte lijst artikelnummers (gescheiden
+    door spatie, tab, puntkomma, komma of regeleinde, of een mix) wordt
+    automatisch herleid tot één lange, komma-gescheiden lijst. Een
+    "Normaliseren"-knop laat toe dit ook manueel toe te passen op reeds
+    getypte/geladen inhoud.
+  - "Gewijzigd door" wordt standaard gevuld met de Windows-gebruikersnaam.
+
+---
+
 ## [15.1.0] - 2026-08-27
 
 ### ✨ Nieuw

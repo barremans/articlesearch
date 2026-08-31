@@ -3,9 +3,115 @@
 # File:    ui_main.py
 # Role:    Hoofdvenster (QMainWindow) — zoekscherm, resultatentabel, menu-
 #          balk, en het openen van alle submodules (Detail, BP, Project,
-#          VTA, Peppol, Timings, Elements, Credit Control).
-# Version: 1.5.0
+#          VTA, Peppol, Timings, Elements, Credit Control, Prod Stock
+#          Overview).
+# Version: 1.13.0
 # Author:  Bart Bossuyt
+# Changes: 1.13.0 — BUGFIX (Prod Stock Overview): "LISA Qty" bleef breed
+#                    ondanks PROD_COLUMN_WIDTHS (70px). Oorzaak: de
+#                    hoofdtabel had `header.setStretchLastSection(True)`
+#                    staan voor de Prod-weergave (overgenomen van de
+#                    Artikel-tabel), waardoor Qt de laatst zichtbare kolom
+#                    — toevallig altijd "LISA Qty" — sowieso alle
+#                    overblijvende breedte laat opvullen, ongeacht een
+#                    nadien expliciet ingestelde `setColumnWidth()`.
+#                    `_populate_prod_rows()` zet nu `setStretchLastSection
+#                    (False)`, zodat "LISA Qty" gewoon zijn ingestelde
+#                    breedte (header-tekst) behoudt.
+# Changes: 1.12.0 — Prod Stock Overview:
+#                    - Kolombreedtes: "LISA_Qty" veel smaller (70px, staat
+#                      vaak leeg/kort), "U_customText"/"Opmerking" breder
+#                      (260px, is een vrije-tekstveld NVARCHAR 255).
+#                      PROD_NARROW_COLUMNS hernoemd/uitgebreid naar
+#                      PROD_COLUMN_WIDTHS (expliciete breedte per kolom,
+#                      niet enkel "smaller").
+#                    - Standaard sortering op Art.Nr. (oplopend) bij elke
+#                      laad-/filteractie in _render_prod_table(), i.p.v. de
+#                      ruwe, ongesorteerde API-volgorde. Gebruikt dezelfde
+#                      sorteersleutel als _sort_prod_column(), zodat een
+#                      volgende dubbelklik op de kolomkop "Art.Nr."
+#                      consistent verder bouwt op deze basis (eerste
+#                      dubbelklik keert dan om naar aflopend).
+# Changes: 1.11.0 — Prod Stock Overview: nieuw API-veld "U_customText"
+#                    toegevoegd aan PROD_STOCK_COLUMNS, als kolom
+#                    "Opmerking" tussen "Niet CGK" en "Stock Algemeen"
+#                    (volgorde uit de API-respons). Nieuwe
+#                    PROD_NARROW_COLUMNS-map: deze kolom wordt na
+#                    resizeColumnsToContents() expliciet smaller gezet
+#                    (90px) i.p.v. de standaard auto-fit-breedte — op
+#                    vraag van gebruiker.
+# Changes: 1.10.0 — Prod Stock Overview: kolomklik-sortering (SORT-PROD-1)
+#                    toegevoegd, analoog aan SORT-1 bij Artikel — dubbelklik
+#                    op de kolomkop "Art.Nr." of "Omschrijving" sorteert de
+#                    (reeds gefilterde) tabel, tweede dubbelklik op dezelfde
+#                    kolom keert de richting om. `_on_table_header_double_
+#                    clicked()` routeert nu per search-type naar
+#                    `_sort_article_column()` (hernoemd, was inline) of de
+#                    nieuwe `_sort_prod_column()`. `_render_prod_table()`
+#                    opgesplitst in filterstap + nieuwe `_populate_prod_
+#                    rows()` (tabelopbouw), zodat sorteren de tabel kan
+#                    herbouwen zonder de tekst-/magazijnfilter opnieuw toe
+#                    te passen. Nieuwe sorteerstatus `self._prod_sort_state`
+#                    (analoog `_article_sort_state`), reset bij elke nieuwe
+#                    filter-/laadactie.
+# Changes: 1.9.0 — Prod Stock Overview: nieuwe kleurregel — "Stock vandaag"
+#                   (StockHeden) krijgt een gele celachtergrond wanneer de
+#                   waarde lager is dan "Min. SAP" (MinSAP) op diezelfde
+#                   rij. Toegevoegd in _render_prod_table(), naast de
+#                   bestaande regels (Min. SAP > 0 => groen, Stock
+#                   Algemeen < 1 => rood).
+# Changes: 1.8.0 — Prod Stock Overview: sneltoetsen toegevoegd, consistent
+#                   met de andere vensters. Nieuw: Ctrl+E exporteert het
+#                   huidige overzicht naar Excel (enkel actief bij
+#                   search-type "Prod", zelfde toets als bij PaymentsDue).
+#                   "Delete" wist voortaan de Prod-resultaatfilter
+#                   (self.prod_filter_input) i.p.v. het verborgen
+#                   zoekterm-veld wanneer search-type "Prod" actief is
+#                   (analoog aan "Ctrl+D = Filters wissen" bij CC BP).
+#                   Ctrl+Enter (bestaand, globaal) werkte al voor Prod
+#                   ("Zoeken"/data ophalen) — geen wijziging nodig.
+# Changes: 1.7.0 — Prod Stock Overview: GEEN apart ProdStockWindow-popup
+#                   meer (op vraag van gebruiker: "alles in het zelfde
+#                   scherm, geen pop-up"). Resultaten verschijnen nu
+#                   rechtstreeks in de bestaande hoofdtabel (self.table),
+#                   zelfde tabel als Artikel/BP, incl. "Selectie"-checkbox-
+#                   kolom (herbruikbaar met "Voeg toe aan lijst"/kopiëren).
+#                   3 nieuwe widgets, enkel zichtbaar bij search-type
+#                   "Prod" (nieuwe grid-rijen 5 en 6): "Magazijn:"
+#                   (self.prod_warehouse_select — wisselt enkel de
+#                   zichtbare Stock_*-kolom, geen nieuwe API-call) en
+#                   "Filter:" (self.prod_filter_input — client-side
+#                   tekstfilter op Art.Nr./Omschrijving op de reeds
+#                   geladen data, geen nieuwe API-call). Nieuwe knop
+#                   "Exporteer naar Excel" (self.prod_export_button,
+#                   naast de bestaande collect-knoppen) enkel zichtbaar bij
+#                   "Prod". "Zoeken" haalt de data 1x op
+#                   (prod_info.get_prod_stock_overview()) en cachet ze in
+#                   self._prod_raw_data; magazijn-/tekstfilter renderen
+#                   enkel opnieuw (_render_prod_table()), zonder herhaalde
+#                   API-calls. NIEUWE kleurregel: "Stock Algemeen" < 1 =>
+#                   lichtrode celachtergrond (naast de bestaande "Min. SAP"
+#                   > 0 => lichtgroen). ⚠️ ui_prod_stock.py (het vorige
+#                   popup-venster) wordt hierdoor niet langer geïmporteerd/
+#                   gebruikt vanuit ui_main.py — mag uit het project
+#                   verwijderd worden (zie context-document).
+# Changes: 1.6.0 — Prod Stock Overview: nieuwe search-type "Prod" toegevoegd
+#                   aan self.search_type_select. Wanneer gekozen: het
+#                   zoekterm-veld/Zoekmodus/Toon-voorraad worden verborgen en
+#                   een nieuwe "Dataset:"-keuzelijst (self.prod_dataset_select)
+#                   verschijnt i.p.v., gevuld via prod_info.list_datasets()
+#                   en voorgeselecteerd/gefilterd o.b.v.
+#                   settings.load_prod_default_dataset_name()/_owner() (zie
+#                   _populate_prod_dataset_combo()). Op "Zoeken" wordt een
+#                   onafhankelijk ProdStockWindow-venster geopend voor de
+#                   geselecteerde dataset (analoog aan het bestaande
+#                   VTA-patroon: setParent(None) + Qt.Window, toegevoegd aan
+#                   self.detail_windows). zoekterm_label is nu een self-
+#                   attribuut (was lokale variabele) zodat hij mee
+#                   verborgen/getoond kan worden. perform_search() se
+#                   "if not zoekterm: return"-guard overslaat deze check nu
+#                   bewust voor search-type "Prod" (geen zoekterm nodig,
+#                   enkel een datasetkeuze).
 # Changes: 1.5.0 — BUGFIX (vervolg OITMI-Upload-prefill): VENDORID/
 #                   VENDORNAME bleven leeg in de OITMI Upload-dialoog
 #                   wanneer een artikel nog geen aankoophistorie (RET) had
@@ -134,6 +240,8 @@ from ui_peppol import PepWidget  # ✅ NIEUW: Peppol check venster
 from ui_duepayment import DuePaymentWindow  # ✅ NIEUW: Betalingsgedrag & Openstaande Posten
 from config import OFFLINE_MODE
 from settings import load_column_headers_s, load_column_headers_default
+from settings import load_prod_default_warehouse  # ✅ NIEUW: Prod Stock Overview (inline, geen popup)
+from prod_info import get_prod_stock_overview, parse_artnbr  # ✅ NIEUW: Prod Stock Overview
 
 
 # ---- Logging ----
@@ -153,6 +261,53 @@ COLUMN_HEADERS_DEFAULT = load_column_headers_default()
 # settings.load_column_headers_s()/_default()) — pas deze set aan indien de
 # labels in settings.py ooit hernoemd worden.
 SORTABLE_ARTICLE_HEADER_LABELS = {"Art.Nr.", "Qty", "Prijs", "Leverancier"}
+PROD_SORTABLE_HEADER_LABELS = {"Art.Nr.", "Omschrijving"}  # SORT-PROD-1
+
+# --- Prod Stock Overview (search-type "Prod") — kolomdefinities/kleuren ---
+# ✅ NIEUW: geen apart ProdStockWindow-venster meer — resultaten worden
+# rechtstreeks in de hoofdtabel (self.table) getoond, zelfde tabel als
+# Artikel/BP.
+PROD_WAREHOUSE_COLUMNS = ["Stock_Algemeen", "Stock_Antwerpen", "Stock_Miami"]
+
+PROD_STOCK_COLUMNS = [
+    ("ArtCode", "Art.Nr."),
+    ("Omschrijving", "Omschrijving"),
+    ("StockHeden", "Stock vandaag"),
+    ("MinSAP", "Min. SAP"),
+    ("MaxSAP", "Max. SAP"),
+    ("MaxRek", "Max. rek"),
+    ("TotaalStock", "Totaal stock"),
+    ("Gereserveerd", "Gereserveerd"),
+    ("InBestelling", "In bestelling"),
+    ("Beschikbaar", "Beschikbaar"),
+    ("KGOpVoorraad", "Kg op voorraad"),
+    ("BENPlatenPerPallet", "Platen/pallet"),
+    ("NietCgk", "Niet CGK"),
+    ("U_customText", "Opmerking"),
+    ("Stock_Algemeen", "Stock Algemeen"),
+    ("Stock_Antwerpen", "Stock Antwerpen"),
+    ("Stock_Miami", "Stock Miami"),
+    ("LISA_Qty", "LISA Qty"),
+]
+
+# Vaste kolombreedtes (px) die na resizeColumnsToContents() bewust
+# afwijken van de auto-fit-breedte:
+# - "U_customText" is een vrije-tekstveld (NVARCHAR 255) -> breder tonen.
+# - "LISA_Qty" staat vaak leeg/kort -> veel smaller tonen.
+PROD_COLUMN_WIDTHS = {
+    "U_customText": 260,
+    "LISA_Qty": 70,
+}
+
+PROD_NUMERIC_KEYS = {
+    "StockHeden", "MinSAP", "MaxSAP", "MaxRek", "TotaalStock", "Gereserveerd",
+    "InBestelling", "Beschikbaar", "KGOpVoorraad", "BENPlatenPerPallet",
+    "Stock_Algemeen", "Stock_Antwerpen", "Stock_Miami", "LISA_Qty",
+}
+
+PROD_MIN_SAP_GREEN = QColor("#d9f2d9")     # Min. SAP > 0 => lichtgroen
+PROD_STOCK_ALG_RED = QColor("#f5c6cb")     # Stock Algemeen < 1 => lichtrood
+PROD_STOCK_HEDEN_YELLOW = QColor("#fff3b0")  # Stock vandaag < Min. SAP => geel
 
 
 class MainWindow(QMainWindow):
@@ -177,6 +332,11 @@ class MainWindow(QMainWindow):
         self._last_article_data = []       # ruwe data (list[dict]) van laatste zoekactie
         self._last_article_columns = []    # data-keys in dezelfde volgorde als de kolommen
         self._article_sort_state = {"column_index": None, "ascending": True}
+
+        # SORT-PROD-1: idem voor de Prod-resultatentabel (Art.Nr./Omschrijving)
+        self._last_prod_data = []
+        self._last_prod_columns = []
+        self._prod_sort_state = {"column_index": None, "ascending": True}
 
         # ✅ Azure AD initialisatie
         try:
@@ -231,6 +391,10 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence("Ctrl+L"), self).activated.connect(self._generate_label)
         QShortcut(QKeySequence("F1"), self).activated.connect(lambda: show_help_dialog(self))
         QShortcut(QKeySequence("Ctrl+O"), self).activated.connect(self._open_selected_row)
+        # NIEUW (Prod Stock Overview): Ctrl+E = exporteren, consistent met
+        # PaymentsDue/andere vensters ("Ctrl+E = Exporteer..."). Enkel actief
+        # bij search-type "Prod" — zie _prod_export_shortcut().
+        QShortcut(QKeySequence("Ctrl+E"), self).activated.connect(self._prod_export_shortcut)
 
         self.installEventFilter(self)
         self.input_field.installEventFilter(self)
@@ -336,7 +500,7 @@ class MainWindow(QMainWindow):
         )
 
         self.search_type_select = QComboBox()
-        self.search_type_select.addItems(["Artikel", "Project", "BP", "VTA"])
+        self.search_type_select.addItems(["Artikel", "Project", "BP", "VTA", "Prod"])
         self.search_type_select.setCurrentText(load_default_search_type())
         self.search_type_select.currentTextChanged.connect(self._toggle_fields_by_search_type)
         self.search_type_select.currentTextChanged.connect(self._update_input_tooltip)
@@ -355,6 +519,30 @@ class MainWindow(QMainWindow):
         # Routeer opslag via centrale handler (afhankelijk van actieve modus)
         self.show_stock_select.currentTextChanged.connect(self._handle_secondary_combo_change)
 
+        # NIEUW (Prod Stock Overview): dataset-keuzelijst, enkel zichtbaar
+        # bij search-type "Prod" (i.p.v. het zoekterm-veld).
+        self.prod_dataset_label = QLabel("Dataset:")
+        self.prod_dataset_select = QComboBox()
+        self._prod_datasets_cache = []
+
+        # NIEUW (v1.7.0 — inline, geen popup meer): magazijnfilter + tekstfilter,
+        # enkel zichtbaar bij "Prod". Beide wijzigen enkel de weergave van reeds
+        # geladen data (self._prod_raw_data) — geen nieuwe API-call.
+        self.prod_warehouse_label = QLabel("Magazijn:")
+        self.prod_warehouse_select = QComboBox()
+        self.prod_warehouse_select.addItem("Alle magazijnen", "")
+        for _wh in PROD_WAREHOUSE_COLUMNS:
+            self.prod_warehouse_select.addItem(_wh.replace("Stock_", ""), _wh)
+        self.prod_warehouse_select.currentIndexChanged.connect(self._render_prod_table)
+
+        self.prod_filter_label = QLabel("Filter:")
+        self.prod_filter_input = QLineEdit()
+        self.prod_filter_input.setPlaceholderText("Filter op art.nr. of omschrijving…")
+        self.prod_filter_input.textChanged.connect(self._render_prod_table)
+
+        self._prod_raw_data = []       # cache van de laatst opgehaalde stock-data
+        self._prod_current_dataset = None
+
         self.search_button = QPushButton("Zoeken")
         self.search_button.clicked.connect(self.perform_search)
         self.table = QTableWidget()
@@ -370,6 +558,11 @@ class MainWindow(QMainWindow):
         self.clear_collected_button = QPushButton("Leeg lijst")
         self.show_list_button = QPushButton("Toon lijst")
         self.select_all_checkbox = QCheckBox("Selecteer alles")
+
+        # NIEUW (Prod Stock Overview): export-knop, enkel zichtbaar bij "Prod"
+        self.prod_export_button = QPushButton("Exporteer naar Excel")
+        self.prod_export_button.clicked.connect(self._export_prod_xlsx)
+        self.prod_export_button.setVisible(False)
 
         self.collect_button.clicked.connect(self.collect_selected_rows)
         self.clear_collected_button.clicked.connect(self.clear_collected_list)
@@ -393,11 +586,11 @@ class MainWindow(QMainWindow):
         grid.setColumnStretch(1, 0)
         grid.setColumnStretch(2, 1)
 
-        zoekterm_label = QLabel("Zoekterm:")
+        self.zoekterm_label = QLabel("Zoekterm:")
         search_type_label = QLabel("Search-type:")
 
         grid.addWidget(self.input_field, 0, 1, 1, 2)
-        grid.addWidget(zoekterm_label, 0, 0, Qt.AlignRight | Qt.AlignVCenter)
+        grid.addWidget(self.zoekterm_label, 0, 0, Qt.AlignRight | Qt.AlignVCenter)
         grid.addWidget(self.input_field, 0, 1, 1, 2)
 
         grid.addWidget(search_type_label, 1, 0, Qt.AlignRight | Qt.AlignVCenter)
@@ -408,6 +601,16 @@ class MainWindow(QMainWindow):
 
         grid.addWidget(self.stock_label, 3, 0, Qt.AlignRight | Qt.AlignVCenter)
         grid.addWidget(self.show_stock_select, 3, 1)
+
+        # NIEUW (Prod Stock Overview): rij 4-6, enkel zichtbaar bij "Prod"
+        grid.addWidget(self.prod_dataset_label, 4, 0, Qt.AlignRight | Qt.AlignVCenter)
+        grid.addWidget(self.prod_dataset_select, 4, 1, 1, 2)
+
+        grid.addWidget(self.prod_warehouse_label, 5, 0, Qt.AlignRight | Qt.AlignVCenter)
+        grid.addWidget(self.prod_warehouse_select, 5, 1)
+
+        grid.addWidget(self.prod_filter_label, 6, 0, Qt.AlignRight | Qt.AlignVCenter)
+        grid.addWidget(self.prod_filter_input, 6, 1, 1, 2)
 
         self._update_input_tooltip(self.search_type_select.currentText())
         self._toggle_fields_by_search_type(self.search_type_select.currentText())
@@ -424,6 +627,7 @@ class MainWindow(QMainWindow):
         btn_layout.addWidget(self.show_list_button)
         btn_layout.addWidget(self.select_all_checkbox)
         btn_layout.addStretch()
+        btn_layout.addWidget(self.prod_export_button)
         layout.addLayout(btn_layout)
 
         layout.addWidget(self.result_count_label)
@@ -439,8 +643,10 @@ class MainWindow(QMainWindow):
         mode = self.mode_select.currentText()
         searchtype = self.search_type_select.currentText()
 
+        is_prod = (searchtype == "Prod")
+
         self.result_count_label.setText("Aantal resultaten: 0")
-        if not zoekterm:
+        if not zoekterm and not is_prod:
             self.table.setRowCount(0)
             self.table.setColumnCount(0)
             return
@@ -454,6 +660,38 @@ class MainWindow(QMainWindow):
         is_vta = (searchtype == "VTA")
         is_project = (searchtype == "Project")
         is_bp = (searchtype == "BP")
+
+        # --- Als Prod: data ophalen en INLINE tonen in self.table (geen popup) ---
+        if is_prod:
+            try:
+                dataset = self.prod_dataset_select.currentData()
+                if not dataset:
+                    QMessageBox.warning(
+                        self, "Geen dataset",
+                        "Selecteer eerst een dataset in de keuzelijst (of maak er één aan via "
+                        "Instellingen → Datasets beheren...)."
+                    )
+                    return
+
+                items = parse_artnbr(dataset.get("DS_ArtNbr", ""))
+                if not items:
+                    QMessageBox.information(self, "Geen artikelen", "Deze dataset bevat geen artikelnummers.")
+                    return
+
+                self._prod_raw_data = get_prod_stock_overview(items)
+                self._prod_current_dataset = dataset
+                self._render_prod_table()
+
+            except Exception as e:
+                logger.error(f"Kon Prod-stock-overzicht niet ophalen: {e}")
+                QMessageBox.critical(self, "Fout", f"Kon stock-overzicht niet ophalen:\n{e}")
+                self._prod_raw_data = []
+                self.table.setRowCount(0)
+                self.table.setColumnCount(0)
+            finally:
+                self.loading_movie.stop()
+                self.loading_spinner.hide()
+            return
 
         # --- Als VTA, open direct ui_vta ---
         if is_vta:
@@ -656,14 +894,25 @@ class MainWindow(QMainWindow):
 
     def _on_table_header_double_clicked(self, logical_index: int):
         """
+        SORT-1 / SORT-PROD-1: sorteert de resultatentabel bij dubbelklik op
+        een toegestane kolomheader — routeert per search-type naar de juiste
+        sorteerlogica (Artikel: Art.Nr./Qty/Prijs/Leverancier; Prod:
+        Art.Nr./Omschrijving). Andere search-types zijn niet sorteerbaar.
+        """
+        current_type = self.search_type_select.currentText()
+        if current_type == "Artikel":
+            self._sort_article_column(logical_index)
+        elif current_type == "Prod":
+            self._sort_prod_column(logical_index)
+        # andere search-types (Project/BP/VTA): geen kolomsortering
+
+    def _sort_article_column(self, logical_index: int):
+        """
         SORT-1: sorteert de Artikel-resultatentabel bij dubbelklik op een
         toegestane kolomheader (Art.Nr. / Qty / Prijs / Leverancier).
         Sorteert op de ruwe data (vóór weergave-opmaak). Tweede dubbelklik
         op dezelfde kolom keert de richting om.
         """
-        # Enkel actief voor de standaard Artikel-resultatentabel
-        if self.search_type_select.currentText() != "Artikel":
-            return
         if logical_index == 0 or not self._last_article_columns:
             return  # kolom 0 = Selectie-checkbox, niet sorteerbaar
 
@@ -752,6 +1001,211 @@ class MainWindow(QMainWindow):
         self.result_count_label.setText(f"Aantal resultaten: {len(data)}")
         if data:
             self.table.selectRow(0)
+
+    # --------------- PROD STOCK OVERVIEW (inline, geen popup) ----------------
+    def _prod_visible_warehouse_columns(self) -> list:
+        """Welke Stock_*-kolommen tonen o.b.v. self.prod_warehouse_select."""
+        selected = self.prod_warehouse_select.currentData()
+        if not selected:
+            return list(PROD_WAREHOUSE_COLUMNS)
+        return [selected]
+
+    def _render_prod_table(self):
+        """
+        Rendert self._prod_raw_data in de hoofdtabel, met magazijn- en
+        tekstfilter toegepast (client-side, GEEN nieuwe API-call — enkel
+        "Zoeken" haalt effectief nieuwe data op). Standaard gesorteerd op
+        Art.Nr. (oplopend) — een nieuwe filter-/laadactie herstelt telkens
+        deze standaardsortering (i.p.v. de ruwe, ongesorteerde API-volgorde).
+        """
+        if self.search_type_select.currentText() != "Prod":
+            return  # widgets kunnen nog signalen sturen tijdens het wisselen van search-type
+
+        data = list(self._prod_raw_data or [])
+
+        term = self.prod_filter_input.text().strip().lower()
+        if term:
+            data = [
+                r for r in data
+                if term in str(r.get("ArtCode", "") or "").lower()
+                or term in str(r.get("Omschrijving", "") or "").lower()
+            ]
+
+        # SORT-PROD-1: standaard oplopend sorteren op Art.Nr. (kolom 1, na de
+        # Selectie-checkboxkolom — "Art.Nr." staat altijd als eerste kolom,
+        # ongeacht de magazijnfilter). Zelfde sorteersleutel als
+        # _sort_prod_column(), zodat een volgende dubbelklik op de
+        # kolomkop consistent hierop verder bouwt (eerste klik -> aflopend).
+        data.sort(key=lambda r: (1, "") if r.get("ArtCode") is None else (0, str(r.get("ArtCode")).lower()))
+        self._prod_sort_state = {"column_index": 1, "ascending": True}
+
+        self._populate_prod_rows(data)
+
+    def _populate_prod_rows(self, data: list):
+        """
+        Bouwt self.table op uit een (reeds gefilterde, eventueel gesorteerde)
+        data-lijst. Losstaand van _render_prod_table() zodat
+        _sort_prod_column() dezelfde tabel kan herbouwen zonder de
+        tekst-/magazijnfilter opnieuw toe te passen.
+        """
+        hidden_wh = set(PROD_WAREHOUSE_COLUMNS) - set(self._prod_visible_warehouse_columns())
+        columns = [(key, label) for key, label in PROD_STOCK_COLUMNS if key not in hidden_wh]
+        header_labels = ["Selectie"] + [label for _, label in columns]
+
+        # SORT-PROD-1: onthouden voor _sort_prod_column() (kolomindex -> data-key)
+        self._last_prod_data = data  # export gebruikt deze (gefilterde/gesorteerde) set
+        self._last_prod_columns = columns
+
+        self.table.setRowCount(len(data))
+        self.table.setColumnCount(len(header_labels))
+        self.table.setHorizontalHeaderLabels(header_labels)
+
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        for idx in range(1, len(header_labels)):
+            header.setSectionResizeMode(idx, QHeaderView.Interactive)
+        # GEEN stretch op de laatste kolom ("LISA Qty"): stretchLastSection
+        # zou de expliciete PROD_COLUMN_WIDTHS-breedte hieronder overrulen
+        # en de kolom alsnog alle overblijvende ruimte laten opvullen.
+        header.setStretchLastSection(False)
+
+        for row, rec in enumerate(data):
+            checkbox = QCheckBox()
+            checkbox.setFocusPolicy(Qt.NoFocus)
+            self.table.setCellWidget(row, 0, checkbox)
+
+            for col_offset, (key, _label) in enumerate(columns, start=1):
+                val = rec.get(key)
+                text = "" if val is None else str(val)
+                cell = QTableWidgetItem(text)
+                cell.setToolTip(text)
+
+                if key in PROD_NUMERIC_KEYS:
+                    cell.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+
+                # "Min. SAP" > 0 => lichtgroen (standaard artikel)
+                if key == "MinSAP":
+                    try:
+                        if val is not None and float(val) > 0:
+                            cell.setBackground(PROD_MIN_SAP_GREEN)
+                            cell.setToolTip(f"{text}\nMin. SAP > 0")
+                    except (TypeError, ValueError):
+                        pass
+
+                # "Stock Algemeen" < 1 => lichtrood
+                if key == "Stock_Algemeen":
+                    try:
+                        if val is not None and float(val) < 1:
+                            cell.setBackground(PROD_STOCK_ALG_RED)
+                            cell.setToolTip(f"{text}\n⚠️ Stock Algemeen < 1")
+                    except (TypeError, ValueError):
+                        pass
+
+                # "Stock vandaag" < "Min. SAP" => geel
+                if key == "StockHeden":
+                    min_sap_val = rec.get("MinSAP")
+                    try:
+                        if val is not None and min_sap_val is not None and float(val) < float(min_sap_val):
+                            cell.setBackground(PROD_STOCK_HEDEN_YELLOW)
+                            cell.setToolTip(f"{text}\n⚠️ Stock vandaag < Min. SAP ({min_sap_val})")
+                    except (TypeError, ValueError):
+                        pass
+
+                self.table.setItem(row, col_offset, cell)
+
+        self.table.resizeColumnsToContents()
+
+        # Enkele kolommen bewust smaller/breder houden dan
+        # resizeColumnsToContents() zou toepassen.
+        for col_offset, (key, _label) in enumerate(columns, start=1):
+            if key in PROD_COLUMN_WIDTHS:
+                self.table.setColumnWidth(col_offset, PROD_COLUMN_WIDTHS[key])
+
+        ds = self._prod_current_dataset or {}
+        self.result_count_label.setText(
+            f"Dataset: {ds.get('DS_Name', '')} | Eigenaar: {ds.get('DS_Owner', '') or '-'} | "
+            f"Aantal artikelen: {len(data)}"
+        )
+        if data:
+            self.table.selectRow(0)
+
+        # SORT-PROD-1: sorteerpijltje in header herstellen na herbouw van de tabel
+        col_idx = self._prod_sort_state.get("column_index")
+        if col_idx is not None:
+            order = Qt.AscendingOrder if self._prod_sort_state["ascending"] else Qt.DescendingOrder
+            header = self.table.horizontalHeader()
+            header.setSortIndicatorShown(True)
+            header.setSortIndicator(col_idx, order)
+
+    def _sort_prod_column(self, logical_index: int):
+        """
+        SORT-PROD-1: sorteert de Prod-resultatentabel bij dubbelklik op een
+        toegestane kolomheader (Art.Nr. / Omschrijving). Sorteert op de
+        reeds gefilterde data (self._last_prod_data), niet op de volledige
+        ruwe set. Tweede dubbelklik op dezelfde kolom keert de richting om.
+        """
+        if logical_index == 0 or not getattr(self, "_last_prod_columns", None):
+            return  # kolom 0 = Selectie-checkbox, niet sorteerbaar
+
+        header_item = self.table.horizontalHeaderItem(logical_index)
+        header_label = header_item.text() if header_item else ""
+        if header_label not in PROD_SORTABLE_HEADER_LABELS:
+            return  # enkel Art.Nr. en Omschrijving zijn sorteerbaar
+
+        col_key_index = logical_index - 1
+        if col_key_index >= len(self._last_prod_columns):
+            return
+        col_key = self._last_prod_columns[col_key_index][0]
+
+        # Richting bepalen: zelfde kolom -> omkeren, andere kolom -> oplopend starten
+        if self._prod_sort_state.get("column_index") == logical_index:
+            ascending = not self._prod_sort_state["ascending"]
+        else:
+            ascending = True
+        self._prod_sort_state = {"column_index": logical_index, "ascending": ascending}
+
+        def _sort_key(record):
+            val = record.get(col_key)
+            if val is None:
+                return (1, "")  # None's altijd achteraan, ongeacht sorteerrichting
+            return (0, str(val).lower())
+
+        self._last_prod_data.sort(key=_sort_key, reverse=not ascending)
+        self._populate_prod_rows(self._last_prod_data)
+
+    def _export_prod_xlsx(self):
+        """Exporteert de huidige (gefilterde) Prod-tabelweergave naar .xlsx."""
+        data = getattr(self, "_last_prod_data", None) or []
+        if not data:
+            QMessageBox.information(self, "Geen data", "Er is niets om te exporteren.")
+            return
+
+        ds = self._prod_current_dataset or {}
+        default_name = f"prod_stock_{ds.get('DS_Name', 'dataset')}.xlsx".replace(" ", "_")
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Exporteer naar Excel", default_name, "Excel-bestand (*.xlsx)"
+        )
+        if not path:
+            return
+
+        try:
+            import openpyxl
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = "Stock overzicht"
+
+            hidden_wh = set(PROD_WAREHOUSE_COLUMNS) - set(self._prod_visible_warehouse_columns())
+            columns = [(key, label) for key, label in PROD_STOCK_COLUMNS if key not in hidden_wh]
+
+            ws.append([label for _, label in columns])
+            for rec in data:
+                ws.append([rec.get(key) for key, _ in columns])
+
+            wb.save(path)
+            QMessageBox.information(self, "Export voltooid", f"Bestand opgeslagen:\n{path}")
+        except Exception as e:
+            logger.error(f"Fout bij Prod-export: {e}")
+            QMessageBox.critical(self, "Fout bij export", str(e))
 
     # --------------- VERZAMEL / DIALOGEN ----------------
     def collect_selected_rows(self):
@@ -1041,11 +1495,25 @@ class MainWindow(QMainWindow):
         self.table.setColumnCount(0)
         self.result_count_label.setText("Aantal resultaten: 0")
 
+    def _prod_export_shortcut(self):
+        """Ctrl+E: exporteert het huidige Prod-stock-overzicht naar Excel
+        (analoog aan Ctrl+E in PaymentsDue e.a.). Genegeerd bij een ander
+        search-type of wanneer er nog niets geladen is."""
+        if self.search_type_select.currentText() != "Prod":
+            return
+        self._export_prod_xlsx()
+
     def eventFilter(self, obj, event):
         if event.type() != QEvent.KeyPress:
             return super().eventFilter(obj, event)
         if event.key() == Qt.Key_Delete:
-            self._clear_search()
+            # Prod: "Delete" wist de resultaatfilter (analoog aan "Ctrl+D =
+            # Filters wissen" bij CC BP/andere vensters), niet het verborgen
+            # zoekterm-veld.
+            if self.search_type_select.currentText() == "Prod":
+                self.prod_filter_input.clear()
+            else:
+                self._clear_search()
             return True
         return super().eventFilter(obj, event)
 
@@ -1314,6 +1782,8 @@ class MainWindow(QMainWindow):
             tip = "Typ BP-nummer of naam"
         elif search_type == "VTA":
             tip = "Typ VTA-nummer"
+        elif search_type == "Prod":
+            tip = "Kies hierboven een dataset"
         else:
             tip = "Geef zoekterm in… geen prefix = zoeken op art.nr., * omschrijving, - kernwoorden, / leverancier"
         self.input_field.setToolTip(tip)
@@ -1342,18 +1812,22 @@ class MainWindow(QMainWindow):
         - Standaard:     Zoekmodus zichtbaar, label='Toon voorraad:', items R/S/B
         - BP:            Zoekmodus zichtbaar, label='Type:', items "", C, S
         - Project:       Beide verbergen
+        - Prod:          Beide verbergen; zoekterm-veld vervangen door
+                          dataset-keuzelijst + magazijn-/tekstfilter
+                          (resultaten inline in self.table, geen popup)
         """
         is_project = (search_type == "Project")
         is_bp = (search_type == "BP")
         is_vta = (search_type == "VTA")
+        is_prod = (search_type == "Prod")
 
-        # Zoekmodus verbergen bij Project en VTA
-        hide_mode = is_project or is_vta
+        # Zoekmodus verbergen bij Project, VTA en Prod
+        hide_mode = is_project or is_vta or is_prod
         self.mode_label.setVisible(not hide_mode)
         self.mode_select.setVisible(not hide_mode)
 
         # Rij eronder: dynamisch label + items
-        if is_project or is_vta:
+        if is_project or is_vta or is_prod:
             # 👇 beide velden volledig verbergen
             self.stock_label.setVisible(False)
             self.show_stock_select.setVisible(False)
@@ -1368,6 +1842,37 @@ class MainWindow(QMainWindow):
             self.show_stock_select.setVisible(True)
             self._set_combo_items(self.show_stock_select, ["R", "S", "B"], current=load_show_stock())
 
+        # Prod: zoekterm-veld verbergen, dataset-/magazijn-/filterkeuzelijsten tonen (en vice versa)
+        self.zoekterm_label.setVisible(not is_prod)
+        self.input_field.setVisible(not is_prod)
+        self.prod_dataset_label.setVisible(is_prod)
+        self.prod_dataset_select.setVisible(is_prod)
+        self.prod_warehouse_label.setVisible(is_prod)
+        self.prod_warehouse_select.setVisible(is_prod)
+        self.prod_filter_label.setVisible(is_prod)
+        self.prod_filter_input.setVisible(is_prod)
+        self.prod_export_button.setVisible(is_prod)
+
+        if is_prod:
+            default_wh = load_prod_default_warehouse()
+            idx = self.prod_warehouse_select.findData(default_wh) if default_wh else 0
+            self.prod_warehouse_select.blockSignals(True)
+            self.prod_warehouse_select.setCurrentIndex(idx if idx >= 0 else 0)
+            self.prod_warehouse_select.blockSignals(False)
+            self.prod_filter_input.blockSignals(True)
+            self.prod_filter_input.clear()
+            self.prod_filter_input.blockSignals(False)
+            self._populate_prod_dataset_combo()
+        else:
+            # Cache leegmaken bij het verlaten van "Prod" (voorkomt verouderde
+            # data bij een volgende _render_prod_table()-call door een
+            # signaal dat nog "in-flight" was tijdens het wisselen).
+            self._prod_raw_data = []
+            self._prod_current_dataset = None
+            self._last_prod_data = []
+            self._last_prod_columns = []
+            self._prod_sort_state = {"column_index": None, "ascending": True}
+
         # UI reset
         self.input_field.clear()
         self.input_field.setFocus()
@@ -1378,6 +1883,51 @@ class MainWindow(QMainWindow):
         if hasattr(self, 'select_all_checkbox'):
             self.select_all_checkbox.blockSignals(True)
             self.select_all_checkbox.setChecked(False)
+
+    def _populate_prod_dataset_combo(self):
+        """
+        Vult self.prod_dataset_select met de beschikbare datasets
+        (prod_info.list_datasets()), o.b.v. de standaardwaarden in settings:
+        - standaard dataset (naam) ingesteld -> deze wordt voorgeselecteerd
+          (uit de volledige lijst, ongeacht eigenaar-filter).
+        - enkel standaard eigenaar ingesteld (geen dataset) -> de keuzelijst
+          toont enkel datasets van die eigenaar.
+        - geen van beide ingesteld -> volledige lijst, geen voorselectie.
+        Gedeactiveerde datasets (DS_Lock) worden niet getoond.
+        """
+        from settings import load_prod_default_dataset_name, load_prod_default_dataset_owner
+
+        default_name = load_prod_default_dataset_name()
+        default_owner = load_prod_default_dataset_owner()
+
+        self.prod_dataset_select.blockSignals(True)
+        self.prod_dataset_select.clear()
+        self._prod_datasets_cache = []
+
+        try:
+            from prod_info import list_datasets
+            owner_filter = default_owner if (default_owner and not default_name) else ""
+            datasets = list_datasets(owner=owner_filter)
+            datasets = [d for d in datasets if str(d.get("DS_Lock") or "0") not in ("1", "true", "True")]
+            self._prod_datasets_cache = datasets
+
+            if not datasets:
+                self.prod_dataset_select.addItem("⚠️ Geen datasets beschikbaar", None)
+            else:
+                for ds in datasets:
+                    label = f"{ds.get('DS_Name', '')} ({ds.get('DS_Owner', '') or '-'})"
+                    self.prod_dataset_select.addItem(label, ds)
+
+                if default_name:
+                    idx = next((i for i, d in enumerate(datasets) if d.get("DS_Name") == default_name), -1)
+                    if idx >= 0:
+                        self.prod_dataset_select.setCurrentIndex(idx)
+
+        except Exception as e:
+            logger.error(f"Kon Prod-datasets niet ophalen: {e}")
+            self.prod_dataset_select.addItem(f"⚠️ Kon datasets niet laden: {e}", None)
+
+        self.prod_dataset_select.blockSignals(False)
 
     # --------------- Helper: detail-payload normaliseren ---------------
     def _normalize_detail_payload(self, payload):
