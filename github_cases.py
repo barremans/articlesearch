@@ -3,8 +3,23 @@
 # File:    github_cases.py
 # Role:    show_github_cases() — toont open Issues + Pull Requests uit de
 #          repo (GitHubCasesClient) via Help-menu → GitHub Cases.
-# Version: 1.1.0
+# Version: 1.3.0
 # Author:  Bart Bossuyt
+# Changes: 1.3.0 — BUGFIX: hardcoded token gaf op 2026-08-31 een bevestigde
+#                   401 Unauthorized (gemeld via "Meld via GitHub",
+#                   screenshot — zelfde onderliggende oorzaak als bij
+#                   bug_report_dialog.py). Vervangen door een echt nieuw
+#                   token (ghp_FZlpfbWf...), zelfde token als in
+#                   bug_report_dialog.py v1.3.0. Structurele les (herhaald
+#                   uit sessie 23): een 401 wordt nooit opgelost door
+#                   hetzelfde token opnieuw te gebruiken.
+#                   OPKUIS: dode, ongebruikte module-level `TOKEN`-constante
+#                   verwijderd — die verwees nog naar het allereerste,
+#                   allang vervallen token uit sessie 20/21
+#                   ("ghp_0wmMscwn1p...") en werd nergens effectief
+#                   gebruikt (GitHubCasesClient.__init__() had altijd al
+#                   zijn eigen, aparte self.token). Puur verwarrende dode
+#                   code, geen functionele wijziging door de verwijdering.
 # Changes: 1.1.0 — Token terug hardcoded i.p.v. via omgevingsvariabele
 #                   ARTICLESEARCH_GITHUB_PAT. Reden: de app wordt via een
 #                   setup/installer verspreid naar andere machines, waar
@@ -37,15 +52,10 @@
 import requests
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QTextBrowser, QPushButton, QMessageBox
 
-# Zelfde token als GitHubClient in bug_report_dialog.py — hergebruikt voor
-# zowel het melden (BugDialog) als het bekijken (dit bestand) van cases.
-# Hardcoded (i.p.v. env var) zodat dit ook werkt op machines waar de app
-# via de setup geïnstalleerd wordt, zonder extra configuratiestap.
-TOKEN = "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"
 
 class GitHubCasesClient:
     def __init__(self):
-        self.token = "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"
+        self.token = "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"
         self.owner = "barremans"
         self.repo = "articlesearch"
         self.api_base = f"https://api.github.com/repos/{self.owner}/{self.repo}"

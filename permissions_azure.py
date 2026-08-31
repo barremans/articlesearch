@@ -1,4 +1,22 @@
 #permissions_azure.py
+# =============================================================================
+# ArticleSearch
+# File:    permissions_azure.py
+# Role:    Azure AD (MSAL) login bij app-start + groepslidmaatschap-check
+#          (gebruikt voor CC-toegangscontrole, e.d.) en SharePoint-token
+#          voor uploads.
+# Version: 1.0.0
+# Author:  Bart Bossuyt
+# Changes: 1.0.0 — Eerste keer onder versiebeheer. Nieuwe accessor
+#                   `get_current_user_display_name()`: geeft de
+#                   `displayName` van de reeds ingelogde AD-gebruiker
+#                   terug (cached sinds `connect_to_azure_ad()` bij
+#                   app-start) — gebruikt door `bug_report_dialog.py`
+#                   (v1.4.0) om het "Je naam"-veld automatisch voor te
+#                   vullen i.p.v. de module-private `_cached_user` elders
+#                   rechtstreeks te benaderen. Geen wijziging aan de
+#                   bestaande login-/groepenlogica.
+# =============================================================================
 import msal
 import requests
 
@@ -90,6 +108,19 @@ def connect_to_azure_ad() -> bool:
 def list_user_groups():
     """Retourneer de opgehaalde groepnamen (cached)."""
     return _cached_groups or []
+
+
+def get_current_user_display_name() -> str:
+    """
+    Geeft de 'displayName' van de reeds ingelogde Azure AD-gebruiker terug
+    (cached sinds connect_to_azure_ad() bij app-start, via GRAPH_ME_ENDPOINT).
+    Retourneert een lege string als er nog geen gebruiker gecached is
+    (bv. connect_to_azure_ad() nooit succesvol aangeroepen/mislukt) —
+    aanroepende code moet dit als "onbekend" behandelen, niet als fout.
+    """
+    if _cached_user:
+        return _cached_user.get("displayName", "") or ""
+    return ""
 
 
 def user_in_azure_group(group_name: str) -> bool:

@@ -1,6 +1,38 @@
 # 📝 Changelog
 
-## [15.3.0] - 2026-08-31
+## [15.2.1] - 2026-08-31
+
+### ✨ Nieuw
+- 🟡 **Artikel-zoekresultaten (Toon voorraad = S)**: de kolom **"Qty"**
+  krijgt een gele celachtergrond wanneer de voorraad voor dat artikel
+  **binnen hetzelfde magazijn** onder **"Min.Whs"** zakt — analoog aan de
+  bestaande kleurregel in Productie Stock Overview. Houdt correct
+  rekening met meerdere locaties binnen één magazijn: pas wanneer de
+  **som** van alle locaties binnen dat magazijn onder Min.Whs zit, kleurt
+  de rij geel.
+- 🟡 **Detailvenster — tabs "LISA" en "SAP"**: zelfde gele markering op
+  de kolom **"Beschikbaar"**, eveneens gegroepeerd per magazijn.
+
+### 🛠 Verbeterd
+- 👤 **Bug/Feature melden**: het veld "Je naam" wordt nu automatisch
+  ingevuld met de naam van de ingelogde gebruiker en is niet langer
+  bewerkbaar. Bij een ontbrekende aanmelding blijft het veld leeg en
+  gewoon manueel invulbaar, zoals voorheen.
+- 📦 **Installatie/update**: een update sluit voortaan automatisch een
+  reeds openstaande ArticleSearch af vóór het overschrijven van de
+  bestanden — voorkomt fouten door een gelockte toepassing tijdens het
+  updaten. De toepassing wordt na de update niet automatisch herstart;
+  start ArticleSearch nadien gewoon opnieuw zelf op. De installatiewizard
+  toont bij een update ook "bijwerken naar versie X" i.p.v. de standaard
+  installatietekst.
+
+### 🔒 Security
+- 🔑 **GitHub-integratie** ("Meld via GitHub"/"Open GitHub Cases"): de
+  sleutel voor toegang tot GitHub was verlopen en is vernieuwd.
+
+---
+
+## [15.2.0] - 2026-08-31
 
 ### ✨ Nieuw
 - 🏭 **Productie Stock Overview**: nieuwe kolom **"Opmerking"** (vrije
@@ -37,7 +69,7 @@
 
 ---
 
-## [15.2.1] - 2026-08-28
+## [15.1.3] - 2026-08-28
 
 ### ✨ Nieuw
 - 🟡 **Productie Stock Overview**: extra kleurregel — **"Stock vandaag"**
@@ -47,7 +79,7 @@
 
 ---
 
-## [15.2.0] - 2026-08-28
+## [15.1.2] - 2026-08-28
 
 ### ✨ Nieuw
 - 🏭 **Productie Stock Overview** — nieuw search-type **"Prod"** in het

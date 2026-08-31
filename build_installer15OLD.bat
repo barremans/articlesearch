@@ -7,47 +7,14 @@ cd /d "%~dp0"
 
 rem ================================================
 rem build_installer15.bat - Build + Inno Setup installer generator
-rem File:    build_installer15.bat
-rem Role:    Bouwt de PyInstaller-EXE en genereert/compileert het Inno
-rem          Setup installer-script (.iss), voor zowel interactief gebruik
-rem          als niet-interactieve aanroep vanuit build_and_publish.ps1
-rem          (via env vars AS_BUMP_PART, AS_MAKE_INSTALLER, AS_DO_SIGN).
-rem Version: 1.3.0
-rem Author:  Bart Bossuyt
-rem Changes: 1.3.0 - INTUNE-UPDATE-1: het gegenereerde installer-script
-rem                   sluit voortaan automatisch een reeds draaiende
-rem                   ArticleSearch.exe vóór het kopiëren van bestanden
-rem                   ([Setup]: CloseApplications=force,
-rem                   CloseApplicationsFilter=%PROJECT_NAME%.exe,
-rem                   RestartApplications=no - app wordt NIET automatisch
-rem                   herstart, want een Intune/SYSTEM-deployment mag geen
-rem                   GUI-app als SYSTEM opstarten). Dit lost het eigenlijke
-rem                   "update terwijl de app openstaat"-probleem op
-rem                   (gelockte exe/_internal-map bij overschrijven).
-rem                   Bijkomend, puur cosmetisch: nieuwe [Code]-sectie
-rem                   (IsUpgrade() + InitializeWizard()) toont in de
-rem                   welkomsttekst van de wizard "bijwerken naar versie
-rem                   X" i.p.v. de standaardtekst wanneer een vorige
-rem                   installatie (zelfde AppId) gedetecteerd wordt in het
-rem                   register - functioneel verandert er niets, enkel de
-rem                   getoonde tekst. Beide wijzigingen zijn silent-install-
-rem                   veilig (CloseApplications=force vraagt niets in
-rem                   /VERYSILENT-modus; WizardForm bestaat ook silent,
-rem                   wordt dan gewoon niet getoond) en dus compatibel met
-rem                   het huidige Intune/SYSTEM-deploymentpad
-rem                   (PrivilegesRequired=admin, silent via Intune Win32-app
-rem                   install-commando). Geen wijziging aan de rest van de
-rem                   build-flow (signing, versie-bump, assets-kopie, enz.).
-rem Changes: 1.2.0 - (voorheen ongedocumenteerd, zie context v22/v24)
-rem                   Signeren optioneel via certificaatstore (analoog
-rem                   Networkmap-patroon) i.p.v. los .pfx-bestand + plaintext
-rem                   wachtwoord; ondersteuning voor env vars AS_BUMP_PART/
-rem                   AS_MAKE_INSTALLER/AS_DO_SIGN voor niet-interactieve
-rem                   aanroep vanuit build_and_publish.ps1.
-rem Changes: 1.0.0 - Baseline: installeert altijd in C:\ArticleSearch,
-rem                   admin vereist (Intune SYSTEM-deployment), versie-bump
-rem                   via bump_version.py, PyInstaller-build via .spec,
-rem                   Inno Setup-script-generatie en -compilatie.
+rem - Installeert ALTIJD in C:\ArticleSearch
+rem - Admin vereist (geschikt voor Intune SYSTEM deployment)
+rem - Signeren nu optioneel, via certificaatstore (naar Networkmap-patroon)
+rem   i.p.v. een los .pfx-bestand + plaintext wachtwoord - vermijdt de
+rem   folder-access-blokkades die MS Intune soms geeft op C:\certs.
+rem - Ondersteunt env vars voor niet-interactieve aanroep (via
+rem   build_and_publish.ps1's wrapper): AS_BUMP_PART, AS_MAKE_INSTALLER,
+rem   AS_DO_SIGN. Zonder deze vars: gewoon interactief zoals voorheen.
 rem ================================================
 
 rem 🧩 Basisconfig
@@ -59,14 +26,6 @@ set "TIMESTAMP_URL=http://timestamp.sectigo.com"
 rem Optioneel: exacte certificaat-subject om te forceren i.p.v. automatisch
 rem beste certificaat (/a). Leeg = automatisch.
 set "SIGN_SUBJECT="
-
-rem INTUNE-UPDATE-1: vaste AppId (zonder de Inno-escape "{{"), gebruikt om
-rem in het [Code]-blok te detecteren of er al een eerdere installatie
-rem (zelfde app) in het register staat - moet EXACT overeenkomen met de
-rem AppId hieronder bij [Setup] (daar WEL met "{{" geschreven, dat is de
-rem Inno-eigen manier om een letterlijke "{" te noteren in een directive-
-rem waarde). Wijzig je de AppId hieronder, wijzig dan ook APPGUID mee.
-set "APPGUID={A1B2C3D4-E5F6-47A8-9023-ABCDEF123456}"
 
 rem ---- Python uit .venv prefereren ----
 set "PYEXE="
@@ -206,7 +165,7 @@ set "DO_ISCC=1"
 if /I "%MAKE_INSTALLER%"=="N" set "DO_ISCC=0"
 if "%DO_ISCC%"=="0" goto SHOW_OUTPUT
 
-rem 📝 Inno script genereren
+rem 📝 Inno script genereren (ONGEWIJZIGD - zelfde werkende logica als voorheen)
 if not exist "%DST_FOLDER%" mkdir "%DST_FOLDER%" >nul 2>&1
 del /q "%ISS_FILE%" >nul 2>&1
 echo [6b] 📝 Installer-script genereren...
@@ -233,17 +192,6 @@ echo [6b] 📝 Installer-script genereren...
 >>"%ISS_FILE%" echo DirExistsWarning=no
 >>"%ISS_FILE%" echo WizardStyle=modern
 >>"%ISS_FILE%" echo SetupIconFile="%ABS_BUILD_FOLDER%\assets\logo.ico"
-rem INTUNE-UPDATE-1: sluit een draaiende ArticleSearch.exe automatisch af
-rem vóór het kopiëren van bestanden (lost gelockte-exe-fouten bij updates
-rem op). "force" = geen prompt, ook niet interactief - vereist voor een
-rem probleemloze /VERYSILENT-run via Intune. RestartApplications=no: de
-rem app bewust NIET automatisch herstarten na install, want dat zou de
-rem GUI-app in de SYSTEM-context proberen op te starten (Intune draait de
-rem installer als SYSTEM, niet als de ingelogde gebruiker) - de gebruiker
-rem start ArticleSearch nadien zelf gewoon opnieuw op.
->>"%ISS_FILE%" echo CloseApplicationsFilter=%PROJECT_NAME%.exe
->>"%ISS_FILE%" echo CloseApplications=force
->>"%ISS_FILE%" echo RestartApplications=no
 >>"%ISS_FILE%" echo.
 >>"%ISS_FILE%" echo [InstallDelete]
 >>"%ISS_FILE%" echo Type: filesandordirs; Name: "{app}\_internal"
@@ -261,25 +209,8 @@ rem start ArticleSearch nadien zelf gewoon opnieuw op.
 >>"%ISS_FILE%" echo.
 >>"%ISS_FILE%" echo [Run]
 >>"%ISS_FILE%" echo Filename: "{app}\%PROJECT_NAME%.exe"; WorkingDir: "{app}"; Description: "Start %PROJECT_NAME%"; Flags: nowait postinstall skipifsilent
->>"%ISS_FILE%" echo.
-rem INTUNE-UPDATE-1: puur cosmetisch - toont "bijwerken naar versie X" i.p.v.
-rem de standaard welkomsttekst wanneer een vorige installatie (zelfde
-rem AppId) al in het register staat. Werkt ook onder een silent/Intune-run
-rem (WizardForm bestaat dan gewoon, wordt alleen niet zichtbaar getoond) -
-rem geen enkele invloed op het effectieve installatiegedrag.
->>"%ISS_FILE%" echo [Code]
->>"%ISS_FILE%" echo function IsUpgrade: Boolean;
->>"%ISS_FILE%" echo var sPrevPath: String;
->>"%ISS_FILE%" echo begin
->>"%ISS_FILE%" echo Result := RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\%APPGUID%_is1', 'InstallLocation', sPrevPath);
->>"%ISS_FILE%" echo end;
->>"%ISS_FILE%" echo.
->>"%ISS_FILE%" echo procedure InitializeWizard();
->>"%ISS_FILE%" echo begin
->>"%ISS_FILE%" echo if IsUpgrade then WizardForm.WelcomeLabel2.Caption := 'Dit zal %PROJECT_NAME% bijwerken naar versie %NEW_VERSION%.' + #13#10#13#10 + 'Klik op Volgende om verder te gaan.';
->>"%ISS_FILE%" echo end;
 
-rem 🔨 Inno Setup compileren
+rem 🔨 Inno Setup compileren (ONGEWIJZIGD)
 echo [7] 🔨 Inno Setup compileren...
 set "ISCC_EXE="
 if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" set "ISCC_EXE=C:\Program Files (x86)\Inno Setup 6\ISCC.exe"

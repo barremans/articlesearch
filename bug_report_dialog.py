@@ -8,8 +8,33 @@
 #          keuze (zelfde patroon als config.py/updater.py) zodat dit ook
 #          werkt op machines waar de app via de setup geïnstalleerd wordt,
 #          zonder per-machine configuratiestap (env var).
-# Version: 1.1.0
+# Version: 1.4.0
 # Author:  Bart Bossuyt
+# Changes: 1.4.0 — Het "Je naam"-veld wordt nu automatisch voorgevuld met
+#                   de displayName van de ingelogde Azure AD-gebruiker
+#                   (`permissions_azure.get_current_user_display_name()`,
+#                   gecached sinds de AD-login bij app-start) en read-only
+#                   gemaakt zodra dat gelukt is — de gebruiker hoeft zijn
+#                   naam dan niet meer manueel te typen. **Fallback**: als
+#                   er (nog) geen gecachede gebruikersnaam is (bv. AD-login
+#                   niet gelukt/overgeslagen), blijft het veld leeg én
+#                   bewerkbaar zoals voorheen — anders zou een gebruiker
+#                   nooit meer een melding kunnen indienen in dat geval.
+#                   Geen wijziging aan `submit_report()` zelf: die leest
+#                   nog steeds gewoon `self.name_input.text()`.
+# Changes: 1.3.0 — BUGFIX: hardcoded token gaf op 2026-08-31 een bevestigde
+#                   401 Unauthorized bij _get_commit_sha() (GET
+#                   .../git/ref/heads/main), gemeld via "Meld via GitHub"
+#                   (screenshot). Vervangen door een echt nieuw token
+#                   (ghp_FZlpfbWf...) — zelfde structurele les als sessie
+#                   23: een 401 wordt nooit opgelost door hetzelfde token
+#                   opnieuw te gebruiken, enkel door een vers gegenereerd
+#                   token. Zelfde nieuwe token ook toegepast in
+#                   github_cases.py (v1.3.0). Geen architecturale
+#                   wijziging — blijft bewust hardcoded op beide plekken
+#                   (geen centrale env var), zelfde afweging als eerder
+#                   (setup/installer-verspreiding maakt per-machine
+#                   configuratie onhaalbaar).
 # Changes: 1.1.0 — Documentatie-update: het hardcoded token gaf op
 #                   2026-08-06 tijdelijk een 401 (zie sessie 20), maar is
 #                   door de gebruiker bevestigd als momenteel geldig/
@@ -35,11 +60,12 @@ from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QTextEdit,
     QPushButton, QMessageBox, QLineEdit, QComboBox
 )
+from permissions_azure import get_current_user_display_name
 
 # GitHubClient klasse
 class GitHubClient:
     def __init__(self):
-        self.token = "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"
+        self.token = "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"
         self.owner = "barremans"
         self.repo = "articlesearch"
         self.base_branch = "main"
@@ -142,6 +168,13 @@ class BugDialog(QDialog):
 
         layout.addWidget(QLabel("Je naam:"))
         self.name_input = QLineEdit()
+        # v1.4.0: automatisch voorvullen met de ingelogde AD-gebruiker +
+        # read-only maken, mét fallback (leeg/bewerkbaar) als er nog geen
+        # gecachede gebruikersnaam beschikbaar is.
+        current_user_name = get_current_user_display_name()
+        if current_user_name:
+            self.name_input.setText(current_user_name)
+            self.name_input.setReadOnly(True)
         layout.addWidget(self.name_input)
 
         layout.addWidget(QLabel("Omschrijf de melding:"))

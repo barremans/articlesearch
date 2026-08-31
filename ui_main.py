@@ -5,8 +5,38 @@
 #          balk, en het openen van alle submodules (Detail, BP, Project,
 #          VTA, Peppol, Timings, Elements, Credit Control, Prod Stock
 #          Overview).
-# Version: 1.13.0
+# Version: 1.15.0
 # Author:  Bart Bossuyt
+# Changes: 1.15.0 — QTYKLEUR-1-BUGFIX: de geel-markering vergeleek voorheen
+#                    de Qty van één locatie-rij tegen Min.Whs, terwijl
+#                    Min.Whs een instelling is per combinatie
+#                    artikel+magazijn, niet per locatie. Bij meerdere
+#                    locaties binnen hetzelfde magazijn (bv. 3 rijen
+#                    "Algemeen magazijn") kleurde één locatie met een
+#                    kleine Qty dus ten onrechte geel, ook al zat de som
+#                    van alle locaties ruim boven Min.Whs. Nieuwe
+#                    groeperingslogica: Qty wordt eerst gesommeerd per
+#                    (Art.Nr., Magazijn)-combinatie over de volledige
+#                    resultatenset, en pas die groepstotaal wordt
+#                    vergeleken met Min.Whs — een rij kleurt dus enkel geel
+#                    als het TOTAAL binnen hetzelfde magazijn onder
+#                    Min.Whs zit, niet meer op basis van een individuele
+#                    locatie. Art.Nr./Magazijn-raw-keys worden, net als
+#                    Qty, generisch afgeleid via labelpositie (geen
+#                    hardcoded keys). Valt terug op het oude, per-rij
+#                    gedrag als Art.Nr./Magazijn-labels niet gevonden
+#                    worden (defensief, zou niet mogen voorkomen).
+# Changes: 1.14.0 — QTYKLEUR-1: in de Artikel-resultatentabel (Toon
+#                    voorraad = S) kleurt de "Qty"-kolom nu geel
+#                    (#fff3b0, zelfde geel als PROD_STOCK_HEDEN_YELLOW in
+#                    Prod Stock Overview) wanneer Qty < Min.Whs op
+#                    dezelfde rij — analoog aan de bestaande
+#                    "StockHeden < MinSAP"-regel. De ruwe API-veldnaam
+#                    achter het label "Qty" wordt niet hardcoded (in
+#                    tegenstelling tot "QTYMININV" voor Min.Whs), maar
+#                    generisch afgeleid via de labelpositie in
+#                    COLUMN_HEADERS_S — robuuster tegen een eventuele
+#                    hernoeming van de ruwe key in settings.py.
 # Changes: 1.13.0 — BUGFIX (Prod Stock Overview): "LISA Qty" bleef breed
 #                    ondanks PROD_COLUMN_WIDTHS (70px). Oorzaak: de
 #                    hoofdtabel had `header.setStretchLastSection(True)`
@@ -308,6 +338,10 @@ PROD_NUMERIC_KEYS = {
 PROD_MIN_SAP_GREEN = QColor("#d9f2d9")     # Min. SAP > 0 => lichtgroen
 PROD_STOCK_ALG_RED = QColor("#f5c6cb")     # Stock Algemeen < 1 => lichtrood
 PROD_STOCK_HEDEN_YELLOW = QColor("#fff3b0")  # Stock vandaag < Min. SAP => geel
+
+# QTYKLEUR-1: zelfde geel als Prod Stock Overview (PROD_STOCK_HEDEN_YELLOW),
+# hergebruikt voor de Artikel-resultatentabel: "Qty" < "Min.Whs" => geel.
+ARTIKEL_QTY_ONDER_MINWHS_GEEL = QColor("#fff3b0")
 
 
 class MainWindow(QMainWindow):
@@ -853,6 +887,52 @@ class MainWindow(QMainWindow):
             min_whs_col_offset = None
         MIN_WHS_STANDAARD_KLEUR = QColor("#d9f2d9")  # lichtgroen
 
+        # QTYKLEUR-1: kolomindex + ruwe data-key van "Qty" bepalen. De
+        # exacte ruwe API-veldnaam achter het label "Qty" staat niet vast
+        # in ui_main.py (komt uit settings.load_column_headers_s()) — dus
+        # net als bij Min.Whs hierboven, maar via de labelpositie i.p.v.
+        # een hardcoded key: zoek "Qty" op in COLUMN_HEADERS_S.values()
+        # (displaylabels) en gebruik diezelfde positie in originele_columns
+        # (ruwe keys) — beide lijsten hebben altijd dezelfde volgorde/
+        # lengte, want ze komen uit hetzelfde dict. Enkel relevant bij
+        # show_stock == "S" (dan is Min.Whs ook aanwezig om tegen af te
+        # zetten).
+        def _raw_key_for_column_label(label):
+            try:
+                idx = list(COLUMN_HEADERS_S.values()).index(label)
+                return originele_columns[idx]
+            except (ValueError, IndexError):
+                return None
+
+        qty_col_offset = None
+        qty_key = None
+        artnr_key = None
+        magazijn_key = None
+        if show_stock == "S":
+            qty_key = _raw_key_for_column_label("Qty")
+            artnr_key = _raw_key_for_column_label("Art.Nr.")
+            magazijn_key = _raw_key_for_column_label("Magazijn")
+            if qty_key is not None:
+                qty_col_offset = originele_columns.index(qty_key) + 1
+
+        # QTYKLEUR-1 (v1.15.0): Min.Whs is een instelling per combinatie
+        # artikel+magazijn, niet per locatie — hetzelfde artikel kan op
+        # meerdere locaties binnen hetzelfde magazijn voorkomen (bv. 3
+        # rijen "Algemeen magazijn"). Eén locatie met een kleine Qty mag
+        # dus niet geel gekleurd worden als de SOM van alle locaties
+        # binnen datzelfde (Art.Nr., Magazijn) al boven Min.Whs zit.
+        # Daarom eerst per (Art.Nr., Magazijn) de Qty's optellen over de
+        # volledige resultatenset, en pas nadien vergelijken met Min.Whs.
+        qty_group_totals = {}
+        if qty_key is not None and artnr_key is not None and magazijn_key is not None:
+            for rec in data:
+                gkey = (rec.get(artnr_key), rec.get(magazijn_key))
+                try:
+                    qty_num = float(str(rec.get(qty_key, 0)).replace(",", "."))
+                except (TypeError, ValueError):
+                    qty_num = 0.0
+                qty_group_totals[gkey] = qty_group_totals.get(gkey, 0.0) + qty_num
+
         for row, item in enumerate(data):
             checkbox = QCheckBox()
             checkbox.setFocusPolicy(Qt.NoFocus)
@@ -873,6 +953,32 @@ class MainWindow(QMainWindow):
                     if is_standaard_artikel:
                         cell.setBackground(MIN_WHS_STANDAARD_KLEUR)
                         cell.setToolTip(f"{val}\n✅ Standaard artikel (Min.Whs > 0)")
+
+                # QTYKLEUR-1: gegroepeerde Qty (som over alle locaties
+                # binnen hetzelfde Art.Nr. + Magazijn) < Min.Whs => geel
+                # gemarkeerd + tooltip, analoog aan "StockHeden < MinSAP"
+                # in Prod Stock Overview. Valt terug op de rij-eigen Qty
+                # (oude, per-locatie gedrag) als Art.Nr./Magazijn niet
+                # gevonden konden worden (bv. hernoemd label).
+                if qty_col_offset is not None and col_offset == qty_col_offset:
+                    try:
+                        min_whs_raw = item.get("QTYMININV", "")
+                        min_whs_val = float(str(min_whs_raw).replace(",", "."))
+                        if artnr_key is not None and magazijn_key is not None:
+                            gkey = (item.get(artnr_key), item.get(magazijn_key))
+                            groep_qty_val = qty_group_totals.get(gkey)
+                        else:
+                            groep_qty_val = None
+                        if groep_qty_val is None:
+                            groep_qty_val = float(str(val).replace(",", "."))
+                        if groep_qty_val < min_whs_val:
+                            cell.setBackground(ARTIKEL_QTY_ONDER_MINWHS_GEEL)
+                            cell.setToolTip(
+                                f"{val}\n⚠️ Totaal Qty voor dit artikel in dit magazijn "
+                                f"({groep_qty_val:g}) < Min.Whs ({min_whs_val:g})"
+                            )
+                    except (TypeError, ValueError):
+                        pass
 
                 self.table.setItem(row, col_offset, cell)
 
