@@ -6,8 +6,17 @@
 #          Afbeelding, ATP. Ontvangt de volledige ZStockInfoP-payload
 #          (detail_data) van ui_main.py en verdeelt de sub-secties over de
 #          tab-widgets.
-# Version: 1.3.0
+# Version: 1.4.0
 # Author:  Bart Bossuyt
+# Changes: 1.4.0 — QTYKLEUR-1 vervolg (LISA-backend-bug, bevestigd via live
+#                   JSON-voorbeeld artikel 40.3.5.2): STOCK.LISA-sectie
+#                   levert QTYMININV/QTYMAXINV als som over ALLE magazijnen
+#                   i.p.v. per magazijn — STOCK.SAP van dezelfde payload
+#                   heeft dit wél correct (MinStock/MaxStock per WhsCode).
+#                   _add_lisa_tab() geeft nu ook self.detail_data["STOCK"]
+#                   ["SAP"] mee aan LisaTab (nieuwe parameter sap_data) als
+#                   terugvalbron voor Min.Whs/Max.Whs — zie ui_lisa.py
+#                   v1.2.0 voor de eigenlijke koppel-/vervanglogica.
 # Changes: 1.3.0 — BUGFIX vervolg (screenshot Bart Bossuyt, artikel
 #                   152.PPECO200515): Beschrijving werd al correct
 #                   vooringevuld (v1.2.0), maar VENDORID/VENDORNAME bleven
@@ -185,7 +194,14 @@ class DetailWindow(QDialog):
 
     def _add_lisa_tab(self):
         data = self.detail_data.get("STOCK", {}).get("LISA", [])
-        tab = LisaTab(data)
+        # QTYKLEUR-1 v1.2.0 (LISA-backend-bug): QTYMININV/QTYMAXINV in de
+        # LISA-sectie zelf blijken bij de backend gesommeerd te zijn over
+        # ALLE magazijnen i.p.v. per magazijn opgesplitst (bevestigd via
+        # live JSON-voorbeeld, artikel 40.3.5.2). De SAP-sectie van
+        # dezelfde payload heeft dit wél correct per magazijn — LisaTab
+        # gebruikt die nu als terugvalbron voor Min.Whs/Max.Whs.
+        sap_data = self.detail_data.get("STOCK", {}).get("SAP", [])
+        tab = LisaTab(data, sap_data=sap_data)
         self.tabs.addTab(tab, "📦 LISA")
 
 

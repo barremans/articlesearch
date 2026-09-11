@@ -4,9 +4,17 @@
 # Role:    Persistente gebruikersinstellingen (settings.json) — environment,
 #          show_stock, kolomheaders, taal, BP-default-type, label-
 #          instellingen, default search-type, tab-volgorde, QSS-paden,
-#          Prod Stock Overview-defaults (dataset/eigenaar/magazijn).
-# Version: 1.2.0
+#          Prod Stock Overview-defaults (dataset/eigenaar/magazijn), Open
+#          Elements overview-defaults (input-/outputmap).
+# Version: 1.3.0
 # Author:  Bart Bossuyt
+# Changes: 1.3.0 — Open Elements overview: 2 nieuwe instellingen + load/
+#                   save-functies toegevoegd: oeoverview_default_input_folder
+#                   en oeoverview_default_output_folder — een vaste,
+#                   optionele standaardmap (leeg = geen standaard ingesteld).
+#                   ui_oeoverview.py gebruikt deze als eerste keuze bij het
+#                   openen van het venster en valt enkel terug op de laatst
+#                   gebruikte map (QSettings) wanneer de instelling leeg is.
 # Changes: 1.2.0 — Prod Stock Overview (nieuwe search-type "Prod"): 3 nieuwe
 #                   instellingen + load/save-functies toegevoegd:
 #                   prod_default_dataset_name, prod_default_dataset_owner
@@ -48,6 +56,8 @@ DEFAULT_SETTINGS = {
     "prod_default_dataset_name": "",   # Prod Stock Overview: standaard dataset (naam)
     "prod_default_dataset_owner": "",  # Prod Stock Overview: standaard eigenaar (filter)
     "prod_default_warehouse": "",      # Prod Stock Overview: standaard magazijn ("" = alle)
+    "oeoverview_default_input_folder": "",   # Open Elements overview: standaard inputmap ("" = geen, dan laatst gebruikte map)
+    "oeoverview_default_output_folder": "",  # Open Elements overview: standaard outputmap ("" = geen, dan laatst gebruikte map)
     "label_settings": {
         "LABEL_WIDTH": 85.0,
         "LABEL_HEIGHT": 25.0,
@@ -419,4 +429,32 @@ def save_prod_default_warehouse(val: str):
         val = ""
     settings = load_settings()
     settings["prod_default_warehouse"] = val
+    save_settings(settings)
+
+
+# --- NIEUW: Open Elements overview default input-/outputmap ---
+def load_oeoverview_default_input_folder() -> str:
+    """Standaard inputmap voor 'Open Elements overview' ('' = geen vaste
+    standaard ingesteld — ui_oeoverview.py valt dan terug op de laatst
+    gebruikte map via QSettings)."""
+    return load_settings().get(
+        "oeoverview_default_input_folder", DEFAULT_SETTINGS["oeoverview_default_input_folder"]
+    )
+
+def save_oeoverview_default_input_folder(val: str):
+    settings = load_settings()
+    settings["oeoverview_default_input_folder"] = (val or "").strip()
+    save_settings(settings)
+
+def load_oeoverview_default_output_folder() -> str:
+    """Standaard outputmap voor 'Open Elements overview' ('' = geen vaste
+    standaard ingesteld — ui_oeoverview.py valt dan terug op de laatst
+    gebruikte map via QSettings)."""
+    return load_settings().get(
+        "oeoverview_default_output_folder", DEFAULT_SETTINGS["oeoverview_default_output_folder"]
+    )
+
+def save_oeoverview_default_output_folder(val: str):
+    settings = load_settings()
+    settings["oeoverview_default_output_folder"] = (val or "").strip()
     save_settings(settings)

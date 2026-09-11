@@ -1,5 +1,106 @@
 # 📝 Changelog
 
+## [15.4.0] - 2026-09-11
+
+### ✨ Nieuw
+- 📑 **Open Elements overview** — nieuw scherm onder **Export → Open
+  Elements overview...**, naast het bestaande "Open Elements". Splitst 2
+  lokaal aangeleverde CSV-exports van openstaande verkoopdocumenten
+  (orders/leveringen) op per verkoopmedewerker (Sales Owner, met Document
+  Owner als terugval) en genereert per medewerker een overzicht (enkel
+  orders ouder dan 6 maanden en leveringen ouder dan 1 maand), met een
+  extra kolom "Openstaand" en een totaalrij. Kies zelf de inputmap
+  (bestandskeuzelijst herkent de orders-/leveringen-CSV automatisch) en de
+  outputmap, en het gewenste formaat (**XLSX**, **CSV**, of beide) — de map
+  met de gegenereerde bestanden wordt na afloop automatisch geopend, en de
+  laatst gebruikte in-/outputmap wordt onthouden voor de volgende keer.
+  Geen live SAP-koppeling nodig voor dit scherm. Zelfde
+  toegangsvoorwaarde als "Open Elements": enkel voor gebruikers in
+  Azure AD-groep **"GPP_Finance"**, en niet beschikbaar in offline-modus.
+  Optioneel kan via **Instellingen → Instellingen wijzigen...** een vaste
+  standaard input-/outputmap ingesteld worden (bv. een gedeelde
+  netwerkschijf) — leeg gelaten, dan valt het scherm terug op de laatst
+  gebruikte map.
+
+### 🛠 Verbeterd
+- ⚙️ **Instellingen-scherm**: heringedeeld in tabbladen ("Algemeen",
+  "Business Partners", "Productie Stock Overview", "Open Elements
+  overview", "Tab-volgorde") i.p.v. één lange, aaneengeschakelde lijst —
+  overzichtelijker nu het aantal instellingengroepen blijft groeien.
+  Functioneel ongewijzigd: dezelfde velden, 1 gedeelde "Opslaan"-knop.
+- 🏭 **Datasets beheren... (Prod Stock Overview)**: "Artikelnummers"
+  wordt bij Opslaan nu altijd eerst zichtbaar genormaliseerd in het veld
+  zelf en pas dan effectief opgeslagen — voorheen gebeurde de normalisatie
+  al wel correct maar onzichtbaar, het getoonde veld bleef ongewijzigd
+  tot manueel op "Normaliseren" geklikt werd.
+
+### 🔒 Security
+- 🏭 **Datasets beheren... (Prod Stock Overview)**: "Eigenaar" wordt bij
+  een nieuwe dataset voortaan automatisch ingevuld met de naam van de
+  ingelogde gebruiker en is niet langer een vrij in te typen veld
+  (zelfde principe als "Gewijzigd door"). **Bewerken** blijft voorbehouden
+  aan de eigenaar (of iemand van wie de naam sterk op de eigenaar lijkt —
+  vangt bestaande, ooit handmatig ingevulde eigenaar-namen op) of aan
+  leden van de AD-groep **"CGK-APP-L6"** (volledige beheerrechten over
+  alle datasets); wie geen van beide is kan de dataset nog steeds
+  **bekijken**, maar dan alleen-lezen — geen enkele dataset wordt dus
+  onzichtbaar.
+
+## [15.3.0] - 2026-09-01
+
+### ✨ Nieuw
+- 🔮 **Betalingsgedrag & Openstaande Posten** — nieuw tabblad **"Forecast"**:
+  toont per openstaande factuur/voorschot een **voorspelde betaaldatum**
+  en **vervalstatus**, gebaseerd op het historische betaalgedrag van de
+  klant. Staat na het ophalen standaard gesorteerd op eerstkomende
+  verwachte betaaldatum; elke kolom (incl. Vervalstatus) blijft ook
+  manueel sorteerbaar via de kolomkop.
+- Σ **Live totaal "Openstaand"**: onderaan de tabbladen "Closed" en
+  "Forecast" verschijnt nu een totaalbedrag dat automatisch meebeweegt
+  met de actieve filters/zoekopdracht — bv. filteren op een bepaald
+  kwartaal toont meteen het openstaand totaal voor enkel die facturen.
+
+### 🛠 Verbeterd
+- 💳 **Betalingsgedrag & Openstaande Posten**: tabblad "Facturen"
+  hernoemd naar **"Closed"** en toont voortaan enkel afgesloten
+  (betaalde) documenten — openstaande facturen zijn nu te vinden in het
+  nieuwe tabblad "Forecast". Een dubbelklik op een klant in "Klanten"
+  springt daarom ook niet langer naar "Closed", maar rechtstreeks naar
+  "Forecast". Kolombreedte van de laatste kolom ("Jaar") is niet langer
+  overdreven breed.
+- 🏭 **Productie Stock Overview**: de rode kleurmarkering bij een lege
+  magazijnvoorraad houdt nu ook rekening met **"Min. SAP"** — een
+  artikel zonder minimumvereiste kleurt niet langer onterecht rood bij
+  een lege voorraad. Geldt voortaan voor **alle 3 magazijnkolommen**
+  (Algemeen, Antwerpen, Miami), niet enkel "Stock Algemeen".
+- 📦 **Detailvenster — tab "LISA"**: de kolommen "Min.Whs"/"Max.Whs"
+  tonen nu de correcte waarde per magazijn (overgenomen uit de SAP-tab
+  van hetzelfde artikel) — zie ook de bugfix hieronder.
+
+### 🐞 Bugfix
+- 📦 **Detailvenster — tab "LISA"**: "Min.Whs" en "Max.Whs" toonden voor
+  elk magazijn dezelfde, foutieve waarde (de som over álle magazijnen
+  van dat artikel, in plaats van het minimum/maximum van dat ene
+  magazijn) — hierdoor kon de gele "onder minimum"-markering op deze tab
+  onterecht wel of net niet verschijnen. Root cause zit in de
+  onderliggende gegevensbron zelf (zie openstaand punt hieronder); de
+  tab toont nu de correcte, reeds elders in hetzelfde scherm beschikbare
+  per-magazijn-waarde als vervanging.
+
+### 📌 Openstaand punt (backend, niet in deze release)
+- 🏭 **Productie Stock Overview**: de "Min. SAP"-waarde is momenteel één
+  gedeeld cijfer per artikel, niet per magazijn. Daardoor toetst de rode
+  kleurmarkering elk magazijn (Algemeen/Antwerpen/Miami) aan datzelfde
+  ene cijfer, i.p.v. aan een eigen minimum per magazijn. Vereist een
+  uitbreiding van de onderliggende gegevensbron (apart minimum per
+  magazijn) om dit echt per-magazijn correct te maken.
+- 📦 De onderliggende gegevensbron achter de "LISA"-tab levert het
+  minimum/maximum per magazijn zelf nog steeds foutief aan (zie bugfix
+  hierboven — dit is enkel in de weergave gecorrigeerd, niet aan de
+  bron). Te melden bij het beheer van de onderliggende gegevensbron.
+
+---
+
 ## [15.2.1] - 2026-08-31
 
 ### ✨ Nieuw

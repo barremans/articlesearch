@@ -4,9 +4,37 @@
 # File:    permissions_azure.py
 # Role:    Azure AD (MSAL) login bij app-start + groepslidmaatschap-check
 #          (gebruikt voor CC-toegangscontrole, e.d.) en SharePoint-token
-#          voor uploads.
-# Version: 1.0.0
+#          voor uploads. Incl. persistente, versleutelde tokencache zodat
+#          een herstart geen nieuwe interactieve login vereist zolang de
+#          sessie geldig blijft.
+# Version: 1.1.0
 # Author:  Bart Bossuyt
+# Changes: 1.1.0 — STARTUP-MSAL-CACHE-1: persistente, versleutelde MSAL-
+#                   tokencache toegevoegd via msal-extensions
+#                   (`build_encrypted_persistence` — DPAPI op Windows,
+#                   Keychain op macOS, libsecret op Linux). Cachebestand:
+#                   "%LOCALAPPDATA%\ArticleSearch\msal_cache.bin". Nieuwe
+#                   functie `_build_token_cache()`, meegegeven aan
+#                   `_get_app()`'s `PublicClientApplication`. Doel: na de
+#                   eerste login kan `acquire_token_silent()` blijven
+#                   slagen over app-herstarts heen, zonder browser-popup —
+#                   voorheen was er geen persistente cache, waardoor
+#                   `get_accounts()` bij élke opstart leeg was en de code
+#                   altijd terugviel op de volledige interactieve flow.
+#                   Conditional Access/Intune-beleid blijft ongewijzigd
+#                   gewoon door Entra ID afgedwongen: als silent refresh
+#                   door CA geweigerd wordt, valt de bestaande code
+#                   automatisch terug op `acquire_token_interactive()`
+#                   (geen aanpassing aan die fallback nodig). Als
+#                   msal-extensions ontbreekt, of encrypted persistence
+#                   niet beschikbaar is op het toestel, valt dit terug op
+#                   de oude in-memory `msal.TokenCache()` (elke opstart
+#                   interactieve login — identiek aan het gedrag vóór
+#                   v1.1.0). Bewust geen fallback naar een onversleutelde
+#                   bestandscache (refresh tokens horen niet leesbaar op
+#                   schijf te staan). Geen wijziging aan
+#                   `get_current_user_display_name()` of de overige login-/
+#                   groepenlogica.
 # Changes: 1.0.0 — Eerste keer onder versiebeheer. Nieuwe accessor
 #                   `get_current_user_display_name()`: geeft de
 #                   `displayName` van de reeds ingelogde AD-gebruiker
@@ -17,8 +45,15 @@
 #                   rechtstreeks te benaderen. Geen wijziging aan de
 #                   bestaande login-/groepenlogica.
 # =============================================================================
+import os
 import msal
 import requests
+
+try:
+    from msal_extensions import PersistedTokenCache, build_encrypted_persistence
+    _MSAL_EXTENSIONS_AVAILABLE = True
+except ImportError:
+    _MSAL_EXTENSIONS_AVAILABLE = False
 
 TENANT_ID = "526b32fa-8cb1-4d6a-9e2b-fd48e2a0e296"
 CLIENT_ID = "58f55e10-e404-4307-9fa2-7b40431782fe"
@@ -28,18 +63,67 @@ SCOPES = ["User.Read", "Group.Read.All"]
 GRAPH_ME_ENDPOINT = "https://graph.microsoft.com/v1.0/me"
 GRAPH_GROUPS_ENDPOINT = "https://graph.microsoft.com/v1.0/me/memberOf"
 
+# --- Locatie voor de persistente tokencache ---
+# %LOCALAPPDATA% is standaard schrijfbaar zonder adminrechten (ook op
+# Intune-beheerde toestellen/AVD) en is per Windows-gebruiker gescheiden.
+# Bewust NIET %APPDATA% (roaming) i.v.m. mogelijke file-locking issues bij
+# Known Folder Move/OneDrive-sync van roaming-profielen.
+_CACHE_DIR = os.path.join(
+    os.environ.get("LOCALAPPDATA", os.path.expanduser("~")),
+    "ArticleSearch"
+)
+_CACHE_FILE = os.path.join(_CACHE_DIR, "msal_cache.bin")
+
 _app = None
 _cached_user = None
 _cached_groups = []
 
 
+def _build_token_cache():
+    """
+    Bouwt een persistente, versleutelde MSAL-tokencache op:
+      - Windows: DPAPI (enkel leesbaar door dezelfde Windows-gebruiker,
+        op datzelfde toestel)
+      - macOS: Keychain
+      - Linux: libsecret
+
+    Valt terug op een gewone in-memory `msal.TokenCache()` (= oud gedrag,
+    elke opstart interactieve login) wanneer:
+      - het package `msal-extensions` niet geïnstalleerd is, of
+      - encrypted persistence op dit toestel niet beschikbaar is (bv. geen
+        DPAPI/keychain/libsecret-backend aanwezig).
+
+    Er wordt bewust NIET teruggevallen op een onversleutelde bestandscache
+    — een refresh token in leesbare vorm op schijf is een onnodig risico
+    (zie ook de projectvoorkeur i.v.m. secrets/GDPR).
+    """
+    if not _MSAL_EXTENSIONS_AVAILABLE:
+        print(
+            "[AD] ⚠️ 'msal-extensions' niet geïnstalleerd — geen "
+            "persistente tokencache (elke opstart interactieve login)."
+        )
+        return msal.TokenCache()
+
+    try:
+        os.makedirs(_CACHE_DIR, exist_ok=True)
+        persistence = build_encrypted_persistence(_CACHE_FILE)
+        return PersistedTokenCache(persistence)
+    except Exception as e:
+        print(
+            f"[AD] ⚠️ Versleutelde tokencache niet beschikbaar ({e}) — "
+            "val terug op in-memory cache (elke opstart interactieve login)."
+        )
+        return msal.TokenCache()
+
+
 def _get_app():
-    """Initialiseer de MSAL client (singleton)."""
+    """Initialiseer de MSAL client (singleton) met persistente tokencache."""
     global _app
     if _app is None:
         _app = msal.PublicClientApplication(
             client_id=CLIENT_ID,
-            authority=AUTHORITY
+            authority=AUTHORITY,
+            token_cache=_build_token_cache()
         )
     return _app
 

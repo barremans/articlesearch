@@ -5,8 +5,13 @@
 #          per databron (API_ENVIRONMENTS) en OAuth-achtige clients per
 #          databron (API_CLIENTS). ⚠️ Bevat base64-encoded client secrets —
 #          zie §7 (Beveiliging) in het context-bestand.
-# Version: 1.3.0
+# Version: 1.3.1
 # Author:  Bart Bossuyt
+# Changes: 1.3.1 — PaymentsDue Forecast: nieuwe config-key
+#                   `duepayment_forecast_configP_id` ("HY04WB") in
+#                   API_ENVIRONMENTS["live"] — hergebruikt bewust de
+#                   bestaande "DuePaymentOverview"-client uit API_CLIENTS,
+#                   geen nieuwe client nodig.
 # Changes: 1.3.0 — Prod Stock Overview (nieuwe search-type "Prod"): 2 nieuwe
 #                   config-keys in API_ENVIRONMENTS["live"]:
 #                   `prod_dataset_configP_id` ("BAEIG0", dataset opvragen/
@@ -77,6 +82,7 @@ API_ENVIRONMENTS = {
         "artbp_configP_id": "KX9RLR", #Artikels gekoppeld aan leverancier (ArtBpSearch)
         "duepayment_detail_configP_id": "UIY02H", #PaymentsDue - per klant/gemiddelden (Detail)
         "duepayment_overview_configP_id": "YCT5LR", #PaymentsDue - per document (Overview)
+        "duepayment_forecast_configP_id": "HY04WB", #PaymentsDue - forecast open facturen (zelfde client als Overview)
         "prod_dataset_configP_id": "BAEIG0",  #Prod Stock Overview - dataset opvragen/aanmaken/bijwerken
         "prod_stock_configP_id": "VX3PMC",    #Prod Stock Overview - artikel-stock-overzicht
         "prod_dataset_import_path": "/api/import/DATAPROD/U/dbname/SBOCGKLIVE",  #vast pad, geen /api/datarequest

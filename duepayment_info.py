@@ -3,14 +3,23 @@
 # File:    duepayment_info.py
 # Role:    Logica/data-laag voor "Betalingsgedrag & Openstaande Posten"
 #          (PaymentsDue) — bouwt de MultiKey-payload en normaliseert de
-#          respons voor de 2 endpoints:
+#          respons voor de 3 endpoints:
 #            - get_payments_due_detail()   -> AVG_DUE_PAYMENTS_DETAIL (UIY02H)
 #            - get_payments_due_overview() -> PAYMENTS_DUE_OVERVIEW   (YCT5LR)
-#          Response-vorm van beide endpoints: {"Data": [ {...}, ... ]} — een
+#            - get_payments_due_forecast() -> forecast open facturen  (HY04WB)
+#          Response-vorm van alle 3 endpoints: {"Data": [ {...}, ... ]} — een
 #          platte lijst van dicts, GEEN "item"-wrapper (in tegenstelling tot
 #          bv. artbp_info.py / data_request.py bij bp/cc).
-# Version: 1.0.0
+# Version: 1.1.0
 # Author:  Bart Bossuyt
+# Changes: 1.1.0 — Nieuwe functie get_payments_due_forecast() (config
+#                   duepayment_forecast_configP_id = HY04WB) — voorspelt per
+#                   openstaande factuur de verwachte betaaldatum en
+#                   vervalstatus, o.b.v. het historische betaalgedrag van de
+#                   klant. Hergebruikt bewust dezelfde client/auth-header als
+#                   Overview (get_auth_header_overview()) — geen nieuwe
+#                   TokenManager-instantie nodig, dit is dezelfde
+#                   "DuePaymentOverview"-client in API_CLIENTS.
 # Changes: 1.0.0 — Eerste versie.
 # =============================================================================
 import json
@@ -105,6 +114,32 @@ def get_payments_due_overview(months: str = "24", cardcode: str = "") -> list:
         )
     multikey = {
         "@months": str(months or "24"),
+        "@cardcode": cardcode or "",
+    }
+    headers = get_auth_header_overview()
+    return _post(config_id, multikey, headers)
+
+
+def get_payments_due_forecast(months: str = "", cardcode: str = "") -> list:
+    """
+    Forecast van openstaande facturen: per document een voorspelde
+    betaaldatum (VerwachteBetaaldatum) en vervalstatus (Vervalstatus),
+    o.b.v. het historische betaalgedrag van de klant
+    (MediaanVerschilVervaldatumVsBetaling_Klant).
+    (config `duepayment_forecast_configP_id` = HY04WB)
+
+    Hergebruikt bewust dezelfde auth-client als Overview — geen aparte
+    TokenManager, geen nieuwe entry in API_CLIENTS nodig.
+    """
+    env = API_ENVIRONMENTS[ENVIRONMENT]
+    config_id = env.get("duepayment_forecast_configP_id")
+    if not config_id:
+        raise RuntimeError(
+            "Ontbrekende config 'duepayment_forecast_configP_id' in API_ENVIRONMENTS "
+            f"voor omgeving '{ENVIRONMENT}'."
+        )
+    multikey = {
+        "@months": str(months or ""),
         "@cardcode": cardcode or "",
     }
     headers = get_auth_header_overview()

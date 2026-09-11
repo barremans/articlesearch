@@ -2,15 +2,83 @@
 # ArticleSearch
 # File:    ui_prod_datasets_dialog.py
 # Role:    Beheerscherm voor Prod Stock Overview-datasets — lijst opvragen,
-#          nieuw aanmaken, bestaande bewerken. Gebruikt prod_info.py
-#          (client "Datasetprod"). Opgeroepen vanuit settings_dialog.py
+#          nieuw aanmaken, bestaande bekijken/bewerken. Bewerken is enkel
+#          toegestaan voor de (bij benadering) eigenaar van de dataset, of
+#          voor leden van de AD-groep "CGK-APP-L6" (volledige beheer-
+#          rechten, zie 1.5.0); bekijken (alleen-lezen) blijft voor
+#          iedereen mogelijk (zie 1.4.0). Gebruikt prod_info.py (client
+#          "Datasetprod"). Opgeroepen vanuit settings_dialog.py
 #          ("Datasets beheren...")-knop.
 #          Geen "verwijderen": de API biedt enkel een upsert-endpoint (CODE);
 #          een dataset "deactiveren" gebeurt via de Lock-checkbox (DS_Lock),
 #          waardoor hij niet meer verschijnt in de dataset-keuzelijst in
 #          ui_main.py (search-type "Prod"). ⚠️ Aanname, nog te bevestigen.
-# Version: 1.2.0
+# Version: 1.5.0
 # Author:  Bart Bossuyt
+# Changes: 1.5.0 — Beheerdersoverride: leden van de Azure AD-groep
+#                   "CGK-APP-L6" (_ADMIN_GROUP) kunnen voortaan élke
+#                   dataset volledig bewerken, ongeacht eigenaar — de
+#                   eigenaar-matchcontrole (_owner_match_level) wordt voor
+#                   hen overschreven naar een nieuw niveau 'admin' in
+#                   ProdDatasetsDialog._edit_selected() (groepscontrole via
+#                   permissions_azure.user_in_azure_group(), fail-safe: een
+#                   falende controle levert stilzwijgend geen beheerrechten
+#                   op, blokkeert bekijken/de normale flow niet). Nieuwe
+#                   parameter is_admin op ProdDatasetEditDialog.__init__():
+#                   Eigenaar-veld blijft in die modus bewerkbaar maar toont
+#                   de bestaande waarde ongewijzigd (geen automatische
+#                   overschrijving met de beheerder's eigen naam, in
+#                   tegenstelling tot de 'approx'-modus uit 1.4.0) —
+#                   venstertitel krijgt de toevoeging "(beheerdersmodus)".
+# Changes: 1.4.0 — Verfijning op 1.3.0's eigenaarschap-controle, na
+#                   terugkoppeling: (1) een dataset zonder bewerkrechten kan
+#                   nu altijd nog BEKEKEN worden — i.p.v. de bewerk-dialoog
+#                   te weigeren met een melding, opent
+#                   ProdDatasetsDialog._edit_selected() ze voortaan altijd,
+#                   in de gepaste modus. (2) Nieuwe helper
+#                   _owner_match_level() vergelijkt DS_Owner niet langer
+#                   enkel exact met de AD-displaynaam, maar herkent ook een
+#                   'approx'-match (substring in beide richtingen, of een
+#                   difflib-gelijkenis >= 0.6) — nodig omdat bestaande
+#                   datasets hun eigenaar vóór 1.3.0 vrij ingetypt kregen
+#                   (afgekort, andere volgorde, kleine tikfout, ...) en
+#                   anders door niemand meer bewerkt zouden kunnen worden.
+#                   ProdDatasetEditDialog kent nu 3 modi i.p.v. 2: 'exact'
+#                   -> volledig bewerkbaar (Eigenaar blijft read-only,
+#                   ongewijzigd), 'approx' -> volledig bewerkbaar mét een
+#                   terug bewerkbaar Eigenaar-veld, voorgesteld met de
+#                   exacte AD-naam zodat 1 klik op "Opslaan" de legacy-
+#                   waarde corrigeert, 'none' -> volledig alleen-lezen
+#                   (readonly=True: alle velden non-editable, "Opslaan"
+#                   verborgen, "Annuleren" wordt "Sluiten"). Nieuwe
+#                   parameters readonly/owner_editable op
+#                   ProdDatasetEditDialog.__init__().
+# Changes: 1.3.0 — Eigenaarschap gekoppeld aan de echte, ingelogde AD-
+#                   identiteit i.p.v. een vrij ingetypt veld:
+#                   (1) Bij een NIEUWE dataset wordt "Eigenaar" automatisch
+#                   ingevuld met permissions_azure.get_current_user_display_name()
+#                   (fallback: Windows-gebruikersnaam indien geen AD-naam
+#                   gecached is) en is het veld voortaan read-only — zelfde
+#                   principe als het bestaande "Gewijzigd door"-veld.
+#                   (2) BEWERKEN is voortaan enkel toegestaan wanneer de
+#                   ingelogde gebruiker exact overeenkomt met DS_Owner van
+#                   de geselecteerde dataset (ProdDatasetsDialog._edit_selected(),
+#                   case-insensitieve vergelijking) — anders een duidelijke
+#                   "Geen toegang"-melding i.p.v. de bewerk-dialoog te
+#                   openen. Geldt zowel bij "Bewerken..." als bij dubbel-
+#                   klik. ⚠️ Aanname/open punt: bestaande datasets zonder
+#                   DS_Owner (leeg) of met een owner-waarde die niet exact
+#                   (case-insensitief) overeenkomt met de AD-displayname
+#                   kunnen hierdoor door niemand meer bewerkt worden via de
+#                   UI — nog te bevestigen of dat gewenst is, of dat er een
+#                   uitzondering/beheerdersoverride nodig is.
+#                   (3) _on_save() normaliseert het artikelnummers-veld nu
+#                   altijd expliciet (_normalize_artnbr_field(), zichtbaar
+#                   bijgewerkt in het veld zelf) vóór save_dataset()
+#                   aangeroepen wordt — voorheen gebeurde de normalisatie
+#                   enkel "onzichtbaar" inline bij het uitlezen van de
+#                   veldinhoud, het getoonde veld zelf bleef ongewijzigd tot
+#                   de gebruiker manueel op "Normaliseren" klikte.
 # Changes: 1.2.0 — "Gewijzigd door"-veld (ProdDatasetEditDialog) is nu
 #                   read-only: toont altijd de huidige Windows-gebruiker
 #                   (degene die de opslag-actie uitvoert) i.p.v. manueel
@@ -33,6 +101,7 @@
 #                   nieuwe plak-gedrag.
 # Changes: 1.0.0 — Initiële versie.
 # =============================================================================
+import difflib
 import os
 import logging
 
@@ -43,6 +112,11 @@ from PySide6.QtWidgets import (
 )
 
 from prod_info import list_datasets, save_dataset, next_dataset_code, parse_artnbr, normalize_pasted_items
+from permissions_azure import get_current_user_display_name, user_in_azure_group
+
+# AD-groep met volledige beheerrechten over alle datasets, ongeacht
+# eigenaar — overschrijft de eigenaar-matchcontrole volledig (zie 1.5.0).
+_ADMIN_GROUP = "CGK-APP-L6"
 
 logger = logging.getLogger("ArticleSearch.ProdDatasetsUI")
 if not logger.handlers:
@@ -57,6 +131,32 @@ def _current_username() -> str:
     """Windows-gebruikersnaam als standaard 'gewijzigd door' (geen aparte
     AD-displayname-lookup nodig — veld blijft door de gebruiker aanpasbaar)."""
     return os.environ.get("USERNAME") or os.environ.get("USER") or "Onbekend"
+
+
+def _owner_match_level(owner: str, current_user: str) -> str:
+    """Vergelijkt de (mogelijk ooit handmatig ingevulde) DS_Owner-waarde met
+    de ingelogde AD-displaynaam. Retourneert 'exact', 'approx' of 'none'.
+
+    'approx' dekt de bestaande datasets waarvan de eigenaar vóór 1.3.0
+    vrij ingetypt werd (afgekort, andere volgorde, kleine tikfout, ...) —
+    die zouden bij een exacte vergelijking door niemand meer bewerkt
+    kunnen worden. Bij 'approx' blijft het scherm bewerkbaar en wordt het
+    Eigenaar-veld voorgesteld met de exacte AD-naam, zodat de effectieve
+    eigenaar de legacy-waarde in 1 klik kan corrigeren. Bij 'none' wordt
+    het scherm enkel getoond in alleen-lezen modus — bekijken blijft altijd
+    mogelijk, ook zonder bewerkrechten.
+    """
+    o = (owner or "").strip().lower()
+    u = (current_user or "").strip().lower()
+    if not o or not u:
+        return "none"
+    if o == u:
+        return "exact"
+    if o in u or u in o:
+        return "approx"
+    if difflib.SequenceMatcher(None, o, u).ratio() >= 0.6:
+        return "approx"
+    return "none"
 
 
 class _ArtNbrTextEdit(QTextEdit):
@@ -78,13 +178,27 @@ class _ArtNbrTextEdit(QTextEdit):
 class ProdDatasetEditDialog(QDialog):
     """Sub-dialoog: één dataset aanmaken of bewerken."""
 
-    def __init__(self, dataset, existing_datasets: list, parent=None):
+    def __init__(self, dataset, existing_datasets: list, parent=None,
+                 readonly: bool = False, owner_editable: bool = False, is_admin: bool = False):
         super().__init__(parent)
         self.existing_datasets = existing_datasets or []
         self.dataset = dataset or {}
         is_new = dataset is None
+        # readonly is enkel relevant bij het bekijken van een bestaande
+        # dataset waarvan de ingelogde gebruiker (ook niet bij benadering,
+        # en geen CGK-APP-L6-lid) geen eigenaar is — een nieuwe dataset is
+        # per definitie altijd volledig bewerkbaar door wie ze aanmaakt.
+        self.readonly = readonly and not is_new
 
-        self.setWindowTitle("Nieuwe dataset" if is_new else f"Dataset bewerken — {self.dataset.get('DS_Name', '')}")
+        if self.readonly:
+            title = f"Dataset bekijken (alleen-lezen) — {self.dataset.get('DS_Name', '')}"
+        elif is_new:
+            title = "Nieuwe dataset"
+        elif is_admin:
+            title = f"Dataset bewerken (beheerdersmodus) — {self.dataset.get('DS_Name', '')}"
+        else:
+            title = f"Dataset bewerken — {self.dataset.get('DS_Name', '')}"
+        self.setWindowTitle(title)
         self.resize(540, 520)
 
         layout = QVBoxLayout(self)
@@ -102,7 +216,34 @@ class ProdDatasetEditDialog(QDialog):
         layout.addWidget(self.name_input)
 
         layout.addWidget(QLabel("Eigenaar:"))
-        self.owner_input = QLineEdit(self.dataset.get("DS_Owner", ""))
+        if is_new:
+            # Eigenaar wordt automatisch bepaald bij aanmaken — niet manueel
+            # instelbaar, zodat de bewerk-rechten-check (enkel de eigenaar
+            # zelf mag bewerken) altijd op een betrouwbare, echte identiteit
+            # steunt i.p.v. een vrij ingetypte naam.
+            eigenaar_default = get_current_user_display_name() or _current_username()
+            owner_readonly = True
+        elif is_admin:
+            # CGK-APP-L6: volledige beheerrechten, ongeacht eigenaar. Veld
+            # blijft bewerkbaar (bv. om eigenaarschap correct toe te wijzen)
+            # maar toont de bestaande waarde ongewijzigd — geen automatische
+            # overschrijving met de beheerder's eigen naam.
+            eigenaar_default = self.dataset.get("DS_Owner", "")
+            owner_readonly = False
+        elif owner_editable:
+            # 'approx'-match (zie _owner_match_level): waarschijnlijk de
+            # eigenaar, maar de opgeslagen naam komt niet exact overeen met
+            # de AD-displaynaam (legacy, handmatig ingevuld vóór 1.3.0).
+            # Veld blijft bewerkbaar en wordt meteen voorgesteld met de
+            # exacte AD-naam, zodat 1 klik op "Opslaan" de legacy-waarde
+            # corrigeert.
+            eigenaar_default = get_current_user_display_name() or self.dataset.get("DS_Owner", "")
+            owner_readonly = False
+        else:
+            eigenaar_default = self.dataset.get("DS_Owner", "")
+            owner_readonly = True
+        self.owner_input = QLineEdit(eigenaar_default)
+        self.owner_input.setReadOnly(owner_readonly)
         layout.addWidget(self.owner_input)
 
         layout.addWidget(QLabel(
@@ -149,6 +290,18 @@ class ProdDatasetEditDialog(QDialog):
         self.save_button.clicked.connect(self._on_save)
         self.cancel_button.clicked.connect(self.reject)
 
+        if self.readonly:
+            # Bekijken blijft altijd mogelijk, ook zonder (bij benadering)
+            # eigenaarschap — enkel effectief wijzigen wordt hier
+            # tegengehouden: alle velden op niet-bewerkbaar, "Opslaan"
+            # verborgen, "Annuleren" wordt de facto een sluitknop.
+            self.name_input.setReadOnly(True)
+            self.artnbr_input.setReadOnly(True)
+            self.normalize_button.setEnabled(False)
+            self.lock_checkbox.setEnabled(False)
+            self.save_button.setVisible(False)
+            self.cancel_button.setText("Sluiten")
+
     def _normalize_artnbr_field(self):
         """Schoont de huidige veldinhoud manueel op (bv. na typen of het
         laden van een bestaande dataset met een ander scheidingsteken)."""
@@ -163,10 +316,11 @@ class ProdDatasetEditDialog(QDialog):
             return
 
         owner = self.owner_input.text().strip()
-        # normalize_pasted_items() is delimiter-agnostic, dus zelfs zonder
-        # de "Normaliseren"-knop expliciet te gebruiken wordt hier alsnog
-        # correct genormaliseerd (spaties/tabs/regeleindes/puntkomma's).
-        items = parse_artnbr(normalize_pasted_items(self.artnbr_input.toPlainText()))
+        # Altijd eerst normaliseren (zichtbaar bijgewerkt in het veld zelf)
+        # en pas dan de genormaliseerde inhoud gebruiken om op te slaan —
+        # ongeacht of de gebruiker zelf al op "Normaliseren" geklikt heeft.
+        self._normalize_artnbr_field()
+        items = parse_artnbr(self.artnbr_input.toPlainText())
 
         if not items:
             reply = QMessageBox.question(
@@ -290,6 +444,30 @@ class ProdDatasetsDialog(QDialog):
         if not ds:
             QMessageBox.information(self, "Geen selectie", "Selecteer eerst een dataset in de lijst.")
             return
-        dialog = ProdDatasetEditDialog(ds, self._datasets, parent=self)
+
+        owner = (ds.get("DS_Owner") or "").strip()
+        current_user = (get_current_user_display_name() or "").strip()
+
+        is_admin = False
+        try:
+            is_admin = user_in_azure_group(_ADMIN_GROUP)
+        except Exception as e:
+            # Fail-safe: een falende groepscontrole mag bekijken/de normale
+            # eigenaar-flow niet blokkeren — enkel het beheerdersvoordeel
+            # vervalt dan stilzwijgend.
+            logger.error(f"Kon AD-groepslidmaatschap ({_ADMIN_GROUP}) niet controleren: {e}")
+
+        match_level = "admin" if is_admin else _owner_match_level(owner, current_user)
+
+        # Bekijken is altijd toegestaan — enkel de bewerkbaarheid hangt af
+        # van de eigenaar-match: 'admin' (CGK-APP-L6) of 'exact' -> volledig
+        # bewerkbaar, 'approx' -> bewerkbaar + Eigenaar corrigeerbaar,
+        # 'none' -> alleen-lezen.
+        dialog = ProdDatasetEditDialog(
+            ds, self._datasets, parent=self,
+            readonly=(match_level == "none"),
+            owner_editable=(match_level in ("approx", "admin")),
+            is_admin=is_admin,
+        )
         if dialog.exec():
             self.load_datasets()

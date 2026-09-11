@@ -3,10 +3,64 @@
 # File:    ui_main.py
 # Role:    Hoofdvenster (QMainWindow) — zoekscherm, resultatentabel, menu-
 #          balk, en het openen van alle submodules (Detail, BP, Project,
-#          VTA, Peppol, Timings, Elements, Credit Control, Prod Stock
-#          Overview).
-# Version: 1.15.0
+#          VTA, Peppol, Timings, Elements, Open Elements overview, Credit
+#          Control, Prod Stock Overview).
+# Version: 1.18.0
 # Author:  Bart Bossuyt
+# Changes: 1.18.0 — Nieuw menu-item "Open Elements overview..." in het
+#                    Export-menu, naast "Open Elements". Zelfde toegangs-
+#                    controlepatroon 1-op-1 overgenomen van
+#                    _open_docs_window()/_open_duepayment_window(): zelfde
+#                    OFFLINE_MODE-check + zelfde vereiste AD-groep
+#                    "GPP_Finance" (bevestigd door gebruiker: zelfde rechten
+#                    als Open Elements). Nieuwe handler
+#                    _open_oeoverview_window(), nieuwe import OeOverviewWindow
+#                    (ui_oeoverview.py) en nieuwe self.oeoverview_windows-
+#                    lijst in __init__ (analoog self.docs_windows/
+#                    self.duepayment_windows) zodat het geopende venster niet
+#                    garbage-collected wordt. Venster wordt getoond via
+#                    .show()/.activateWindow()/.raise_() i.p.v.
+#                    showMaximized() — het is een compact formulierscherm
+#                    (inputmap/outputmap/formaatkeuze), geen datatabel, zelfde
+#                    patroon als _open_timings_window(). Geen wijziging aan
+#                    config.py/settings.py nodig: deze module heeft geen
+#                    live SAP-koppeling (2 lokale CSV-exports als bron) en
+#                    onthoudt zijn laatst gebruikte in-/outputmap zelf via
+#                    QSettings (analoog ui_duepayment.py's laatst-gebruikte-
+#                    exportmap), dus geen tweede settings-bestand nodig.
+# Changes: 1.17.0 — BUGFIX (Prod Stock Overview, opgemerkt door gebruiker):
+#                    de "lichtrood bij stock < 1"-regel gold voordien enkel
+#                    voor "Stock Algemeen", en hield geen rekening met
+#                    Min. SAP — een artikel zonder minimumvereiste (Min.
+#                    SAP = 0) kleurde dus onterecht rood bij stock = 0. Nu:
+#                    (1) uitgebreid naar alle 3 magazijn-kolommen (Stock
+#                    Algemeen/Antwerpen/Miami, via PROD_WAREHOUSE_COLUMNS
+#                    i.p.v. enkel "Stock_Algemeen"), (2) enkel nog rood
+#                    wanneer Min. SAP > 0 (dus een effectief vereist
+#                    minimum) ÉN de magazijn-stock < 1. Min. SAP blijft
+#                    bewust 1 totaalcijfer per artikel (geen apart minimum
+#                    per magazijn) — de check is dus "geldt er sowieso een
+#                    minimum", niet een per-magazijn-vergelijking.
+# Changes: 1.16.0 — SPEED-PROD-1: het ophalen van de Prod-datasetlijst
+#                    (_populate_prod_dataset_combo(), prod_info.list_datasets())
+#                    gebeurt nu asynchroon in een nieuwe _ProdDatasetLoaderThread
+#                    i.p.v. rechtstreeks/synchroon op de GUI-thread. Relevant
+#                    vooral bij app-opstart: als "Prod" de standaard search-
+#                    type is (settings.load_default_search_type()), riep
+#                    __init__() via _toggle_fields_by_search_type() deze
+#                    functie synchroon aan, wat de volledige MainWindow-
+#                    constructie (en dus het openen van het venster) liet
+#                    wachten tot de Datasetprod-tokencall + list_datasets()-
+#                    respons terug was. De keuzelijst toont nu meteen
+#                    "⏳ Datasets laden..." (uitgeschakeld) en wordt pas na
+#                    het signaal van de achtergrondthread gevuld/opnieuw
+#                    ingeschakeld — nieuwe callbacks _on_prod_datasets_loaded()
+#                    en _on_prod_datasets_error(). Een eventuele nog lopende
+#                    vorige loader (bv. snel heen-en-weer wisselen van
+#                    search-type) wordt losgekoppeld i.p.v. afgebroken, om
+#                    een verweesde callback op een inmiddels vervangen combo-
+#                    inhoud te vermijden. Geen wijziging aan het moment
+#                    waarop deze functie aangeroepen wordt, enkel aan hoe.
 # Changes: 1.15.0 — QTYKLEUR-1-BUGFIX: de geel-markering vergeleek voorheen
 #                    de Qty van één locatie-rij tegen Min.Whs, terwijl
 #                    Min.Whs een instelling is per combinatie
@@ -239,7 +293,7 @@ from PySide6.QtWidgets import (
     QGridLayout
 )
 from PySide6.QtGui import QShortcut, QKeySequence, QMovie, QIcon, QColor
-from PySide6.QtCore import QEvent, Qt, QPoint, QTimer, QFileSystemWatcher, QMimeData
+from PySide6.QtCore import QEvent, Qt, QPoint, QTimer, QFileSystemWatcher, QMimeData, QThread, Signal
 
 from data_request import send_data_request
 from ui_detail import DetailWindow
@@ -268,6 +322,7 @@ from ui_vta import PoWidget
 from ui_CcBP import CreditControlWindow
 from ui_peppol import PepWidget  # ✅ NIEUW: Peppol check venster
 from ui_duepayment import DuePaymentWindow  # ✅ NIEUW: Betalingsgedrag & Openstaande Posten
+from ui_oeoverview import OeOverviewWindow  # ✅ NIEUW: Open Elements overview (CSV-gebaseerd, geen live API)
 from config import OFFLINE_MODE
 from settings import load_column_headers_s, load_column_headers_default
 from settings import load_prod_default_warehouse  # ✅ NIEUW: Prod Stock Overview (inline, geen popup)
@@ -336,12 +391,42 @@ PROD_NUMERIC_KEYS = {
 }
 
 PROD_MIN_SAP_GREEN = QColor("#d9f2d9")     # Min. SAP > 0 => lichtgroen
-PROD_STOCK_ALG_RED = QColor("#f5c6cb")     # Stock Algemeen < 1 => lichtrood
+PROD_STOCK_ALG_RED = QColor("#f5c6cb")     # magazijn-stock < 1 én Min. SAP > 0 => lichtrood
 PROD_STOCK_HEDEN_YELLOW = QColor("#fff3b0")  # Stock vandaag < Min. SAP => geel
 
 # QTYKLEUR-1: zelfde geel als Prod Stock Overview (PROD_STOCK_HEDEN_YELLOW),
 # hergebruikt voor de Artikel-resultatentabel: "Qty" < "Min.Whs" => geel.
 ARTIKEL_QTY_ONDER_MINWHS_GEEL = QColor("#fff3b0")
+
+
+class _ProdDatasetLoaderThread(QThread):
+    """
+    SPEED-PROD-1: haalt de Prod-datasetlijst (prod_info.list_datasets())
+    op in een aparte thread, zodat het wisselen naar/openen van search-type
+    "Prod" — inclusief bij app-start als dit de standaard search-type is
+    (settings.load_default_search_type()) — de GUI-thread niet blokkeert
+    tijdens de netwerkcall (Datasetprod-token + list_datasets()-respons).
+    Voordien gebeurde dit synchroon in _populate_prod_dataset_combo(),
+    rechtstreeks aangeroepen vanuit _toggle_fields_by_search_type(): bij
+    "Prod" als standaard search-type hing de volledige MainWindow-
+    constructie (en dus het openen van het venster) dus vast tot deze call
+    terugkwam.
+    """
+    finished_ok = Signal(list)
+    finished_error = Signal(str)
+
+    def __init__(self, owner_filter: str, parent=None):
+        super().__init__(parent)
+        self._owner_filter = owner_filter
+
+    def run(self):
+        try:
+            from prod_info import list_datasets
+            datasets = list_datasets(owner=self._owner_filter)
+            datasets = [d for d in datasets if str(d.get("DS_Lock") or "0") not in ("1", "true", "True")]
+            self.finished_ok.emit(datasets)
+        except Exception as e:
+            self.finished_error.emit(str(e))
 
 
 class MainWindow(QMainWindow):
@@ -361,6 +446,9 @@ class MainWindow(QMainWindow):
 
         # ✅ NIEUW: PaymentsDue-vensters bijhouden zodat ze niet verdwijnen
         self.duepayment_windows = []
+
+        # ✅ NIEUW: Open Elements overview-vensters bijhouden zodat ze niet verdwijnen
+        self.oeoverview_windows = []
 
         # SORT-1: state voor dubbelklik-sortering in de Artikel-resultatentabel
         self._last_article_data = []       # ruwe data (list[dict]) van laatste zoekactie
@@ -498,6 +586,7 @@ class MainWindow(QMainWindow):
 
         export_menu = menubar.addMenu("&Export")
         export_menu.addAction("Open &Elements").triggered.connect(self._open_docs_window)
+        export_menu.addAction("Open Elements overview...").triggered.connect(self._open_oeoverview_window)
         export_menu.addAction("Open Credit Control (CC BP)").triggered.connect(self._open_ccbp_window)
         export_menu.addAction("Betalingsgedrag...").triggered.connect(self._open_duepayment_window)
         export_menu.addSeparator()
@@ -1198,12 +1287,20 @@ class MainWindow(QMainWindow):
                     except (TypeError, ValueError):
                         pass
 
-                # "Stock Algemeen" < 1 => lichtrood
-                if key == "Stock_Algemeen":
+                # Magazijn-stock (Algemeen/Antwerpen/Miami) < 1 => lichtrood,
+                # ENKEL wanneer er voor dit artikel ook effectief een
+                # minimum vereist is (Min. SAP > 0) — anders vals alarm bij
+                # artikelen die sowieso niet op voorraad hoeven te liggen.
+                # Bewust NIET magazijn-specifiek vergeleken met Min. SAP
+                # (dat is 1 totaalcijfer per artikel, geen apart minimum per
+                # magazijn) — enkel of er ÜBERHAUPT een minimum geldt.
+                if key in PROD_WAREHOUSE_COLUMNS:
+                    min_sap_val = rec.get("MinSAP")
                     try:
-                        if val is not None and float(val) < 1:
+                        if (val is not None and float(val) < 1
+                                and min_sap_val is not None and float(min_sap_val) > 0):
                             cell.setBackground(PROD_STOCK_ALG_RED)
-                            cell.setToolTip(f"{text}\n⚠️ Stock Algemeen < 1")
+                            cell.setToolTip(f"{text}\n⚠️ {key} < 1 (Min. SAP = {min_sap_val})")
                     except (TypeError, ValueError):
                         pass
 
@@ -2000,6 +2097,13 @@ class MainWindow(QMainWindow):
           toont enkel datasets van die eigenaar.
         - geen van beide ingesteld -> volledige lijst, geen voorselectie.
         Gedeactiveerde datasets (DS_Lock) worden niet getoond.
+
+        SPEED-PROD-1: de eigenlijke API-call (list_datasets()) gebeurt
+        asynchroon in _ProdDatasetLoaderThread, zodat dit de GUI-thread niet
+        blokkeert — relevant vooral bij app-start wanneer "Prod" de
+        standaard search-type is (zie __init__ -> _toggle_fields_by_
+        search_type()). De keuzelijst toont meteen een "laden..."-item en
+        wordt uitgeschakeld tot het resultaat (via signaal) binnen is.
         """
         from settings import load_prod_default_dataset_name, load_prod_default_dataset_owner
 
@@ -2008,31 +2112,66 @@ class MainWindow(QMainWindow):
 
         self.prod_dataset_select.blockSignals(True)
         self.prod_dataset_select.clear()
+        self.prod_dataset_select.addItem("⏳ Datasets laden...", None)
+        self.prod_dataset_select.setEnabled(False)
+        self.prod_dataset_select.blockSignals(False)
         self._prod_datasets_cache = []
 
-        try:
-            from prod_info import list_datasets
-            owner_filter = default_owner if (default_owner and not default_name) else ""
-            datasets = list_datasets(owner=owner_filter)
-            datasets = [d for d in datasets if str(d.get("DS_Lock") or "0") not in ("1", "true", "True")]
-            self._prod_datasets_cache = datasets
+        owner_filter = default_owner if (default_owner and not default_name) else ""
 
-            if not datasets:
-                self.prod_dataset_select.addItem("⚠️ Geen datasets beschikbaar", None)
-            else:
-                for ds in datasets:
-                    label = f"{ds.get('DS_Name', '')} ({ds.get('DS_Owner', '') or '-'})"
-                    self.prod_dataset_select.addItem(label, ds)
+        # Een eventuele nog lopende vorige loader (bv. snel heen-en-weer
+        # wisselen van search-type) loskoppelen i.p.v. afbreken, om een
+        # verweesde callback op een inmiddels vervangen combo-inhoud te
+        # vermijden. De thread zelf laten uitlopen is onschadelijk — het
+        # resultaat wordt gewoon genegeerd doordat de signalen losgekoppeld
+        # zijn.
+        old_thread = getattr(self, "_prod_dataset_loader", None)
+        if old_thread is not None:
+            try:
+                old_thread.finished_ok.disconnect()
+                old_thread.finished_error.disconnect()
+            except (TypeError, RuntimeError):
+                pass
 
-                if default_name:
-                    idx = next((i for i, d in enumerate(datasets) if d.get("DS_Name") == default_name), -1)
-                    if idx >= 0:
-                        self.prod_dataset_select.setCurrentIndex(idx)
+        thread = _ProdDatasetLoaderThread(owner_filter, parent=self)
+        thread.finished_ok.connect(lambda datasets: self._on_prod_datasets_loaded(datasets, default_name))
+        thread.finished_error.connect(self._on_prod_datasets_error)
+        self._prod_dataset_loader = thread
+        thread.start()
 
-        except Exception as e:
-            logger.error(f"Kon Prod-datasets niet ophalen: {e}")
-            self.prod_dataset_select.addItem(f"⚠️ Kon datasets niet laden: {e}", None)
+    def _on_prod_datasets_loaded(self, datasets, default_name):
+        """
+        SPEED-PROD-1: callback (GUI-thread) zodra _ProdDatasetLoaderThread
+        de datasetlijst succesvol heeft opgehaald. Vult self.prod_dataset_
+        select en self._prod_datasets_cache — zelfde logica als voorheen
+        synchroon in _populate_prod_dataset_combo() gebeurde.
+        """
+        self._prod_datasets_cache = datasets
+        self.prod_dataset_select.blockSignals(True)
+        self.prod_dataset_select.clear()
+        self.prod_dataset_select.setEnabled(True)
 
+        if not datasets:
+            self.prod_dataset_select.addItem("⚠️ Geen datasets beschikbaar", None)
+        else:
+            for ds in datasets:
+                label = f"{ds.get('DS_Name', '')} ({ds.get('DS_Owner', '') or '-'})"
+                self.prod_dataset_select.addItem(label, ds)
+
+            if default_name:
+                idx = next((i for i, d in enumerate(datasets) if d.get("DS_Name") == default_name), -1)
+                if idx >= 0:
+                    self.prod_dataset_select.setCurrentIndex(idx)
+
+        self.prod_dataset_select.blockSignals(False)
+
+    def _on_prod_datasets_error(self, error_message: str):
+        """SPEED-PROD-1: callback (GUI-thread) bij een fout in _ProdDatasetLoaderThread."""
+        logger.error(f"Kon Prod-datasets niet ophalen: {error_message}")
+        self.prod_dataset_select.blockSignals(True)
+        self.prod_dataset_select.clear()
+        self.prod_dataset_select.addItem(f"⚠️ Kon datasets niet laden: {error_message}", None)
+        self.prod_dataset_select.setEnabled(True)
         self.prod_dataset_select.blockSignals(False)
 
     # --------------- Helper: detail-payload normaliseren ---------------
@@ -2107,6 +2246,63 @@ class MainWindow(QMainWindow):
                 self,
                 "Fout",
                 f"Kon 'Elements' openen:\n{e}"
+            )
+
+    def _open_oeoverview_window(self):
+        """Opent 'Open Elements overview' vanuit Export — zelfde AD-rechten als Open Elements.
+
+        Geen live SAP-koppeling (in tegenstelling tot de andere Export-
+        modules): de gebruiker levert zelf 2 CSV-exports aan via een
+        inputmap, verwerking gebeurt volledig lokaal in OeOverviewWindow.
+        """
+        from config import OFFLINE_MODE
+        from permissions_azure import user_in_azure_group  # lokale import voor zekerheid
+
+        # 🔒 Offline check — bewust behouden voor consistentie met de overige
+        # Export-modules, ook al is er hier geen live API-call nodig.
+        if OFFLINE_MODE:
+            QMessageBox.warning(
+                self,
+                "Offline modus",
+                "De module 'Open Elements overview' is niet beschikbaar in offline-modus."
+            )
+            return
+
+        required_group = "GPP_Finance"  # zelfde vereiste groep als Open Elements
+
+        try:
+            if not user_in_azure_group(required_group):
+                QMessageBox.warning(
+                    self,
+                    "Geen toegang",
+                    f"U behoort niet tot de vereiste Azure AD-groep:\n\n{required_group}\n\n"
+                    "Neem contact op met IT indien u toegang nodig heeft."
+                )
+                return
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Azure AD fout",
+                f"Kon groepsrechten niet controleren:\n{e}"
+            )
+            return
+
+        # ✅ Toegang OK ➜ venster openen (compact formulierscherm, geen
+        # showMaximized() — zelfde patroon als bv. _open_timings_window)
+        try:
+            w = OeOverviewWindow()
+            w.setParent(None)
+            w.setWindowModality(Qt.NonModal)
+            w.setWindowFlag(Qt.Window, True)
+            self.oeoverview_windows.append(w)
+            w.show()
+            w.activateWindow()
+            w.raise_()
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Fout",
+                f"Kon 'Open Elements overview' openen:\n{e}"
             )
 
     def _open_duepayment_window(self):

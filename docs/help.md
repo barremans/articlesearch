@@ -1,7 +1,7 @@
 # 📦 Artikelzoeker – Help
 
-**Versie:** 15.3.0  
-**Laatste update:** augustus 2026  
+**Versie:** 15.4.0  
+**Laatste update:** september 2026  
 
 De applicatie laat je toe om **artikels**, **projectitems**, **business partners (BP)**, **VTA's**, **openstaande documenten**, **Credit Control (CC BP)**, **Productie Stock Overview** én **Urenregistraties** te consulteren en te verwerken.  
 Werkt **online** via de Windows `.exe` (PyInstaller) met **Azure AD-beveiliging**.
@@ -14,6 +14,7 @@ Werkt **online** via de Windows `.exe` (PyInstaller) met **Azure AD-beveiliging*
 - **Instellingen** → Omgeving, (BP/VTA/Prod) defaults, QSS-styles, taal, zoektype, datasets beheren  
 - **Export** →  
   - **Open Elements** – openstaande documenten  
+  - **Open Elements overview...** – overzicht per verkoopmedewerker op basis van 2 CSV-exports  
   - **Open Credit Control (CC BP)**  
   - **Betalingsgedrag...** – gemiddeld betaalgedrag per klant en detail per factuur  
 - **Applicaties** →  
@@ -109,12 +110,19 @@ keuzelijst.
 
 ### Datasets beheren
 Via **Instellingen → Datasets beheren...** open je het beheerscherm:
-- **Nieuw...** / **Bewerken...** — naam, eigenaar en artikelnummers
-  instellen. Plak een lijst artikelnummers (gescheiden door spatie, tab,
-  puntkomma, komma of regeleinde, of een mix) — dit wordt **automatisch**
-  omgezet naar één lange, komma-gescheiden lijst. De knop
-  **"Normaliseren"** doet dit ook manueel voor reeds getypte/geladen
-  inhoud.
+- **Nieuw...** — naam en artikelnummers instellen. **Eigenaar** wordt
+  automatisch ingevuld met je eigen naam en is niet aanpasbaar.
+- **Bewerken...** — enkel volledig mogelijk voor de **eigenaar** van de
+  dataset (of iemand van wie de naam sterk op de eigenaar lijkt, zodat
+  oudere, handmatig ingevulde eigenaar-namen ook nog werken), of voor
+  leden van de AD-groep **"CGK-APP-L6"** (kunnen elke dataset bewerken).
+  Ben je geen van beide, dan open je de dataset nog steeds — maar in
+  **alleen-lezen** weergave, zodat je de inhoud altijd kan controleren.
+- Plak een lijst artikelnummers (gescheiden door spatie, tab, puntkomma,
+  komma of regeleinde, of een mix) — dit wordt **automatisch** omgezet
+  naar één lange, komma-gescheiden lijst, ook bij Opslaan. De knop
+  **"Normaliseren"** doet dit ook manueel zichtbaar voor reeds getypte/
+  geladen inhoud.
 - **Verwijderen bestaat niet** — vink **"Gedeactiveerd"** aan om een
   dataset niet langer in de keuzelijst te tonen (i.p.v. te verwijderen).
 - **Gewijzigd door** en **Gewijzigd op** worden automatisch gevuld —
@@ -310,6 +318,55 @@ Open via **Export → Open Elements**
 
 ---
 
+## 📑 Open Elements overview
+
+Open via **Export → Open Elements overview...**
+
+### 🔒 Beveiliging
+- Zelfde toegangsvoorwaarde als Open Elements: enkel voor gebruikers in
+  **Azure AD-groep "GPP_Finance"**.
+- Offline gebruik is niet toegestaan.
+
+### 📊 Functionaliteit
+Splitst 2 lokaal aangeleverde CSV-exports van openstaande verkoop-
+documenten ("open elementen") op per verkoopmedewerker en genereert
+daarvan een overzichtsbestand per medewerker. **Geen live SAP-koppeling**
+— je levert zelf de 2 CSV's aan, geëxporteerd vanuit SAP B1.
+
+1. Kies de **inputmap** met de orders- en leveringen-CSV — de app herkent
+   ze automatisch aan de bestandsnaam en toont ze in 2 keuzelijsten
+   (nieuwste bestand staat standaard bovenaan; kies zelf een ander bestand
+   indien nodig).
+2. Kies de **outputmap** waar de overzichten terechtkomen.
+3. Kies het **uitvoerformaat**: **XLSX** (1 workbook per medewerker met
+   tabbladen "VKOrders"/"VKLeveringen"), **CSV** (2 losse bestanden per
+   medewerker), of beide.
+4. Klik op **Starten** (`Ctrl + Enter`).
+
+> 💡 Bij het openen worden de input-/outputmap automatisch ingevuld: eerst
+> de vaste standaardmap indien ingesteld (zie **Instellingen** hieronder),
+> anders de laatst gebruikte map.
+
+**Verwerkingsregels:**
+- Groepering op **Sales Owner**, met terugval op **Document Owner**
+  wanneer Sales Owner leeg is of "-Geen verkoopmedewerker-".
+- Enkel **orders ouder dan 6 maanden** en **leveringen ouder dan 1
+  maand** worden meegenomen.
+- Elk overzicht krijgt een extra kolom **"Openstaand"**
+  (= DocTotal − PaidSum) en een totaalrij.
+
+Na een geslaagde run wordt de outputmap automatisch geopend in de
+bestandsverkenner, en wordt de laatst gebruikte in-/outputmap onthouden
+voor de volgende keer.
+
+### ⌨️ Sneltoetsen
+| Toets          | Actie              |
+|----------------|--------------------|
+| `Ctrl + Enter` | Starten            |
+| `Esc`          | Venster sluiten    |
+
+---
+
 ## ✳️ Zoektermen & prefixen (artikels)
 
 | Prefix   | Zoekveld                                       | Voorbeeld |
@@ -342,6 +399,8 @@ Open via **Export → Open Elements**
   (filtert de keuzelijst wanneer geen dataset gekozen is; beide zijn
   keuzelijsten, geen vrije tekst), standaard magazijn — plus de knop
   **"Datasets beheren..."**  
+- **Open Elements overview**: optionele vaste standaard input-/outputmap
+  (leeg = laatst gebruikte map)  
 - Taal: NL / EN  
 - QSS-styles live aanpasbaar  
 

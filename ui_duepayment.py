@@ -2,19 +2,25 @@
 # ArticleSearch
 # File:    ui_duepayment.py
 # Role:    GUI-venster "Betalingsgedrag & Openstaande Posten" (PaymentsDue),
-#          geopend vanuit het Export-menu (ui_main.py). Twee tabs:
+#          geopend vanuit het Export-menu (ui_main.py). Drie tabs:
 #            - "Klanten"     (standaard geladen): 1 rij per klant, gemiddelden
 #                             (duepayment_info.get_payments_due_detail)
-#            - "Facturen"    : 1 rij per factuur/voorschot
+#            - "Closed"      (was "Facturen" t/m v1.3.0): 1 rij per afgesloten
+#                             factuur/voorschot, automatisch gefilterd op
+#                             Status != "Open"
 #                             (duepayment_info.get_payments_due_overview)
+#            - "Forecast"    (nieuw sinds v1.4.0): 1 rij per openstaande
+#                             factuur + voorspelde betaaldatum/vervalstatus,
+#                             hergebruikt dezelfde auth-client als Closed
+#                             (duepayment_info.get_payments_due_forecast)
 #          Per tab: filtervelden + knop "Ophalen" (GEEN automatische call bij
 #          openen — data wordt pas bevraagd na klik, zelfde principe als
 #          Open Elements/ui_docs.py). Kolomklik = sorteren (numeriek/datum-
 #          bewust via UserRole-sortkey), live zoekbalk filtert alle kolommen.
-#          Tab "Facturen" heeft bijkomend een filter op "Verschil vervaldatum"
+#          Tab "Closed" heeft bijkomend een filter op "Verschil vervaldatum"
 #          (alles / enkel te laat / enkel correct betaald), client-side
 #          gecombineerd met de zoekbalk. Export: "Exporteer..." (huidige tab)
-#          / "Exporteer alles" (beide tabs) — formaatkeuze CSV / XLSX / Beide
+#          / "Exporteer alles" (alle tabs) — formaatkeuze CSV / XLSX / Beide
 #          via _ask_export_format(); na export wordt de bevattende map
 #          automatisch geopend in de bestandsverkenner.
 #          Zelfde AD-toegang als Open Elements (GPP_Finance) — check gebeurt
@@ -23,8 +29,45 @@
 #          automatisch overgenomen naar de Facturen-tab (één richting).
 #          Sneltoetsen: Ctrl+Return = Ophalen (actieve tab), Ctrl+E =
 #          Exporteer... (actieve tab), Alt+1/Alt+2 = wissel tab, Esc = sluiten.
-# Version: 1.3.0
+# Version: 1.5.0
 # Author:  Bart Bossuyt
+# Changes: 1.5.0 — Bijsturing: (1) kolom "Jaar" (laatste kolom) was absurd
+#                   breed door setStretchLastSection(True) in _init_table —
+#                   verwijderd, elke kolom krijgt nu enkel zijn eigen
+#                   inhoud-breedte (resizeColumnsToContents), rest blijft
+#                   gewoon leeg. (2) Live totaal "Openstaand (zichtbaar)"
+#                   toegevoegd onder de tabel in Closed én Forecast —
+#                   herberekend bij elke filterwijziging (zoekbalk, Verschil
+#                   vervaldatum-dropdown, na Ophalen) via nieuwe
+#                   _sum_visible_column()/_update_overview_total()/
+#                   _update_forecast_total(). Forecast-zoekbalk gebruikt nu
+#                   _apply_forecast_filters() (filter + totaal-update)
+#                   i.p.v. rechtstreeks _apply_text_filter(). (3) Forecast-
+#                   tab sorteert na Ophalen nu standaard op "Verwachte
+#                   betaaldatum" oplopend (eerstkomende datum bovenaan) —
+#                   kolomklik-sortering op om het even welke kolom
+#                   (incl. Vervalstatus) werkte al via de bestaande
+#                   _SortItem/UserRole-sortkey-mechanica, geen wijziging
+#                   nodig. (4) Dubbelklik op een klant (Klanten-tab) wisselt
+#                   nu naar de Forecast-tab (was Closed) en haalt meteen de
+#                   bijhorende forecast op.
+# Changes: 1.4.0 — Nieuwe tab "Forecast" toegevoegd (3e tab, na "Closed"),
+#                   o.b.v. het nieuwe HY04WB-endpoint (duepayment_info.
+#                   get_payments_due_forecast(), hergebruikt de bestaande
+#                   Overview-client). Toont per openstaande factuur een
+#                   voorspelde betaaldatum + vervalstatus o.b.v. historisch
+#                   klantgedrag (FORECAST_COLUMNS). Tab "Facturen" hernoemd
+#                   naar "Closed" en toont voortaan enkel afgesloten
+#                   documenten (Status != "Open") — automatisch gefilterd,
+#                   niet toggle-baar, want "Forecast" dekt nu het
+#                   open-documenten-verhaal. Aantal-maanden/klantcode van
+#                   Klanten-tab wordt nu ook naar Forecast overgenomen (3-weg
+#                   sync). Sneltoetsen/export/fetch-dispatch uitgebreid van
+#                   2 naar 3 tabs (Alt+3, _fetch_current_tab/_export_
+#                   current_tab via tabs.currentIndex()). Interne tab_key
+#                   "overview" (Closed) en "forecast" blijven apart, geen
+#                   hernoeming van python-namen — enkel UI-label + export-
+#                   sheetnaam/CSV-suffix aangepast.
 # Changes: 1.3.0 — Laatst gebruikte exportmap wordt onthouden (QSettings,
 #                   org "CGK Group" / app "ArticleSearch", key
 #                   "duepayment/last_export_dir") en automatisch voorgesteld
@@ -70,7 +113,7 @@ from PySide6.QtWidgets import (
     QFileDialog, QGroupBox
 )
 
-from duepayment_info import get_payments_due_detail, get_payments_due_overview
+from duepayment_info import get_payments_due_detail, get_payments_due_overview, get_payments_due_forecast
 
 try:
     import openpyxl
@@ -120,6 +163,29 @@ OVERVIEW_COLUMNS = [
     ("Jaar", "Jaar", "text"),
 ]
 
+FORECAST_COLUMNS = [
+    ("DocType", "Type", "text"),
+    ("DocNum", "Docnr.", "num"),
+    ("CardCode", "Klantcode", "text"),
+    ("Klant", "Klant", "text"),
+    ("DocDate", "Factuurdatum", "date"),
+    ("DocDueDate", "Vervaldatum", "date"),
+    ("DocTotal", "Totaalbedrag", "num"),
+    ("PaidToDate", "Betaald", "num"),
+    ("OpenAmount", "Openstaand", "num"),
+    ("BetalingsvoorwaardeKlantenfiche", "Betalingsvw. klantenfiche", "text"),
+    ("BetalingsvoorwaardeToegepast", "Betalingsvw. toegepast", "text"),
+    ("AfwijkingVsKlantenfiche", "Afwijking", "text"),
+    ("Status", "Status", "text"),
+    ("MediaanVerschilVervaldatumVsBetaling_Klant", "Mediaan verschil (klant)", "num"),
+    ("VerwachteBetaaldatum", "Verwachte betaaldatum", "date"),
+    ("Vervalstatus", "Vervalstatus", "text"),
+    ("Maand", "Maand", "text"),
+    ("Kwartaal", "Kwartaal", "text"),
+    ("Semester", "Semester", "text"),
+    ("Jaar", "Jaar", "text"),
+]
+
 
 def _fmt_date(raw):
     """'2025-10-22T00:00:00' -> '22-10-2025'; laat onbekende/lege waarden ongemoeid."""
@@ -161,6 +227,7 @@ class DuePaymentWindow(QWidget):
         # export gebeurt op wat zichtbaar/geladen is in de tabel zelf)
         self._detail_rows: list = []
         self._overview_rows: list = []
+        self._forecast_rows: list = []
 
         root = QVBoxLayout(self)
 
@@ -176,26 +243,36 @@ class DuePaymentWindow(QWidget):
         detail_tab = self._build_detail_tab()
         self.tabs.addTab(detail_tab, "Klanten")
 
-        # ---- Tab 2: Facturen (Overview, YCT5LR) ----
+        # ---- Tab 2: Closed (Overview, YCT5LR) — enkel afgesloten documenten ----
         self.overview_table = QTableWidget()
         self.overview_search = QLineEdit()
         self.overview_months = QLineEdit("24")
         self.overview_cardcode = QLineEdit()
         self.overview_diff_filter = QComboBox()
         overview_tab = self._build_overview_tab()
-        self.tabs.addTab(overview_tab, "Facturen")
+        self.tabs.addTab(overview_tab, "Closed")
 
-        # ---- Inputs Klanten-tab automatisch overnemen naar Facturen-tab ----
+        # ---- Tab 3: Forecast (HY04WB) — openstaande facturen + voorspelling ----
+        self.forecast_table = QTableWidget()
+        self.forecast_search = QLineEdit()
+        self.forecast_months = QLineEdit("24")
+        self.forecast_cardcode = QLineEdit()
+        forecast_tab = self._build_forecast_tab()
+        self.tabs.addTab(forecast_tab, "Forecast")
+
+        # ---- Inputs Klanten-tab automatisch overnemen naar Closed- en Forecast-tab ----
         self.detail_months.textChanged.connect(self.overview_months.setText)
         self.detail_cardcode.textChanged.connect(self.overview_cardcode.setText)
+        self.detail_months.textChanged.connect(self.forecast_months.setText)
+        self.detail_cardcode.textChanged.connect(self.forecast_cardcode.setText)
 
-        # ---- Dubbelklik op klant (Klanten-tab) -> Facturen-tab, gefilterd op CardCode ----
+        # ---- Dubbelklik op klant (Klanten-tab) -> Closed-tab, gefilterd op CardCode ----
         self.detail_table.cellDoubleClicked.connect(self._on_detail_row_double_clicked)
 
-        # ---- Export alles (buiten de tabs, geldt voor beide) ----
+        # ---- Export alles (buiten de tabs, geldt voor alle 3) ----
         export_all_row = QHBoxLayout()
         export_all_row.addStretch(1)
-        self.btn_export_all = QPushButton("Exporteer alles (beide tabs)")
+        self.btn_export_all = QPushButton("Exporteer alles (alle tabs)")
         self.btn_export_all.clicked.connect(self._export_all)
         export_all_row.addWidget(self.btn_export_all)
         root.addLayout(export_all_row)
@@ -208,6 +285,7 @@ class DuePaymentWindow(QWidget):
         QShortcut(QKeySequence("Ctrl+E"), self).activated.connect(self._export_current_tab)
         QShortcut(QKeySequence("Alt+1"), self).activated.connect(lambda: self.tabs.setCurrentIndex(0))
         QShortcut(QKeySequence("Alt+2"), self).activated.connect(lambda: self.tabs.setCurrentIndex(1))
+        QShortcut(QKeySequence("Alt+3"), self).activated.connect(lambda: self.tabs.setCurrentIndex(2))
         QShortcut(QKeySequence(Qt.Key_Escape), self).activated.connect(self.close)
 
     # ------------------------------------------------------------------
@@ -284,6 +362,12 @@ class DuePaymentWindow(QWidget):
         actions.addWidget(self.overview_search, 1)
         lay.addLayout(actions)
 
+        totals_row = QHBoxLayout()
+        totals_row.addStretch(1)
+        self.overview_total_label = QLabel("")
+        totals_row.addWidget(self.overview_total_label)
+        lay.addLayout(totals_row)
+
         self._init_table(self.overview_table, OVERVIEW_COLUMNS)
         lay.addWidget(self.overview_table)
         return w
@@ -292,14 +376,32 @@ class DuePaymentWindow(QWidget):
     _overview_diff_col_index = next(
         (i for i, c in enumerate(OVERVIEW_COLUMNS) if c[0] == "VerschilVervaldatumVsBetaling"), None
     )
-    # index van de kolom "CardCode" binnen DETAIL_COLUMNS (voor dubbelklik -> Facturen-tab)
+    # index van de kolom "Status" binnen OVERVIEW_COLUMNS (voor de automatische
+    # "enkel afgesloten documenten"-filter op de Closed-tab)
+    _overview_status_col_index = next(
+        (i for i, c in enumerate(OVERVIEW_COLUMNS) if c[0] == "Status"), None
+    )
+    # index van de kolom "OpenAmount" binnen OVERVIEW_COLUMNS/FORECAST_COLUMNS
+    # (voor het live totaal "Openstaand (zichtbaar)")
+    _overview_openamount_col_index = next(
+        (i for i, c in enumerate(OVERVIEW_COLUMNS) if c[0] == "OpenAmount"), None
+    )
+    _forecast_openamount_col_index = next(
+        (i for i, c in enumerate(FORECAST_COLUMNS) if c[0] == "OpenAmount"), None
+    )
+    # index van de kolom "VerwachteBetaaldatum" binnen FORECAST_COLUMNS
+    # (voor de standaard-sortering na ophalen: eerstkomende datum bovenaan)
+    _forecast_verwachte_col_index = next(
+        (i for i, c in enumerate(FORECAST_COLUMNS) if c[0] == "VerwachteBetaaldatum"), None
+    )
+    # index van de kolom "CardCode" binnen DETAIL_COLUMNS (voor dubbelklik -> Forecast-tab)
     _detail_cardcode_col_index = next(
         (i for i, c in enumerate(DETAIL_COLUMNS) if c[0] == "CardCode"), None
     )
 
     @Slot(int, int)
     def _on_detail_row_double_clicked(self, row: int, _column: int):
-        """Dubbelklik op een klant (Klanten-tab): wissel naar Facturen-tab, gefilterd op die CardCode."""
+        """Dubbelklik op een klant (Klanten-tab): wissel naar Forecast-tab, gefilterd op die CardCode."""
         col = self._detail_cardcode_col_index
         if col is None:
             return
@@ -308,9 +410,47 @@ class DuePaymentWindow(QWidget):
         if not cardcode:
             return
 
-        self.overview_cardcode.setText(cardcode)
-        self.tabs.setCurrentIndex(1)
-        self._fetch_overview()
+        self.forecast_cardcode.setText(cardcode)
+        self.tabs.setCurrentIndex(2)
+        self._fetch_forecast()
+
+    def _build_forecast_tab(self) -> QWidget:
+        w = QWidget()
+        lay = QVBoxLayout(w)
+
+        filt_box = QGroupBox("Filter")
+        grid = QGridLayout(filt_box)
+        grid.addWidget(QLabel("Aantal maanden:"), 0, 0)
+        self.forecast_months.setPlaceholderText("24")
+        grid.addWidget(self.forecast_months, 0, 1)
+        grid.addWidget(QLabel("Klantcode:"), 0, 2)
+        self.forecast_cardcode.setPlaceholderText("leeg = alle klanten")
+        grid.addWidget(self.forecast_cardcode, 0, 3)
+        lay.addWidget(filt_box)
+
+        actions = QHBoxLayout()
+        btn_fetch = QPushButton("Ophalen")
+        btn_fetch.clicked.connect(self._fetch_forecast)
+        btn_export = QPushButton("Exporteer...")
+        btn_export.clicked.connect(lambda: self._export_tab("forecast"))
+        actions.addWidget(btn_fetch)
+        actions.addWidget(btn_export)
+        actions.addStretch(1)
+        actions.addWidget(QLabel("Zoeken:"))
+        self.forecast_search.setPlaceholderText("filter over alle kolommen...")
+        self.forecast_search.textChanged.connect(lambda _t: self._apply_forecast_filters())
+        actions.addWidget(self.forecast_search, 1)
+        lay.addLayout(actions)
+
+        totals_row = QHBoxLayout()
+        totals_row.addStretch(1)
+        self.forecast_total_label = QLabel("")
+        totals_row.addWidget(self.forecast_total_label)
+        lay.addLayout(totals_row)
+
+        self._init_table(self.forecast_table, FORECAST_COLUMNS)
+        lay.addWidget(self.forecast_table)
+        return w
 
     @staticmethod
     def _init_table(table: QTableWidget, columns: list):
@@ -321,7 +461,11 @@ class DuePaymentWindow(QWidget):
         table.setSelectionBehavior(QTableWidget.SelectRows)
         header = table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Interactive)
-        header.setStretchLastSection(True)
+        # GEEN setStretchLastSection: dat trok de laatste kolom (bv. "Jaar")
+        # op tot alle restruimte, wat die kolom absurd breed maakte. Elke
+        # kolom krijgt nu gewoon zijn eigen inhoud-gebaseerde breedte via
+        # resizeColumnsToContents() (zie _populate_table) — eventuele
+        # restruimte blijft gewoon leeg naast de laatste kolom.
 
     # ------------------------------------------------------------------
     # Zoeken/filteren (live, alle kolommen)
@@ -342,15 +486,25 @@ class DuePaymentWindow(QWidget):
             table.setRowHidden(row, not match)
 
     def _apply_overview_filters(self):
-        """Facturen-tab: combineert de zoekbalk MET de 'Verschil vervaldatum'-filter."""
+        """Closed-tab: combineert de zoekbalk + 'Verschil vervaldatum'-filter MET
+        de vaste regel dat enkel afgesloten documenten (Status != 'Open')
+        getoond worden — deze tab heet niet toevallig "Closed": open
+        documenten horen sinds v1.4.0 thuis in de aparte Forecast-tab."""
         text = (self.overview_search.text() or "").strip().lower()
         diff_mode = self.overview_diff_filter.currentData() or ""
         diff_col = self._overview_diff_col_index
+        status_col = self._overview_status_col_index
 
         for row in range(self.overview_table.rowCount()):
             visible = True
 
-            if text:
+            if status_col is not None:
+                item = self.overview_table.item(row, status_col)
+                status = item.text().strip() if item else ""
+                if status == "Open":
+                    visible = False
+
+            if visible and text:
                 visible = False
                 for col in range(self.overview_table.columnCount()):
                     item = self.overview_table.item(row, col)
@@ -372,20 +526,60 @@ class DuePaymentWindow(QWidget):
 
             self.overview_table.setRowHidden(row, not visible)
 
+        self._update_overview_total()
+
+    def _apply_forecast_filters(self):
+        """Forecast-tab: zoekbalk-filter + herberekening van het live totaal."""
+        self._apply_text_filter(self.forecast_table, self.forecast_search.text())
+        self._update_forecast_total()
+
+    @staticmethod
+    def _sum_visible_column(table: QTableWidget, col_index) -> float:
+        """Som van de numerieke UserRole-waarde van een kolom, enkel over niet-verborgen rijen."""
+        if col_index is None:
+            return 0.0
+        total = 0.0
+        for row in range(table.rowCount()):
+            if table.isRowHidden(row):
+                continue
+            item = table.item(row, col_index)
+            if not item:
+                continue
+            raw = item.data(Qt.UserRole)
+            try:
+                total += float(raw)
+            except (TypeError, ValueError):
+                continue
+        return total
+
+    def _update_overview_total(self):
+        total = self._sum_visible_column(self.overview_table, self._overview_openamount_col_index)
+        self.overview_total_label.setText(f"Totaal openstaand (zichtbaar): {total:,.2f}")
+
+    def _update_forecast_total(self):
+        total = self._sum_visible_column(self.forecast_table, self._forecast_openamount_col_index)
+        self.forecast_total_label.setText(f"Totaal openstaand (zichtbaar): {total:,.2f}")
+
     # ------------------------------------------------------------------
     # Sneltoetsen-helpers (actieve tab)
     # ------------------------------------------------------------------
     def _fetch_current_tab(self):
-        if self.tabs.currentIndex() == 0:
+        idx = self.tabs.currentIndex()
+        if idx == 0:
             self._fetch_detail()
-        else:
+        elif idx == 1:
             self._fetch_overview()
+        else:
+            self._fetch_forecast()
 
     def _export_current_tab(self):
-        if self.tabs.currentIndex() == 0:
+        idx = self.tabs.currentIndex()
+        if idx == 0:
             self._export_tab("detail")
-        else:
+        elif idx == 1:
             self._export_tab("overview")
+        else:
+            self._export_tab("forecast")
 
     # ------------------------------------------------------------------
     # Ophalen
@@ -417,16 +611,36 @@ class DuePaymentWindow(QWidget):
 
         self._exec.submit(_worker)
 
+    def _fetch_forecast(self):
+        months = self.forecast_months.text().strip() or "24"
+        cardcode = self.forecast_cardcode.text().strip()
+
+        def _worker():
+            try:
+                rows = get_payments_due_forecast(months=months, cardcode=cardcode)
+                self.fetch_success.emit(rows, "forecast")
+            except Exception as e:
+                self.fetch_error.emit(str(e), "forecast")
+
+        self._exec.submit(_worker)
+
     @Slot(list, str)
     def _on_fetch_success(self, rows: list, tab_key: str):
         if tab_key == "detail":
             self._detail_rows = rows
             self._populate_table(self.detail_table, DETAIL_COLUMNS, rows)
             self._apply_text_filter(self.detail_table, self.detail_search.text())
-        else:
+        elif tab_key == "overview":
             self._overview_rows = rows
             self._populate_table(self.overview_table, OVERVIEW_COLUMNS, rows)
             self._apply_overview_filters()
+        else:
+            self._forecast_rows = rows
+            self._populate_table(self.forecast_table, FORECAST_COLUMNS, rows)
+            # Standaard sorteren op eerstkomende verwachte betaaldatum
+            if self._forecast_verwachte_col_index is not None:
+                self.forecast_table.sortItems(self._forecast_verwachte_col_index, Qt.AscendingOrder)
+            self._apply_forecast_filters()
 
         if not rows:
             QMessageBox.information(self, "Geen resultaten", "Geen documenten/klanten gevonden voor deze filters.")
@@ -543,9 +757,12 @@ class DuePaymentWindow(QWidget):
             pass
 
     def _export_tab(self, tab_key: str):
-        table = self.detail_table if tab_key == "detail" else self.overview_table
-        columns = DETAIL_COLUMNS if tab_key == "detail" else OVERVIEW_COLUMNS
-        sheet_name = "Klanten" if tab_key == "detail" else "Facturen"
+        if tab_key == "detail":
+            table, columns, sheet_name = self.detail_table, DETAIL_COLUMNS, "Klanten"
+        elif tab_key == "overview":
+            table, columns, sheet_name = self.overview_table, OVERVIEW_COLUMNS, "Closed"
+        else:
+            table, columns, sheet_name = self.forecast_table, FORECAST_COLUMNS, "Forecast"
 
         rows = self._visible_rows_as_dicts(table, columns)
         if not rows:
@@ -575,8 +792,9 @@ class DuePaymentWindow(QWidget):
     def _export_all(self):
         detail_rows = self._visible_rows_as_dicts(self.detail_table, DETAIL_COLUMNS)
         overview_rows = self._visible_rows_as_dicts(self.overview_table, OVERVIEW_COLUMNS)
+        forecast_rows = self._visible_rows_as_dicts(self.forecast_table, FORECAST_COLUMNS)
 
-        if not detail_rows and not overview_rows:
+        if not detail_rows and not overview_rows and not forecast_rows:
             QMessageBox.information(self, "Geen data", "Er is niets om te exporteren — klik eerst op 'Ophalen' in minstens 1 tab.")
             return
 
@@ -595,13 +813,17 @@ class DuePaymentWindow(QWidget):
             if detail_rows:
                 self._write_csv(f"{base_path}_klanten.csv", DETAIL_COLUMNS, detail_rows)
             if overview_rows:
-                self._write_csv(f"{base_path}_facturen.csv", OVERVIEW_COLUMNS, overview_rows)
+                self._write_csv(f"{base_path}_closed.csv", OVERVIEW_COLUMNS, overview_rows)
+            if forecast_rows:
+                self._write_csv(f"{base_path}_forecast.csv", FORECAST_COLUMNS, forecast_rows)
         if "xlsx" in formats:
             sheets = {}
             if detail_rows:
                 sheets["Klanten"] = (DETAIL_COLUMNS, detail_rows)
             if overview_rows:
-                sheets["Facturen"] = (OVERVIEW_COLUMNS, overview_rows)
+                sheets["Closed"] = (OVERVIEW_COLUMNS, overview_rows)
+            if forecast_rows:
+                sheets["Forecast"] = (FORECAST_COLUMNS, forecast_rows)
             self._write_xlsx(f"{base_path}.xlsx", sheets)
 
         self._remember_export_dir(base_path)
