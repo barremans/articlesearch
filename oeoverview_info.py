@@ -2,17 +2,66 @@
 # ArticleSearch
 # File:    oeoverview_info.py
 # Role:    "Open Elements overview" — bedrijfslogica (geen API/token nodig):
-#          kandidaat-CSV's zoeken in een inputmap, twee SAP B1-exports
-#          (openstaande orders/leveringen) inlezen en valideren, groeperen
-#          per verkoopmedewerker (SalesOwner met DocOwner-fallback),
-#          filteren op leeftijd (MaandenOud) en wegschrijven naar xlsx/csv
-#          per medewerker. Overgenomen uit het losstaande, reeds geteste
-#          "OpenElements2Csv"-prototype (csv_loader.py/processor.py/
-#          exporter.py) en samengevoegd tot 1 bestand volgens het
-#          `*_info.py`-patroon van ArticleSearch — bewust GEEN `*_token.py`,
-#          er is geen authenticatie/live SAP-koppeling voor dit onderdeel.
-# Version: 1.0.0
+#          kandidaat-bronbestanden (CSV én/of Excel) zoeken in een inputmap,
+#          twee SAP B1-exports (openstaande orders/leveringen) inlezen en
+#          valideren, groeperen per verkoopmedewerker (SalesOwner met
+#          DocOwner-fallback), filteren op leeftijd (MaandenOud) en
+#          wegschrijven naar xlsx/csv per medewerker. Overgenomen uit het
+#          losstaande, reeds geteste "OpenElements2Csv"-prototype
+#          (csv_loader.py/processor.py/exporter.py) en samengevoegd tot 1
+#          bestand volgens het `*_info.py`-patroon van ArticleSearch —
+#          bewust GEEN `*_token.py`, er is geen authenticatie/live SAP-
+#          koppeling voor dit onderdeel.
+# Version: 1.3.0
 # Author:  Bart Bossuyt
+# Changes: 1.3.0 — UX-verbetering na een reële vergissing (orders-/
+#                   leveringen-bestand omgewisseld via "Bladeren...", 2
+#                   bijna-identieke bestandsnamen naast elkaar):
+#                   _validate_header() geeft nu, wanneer de gekozen header
+#                   net wél alle kolommen van het ANDERE brontype bevat, een
+#                   gerichte melding ("X lijkt een <ander>-bestand te zijn,
+#                   maar is gekozen als <huidig>-bestand — wissel de 2
+#                   bestandskeuzes om.") i.p.v. enkel de kale
+#                   "ontbrekende kolommen"-lijst. Nieuwe constanten
+#                   _OTHER_SOURCE_TYPE/_SOURCE_TYPE_LABEL; _validate_header()
+#                   krijgt een nieuwe optionele parameter source_type (beide
+#                   aanroepen, in load_csv() en load_xlsx(), geven die nu
+#                   mee). Zelf getest met de 2 aangeleverde reële bestanden
+#                   (OpenVKOorders_1.csv/OpenVKOleveringen_1.csv) — correct
+#                   toegewezen verwerken ze foutloos tot 31 medewerkers
+#                   (183 orders-/50 leveringenrijen).
+# Changes: 1.2.0 — BUGFIX (bevestigd door gebruiker: "Ongeldige datum in
+#                   kolom DocDate: 'Thierry Bourse'"): een reële SAP B1-
+#                   Excel-export bleek na de eigenlijke tabel nog een
+#                   niet-tabelrij te bevatten (vermoedelijk een voettekst-/
+#                   notitieregel, bv. "Afgedrukt door: <naam>") die toevallig
+#                   onder de kolom "DocDate" terechtkwam — load_xlsx() liet
+#                   daardoor de volledige import falen op die ene randrij.
+#                   Nieuwe helper _is_data_row(): een Excel-rij telt enkel
+#                   als echte gegevensrij wanneer de ankerkolom (de eerste
+#                   vereiste kolom, "DocNum" voor beide brontypes) een
+#                   geldig, numeriek documentnummer bevat — andere rijen
+#                   worden overgeslagen i.p.v. de hele import te laten
+#                   crashen op een niet-interpreteerbare waarde in een
+#                   willekeurige kolom. Aantal overgeslagen rijen wordt
+#                   gelogd (nieuwe module-logger "ArticleSearch.OeOverview",
+#                   zelfde patroon als prod_info.py). load_csv() blijft
+#                   bewust ongewijzigd (strikte validatie) — dit type
+#                   voettekst-rij is een Excel/print-exportfenomeen, niet
+#                   waargenomen in de al langer geteste CSV-variant.
+# Changes: 1.1.0 — Bronbestanden bleken in de praktijk .xlsx te zijn (niet
+#                   .csv, de aanname uit het oorspronkelijke prototype) —
+#                   nu kunnen beide: nieuwe load_xlsx() (openpyxl,
+#                   read_only/data_only) naast de bestaande load_csv(), en
+#                   een nieuwe dispatcher load_source_file() die op basis
+#                   van de bestandsextensie de juiste kiest (voorkeurs-
+#                   ingang voor ui_oeoverview.py). find_candidate_files()
+#                   zoekt nu ook op .xlsx/.xls naast .csv
+#                   (_SUPPORTED_EXTENSIONS). _to_int()/_to_float()/_to_date()
+#                   zijn bron-onafhankelijk gemaakt (tolereren zowel
+#                   CSV-strings als al-getypte Excel-celwaarden int/float/
+#                   datetime) zodat _convert_row() door beide loaders
+#                   herbruikt kan worden.
 # Changes: 1.0.0 — Initiële opzet: overgezet uit het OpenElements2Csv-
 #                   prototype. Business-regels ongewijzigd overgenomen
 #                   (bevestigd, zie OpenElements2Csv_ArticleSearch_
@@ -35,6 +84,7 @@
 from __future__ import annotations
 
 import csv
+import logging
 import re
 import time
 from dataclasses import dataclass, field
@@ -42,9 +92,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font
 from openpyxl.worksheet.worksheet import Worksheet
+
+logger = logging.getLogger("ArticleSearch.OeOverview")
+if not logger.handlers:
+    h = logging.StreamHandler()
+    f = logging.Formatter("[%(levelname)s] %(asctime)s - [ArticleSearch.OeOverview] %(message)s")
+    h.setFormatter(f)
+    logger.addHandler(h)
+logger.setLevel(logging.INFO)
 
 # -----------------------------------------------------------------------
 # Constanten — bronbestanden / kolommen
@@ -53,13 +111,34 @@ from openpyxl.worksheet.worksheet import Worksheet
 SOURCE_TYPE_ORDERS = "orders"
 SOURCE_TYPE_LEVERINGEN = "leveringen"
 
+# Voor de "omgewisselde bestandskeuze"-hint in _validate_header().
+_OTHER_SOURCE_TYPE: dict[str, str] = {
+    SOURCE_TYPE_ORDERS: SOURCE_TYPE_LEVERINGEN,
+    SOURCE_TYPE_LEVERINGEN: SOURCE_TYPE_ORDERS,
+}
+_SOURCE_TYPE_LABEL: dict[str, str] = {
+    SOURCE_TYPE_ORDERS: "orders",
+    SOURCE_TYPE_LEVERINGEN: "leveringen",
+}
+
 # Bestandsnaam-patroon per brontype (case-insensitive substring-match),
-# bv. "OpenVKOorders.csv" / "OpenVKOleveringen.csv" — bewuste aanname
-# i.p.v. detectie op kolomstructuur.
+# bv. "OpenVKOorders.xlsx" / "OpenVKOleveringen.xlsx" (of .csv) — bewuste
+# aanname i.p.v. detectie op kolomstructuur. Dit patroon bepaalt enkel
+# welk bestand in de keuzelijst vooraf geselecteerd staat als "vermoedelijk
+# de juiste" — het is nooit een harde vereiste: elk bestand kan ook altijd
+# manueel gekozen worden via "Bladeren...", ongeacht naam of locatie (zie
+# find_candidate_files()/1.2.0).
 _FILENAME_PATTERNS: dict[str, str] = {
     SOURCE_TYPE_ORDERS: "orders",
     SOURCE_TYPE_LEVERINGEN: "leveringen",
 }
+
+# Ondersteunde bestandsextensies voor bronbestanden — de reële SAP B1-
+# export bleek .xlsx te zijn (niet .csv, de aanname uit het oorspronkelijke
+# OpenElements2Csv-prototype); .csv blijft ook ondersteund voor wie dat
+# formaat wel exporteert. Bepaalt zowel welke bestanden find_candidate_files()
+# oppikt als welke loader load_source_file() kiest (op basis van suffix).
+_SUPPORTED_EXTENSIONS = (".xlsx", ".xls", ".csv")
 
 # Verwachte kolomvolgorde per brontype.
 REQUIRED_COLUMNS: dict[str, list[str]] = {
@@ -169,7 +248,8 @@ def find_candidate_files(input_folder: Path, source_type: str) -> list[Candidate
     pattern = _FILENAME_PATTERNS[source_type]
     candidates = [
         CandidateFile(path=p, modified_at=datetime.fromtimestamp(p.stat().st_mtime))
-        for p in input_folder.glob("*.csv")
+        for ext in _SUPPORTED_EXTENSIONS
+        for p in input_folder.glob(f"*{ext}")
         if pattern in p.stem.lower()
     ]
     candidates.sort(key=lambda c: c.modified_at, reverse=True)
@@ -221,7 +301,7 @@ def load_csv(file_path: Path, source_type: str) -> list[dict[str, Any]]:
         raise CsvLoadError(f"Kan bestand niet inlezen: {file_path.name} (leeg bestand).")
 
     header = _split_fields(records[0])
-    _validate_header(header, expected_columns, file_path)
+    _validate_header(header, expected_columns, file_path, source_type)
 
     rows: list[dict[str, Any]] = []
     for line_no, record in enumerate(records[1:], start=2):
@@ -235,6 +315,132 @@ def load_csv(file_path: Path, source_type: str) -> list[dict[str, Any]]:
         rows.append(_convert_row(raw_row))
 
     return rows
+
+
+# =========================================================================
+# Excel (.xlsx/.xls) inlezen/valideren
+# =========================================================================
+
+def _is_data_row(raw_row: dict, anchor_column: str) -> bool:
+    """Bepaalt of een Excel-rij een echte gegevensrij is, op basis van de
+    ankerkolom (typisch 'DocNum'): enkel als die een geldig, numeriek
+    documentnummer bevat. Filtert voettekst-/notitieregels die soms na de
+    eigenlijke tabel in een SAP B1-Excel-export blijven staan (bv.
+    "Afgedrukt door: <naam>") — die hebben geen bruikbaar documentnummer en
+    zouden anders de hele import laten falen op een niet-interpreteerbare
+    waarde in een willekeurige andere kolom.
+    """
+    value = raw_row.get(anchor_column)
+    if value is None:
+        return False
+    if isinstance(value, str):
+        value = value.strip()
+        if value == "":
+            return False
+    try:
+        float(value)
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
+def load_xlsx(file_path: Path, source_type: str) -> list[dict[str, Any]]:
+    """Lees en valideer een orders- of leveringen-Excel-export (.xlsx/.xls).
+
+    Verwacht de kolomnamen in de eerste rij van het eerste (actieve)
+    tabblad — zelfde vereiste kolommen als bij de CSV-variant
+    (REQUIRED_COLUMNS). Cijfer-/datumcellen komen via openpyxl al als
+    Python int/float/datetime binnen (geen tekst-parsing nodig, zie
+    _to_int()/_to_float()/_to_date()).
+
+    Raises:
+        CsvLoadError: als ``source_type`` onbekend is, het bestand niet
+            gevonden/leesbaar is, of de header niet de verwachte kolommen
+            bevat.
+    """
+    if source_type not in REQUIRED_COLUMNS:
+        raise CsvLoadError(f"Onbekend brontype: {source_type}")
+
+    if not file_path.is_file():
+        raise CsvLoadError(f"Kan bestand niet inlezen: {file_path.name} (bestand niet gevonden).")
+
+    expected_columns = REQUIRED_COLUMNS[source_type]
+
+    try:
+        wb = load_workbook(file_path, read_only=True, data_only=True)
+    except Exception as exc:
+        raise CsvLoadError(f"Kan bestand niet inlezen: {file_path.name} ({exc}).") from exc
+
+    try:
+        ws = wb.active
+        rows_iter = ws.iter_rows(values_only=True)
+        try:
+            header_row = next(rows_iter)
+        except StopIteration:
+            raise CsvLoadError(f"Kan bestand niet inlezen: {file_path.name} (leeg bestand).")
+
+        header = [str(h).strip() if h is not None else "" for h in header_row]
+        _validate_header(header, expected_columns, file_path, source_type)
+
+        # Ankerkolom om een echte gegevensrij te herkennen (zie 1.2.0) —
+        # de eerste vereiste kolom, "DocNum" voor beide brontypes.
+        anchor_column = expected_columns[0]
+
+        rows: list[dict[str, Any]] = []
+        skipped = 0
+        for values in rows_iter:
+            if values is None or all(v is None for v in values):
+                continue  # lege rij overslaan (komt vaak voor onderaan een export)
+            # openpyxl's rijlengte volgt de sheetbreedte (ws.max_column) en
+            # kan daardoor in randgevallen net iets afwijken van de
+            # headerlengte — aanvullen/afknotten i.p.v. hard te falen, in
+            # tegenstelling tot de striktere CSV-validatie (waar een
+            # lengteverschil wél op een echt datakwaliteitsprobleem wijst).
+            if len(values) < len(header):
+                values = values + (None,) * (len(header) - len(values))
+            elif len(values) > len(header):
+                values = values[:len(header)]
+            raw_row = dict(zip(header, values))
+            if not _is_data_row(raw_row, anchor_column):
+                # Vermoedelijk een voettekst-/notitieregel na de eigenlijke
+                # tabel (bv. "Afgedrukt door: <naam>") — geen bruikbaar
+                # documentnummer, dus overslaan i.p.v. de hele import te
+                # laten falen op een niet-interpreteerbare waarde in een
+                # willekeurige andere kolom.
+                skipped += 1
+                continue
+            rows.append(_convert_row(raw_row))
+
+        if skipped:
+            logger.info(
+                f"{file_path.name}: {skipped} rij(en) overgeslagen zonder geldige "
+                f"'{anchor_column}' (vermoedelijk voettekst/notitie na de tabel)."
+            )
+
+        return rows
+    finally:
+        wb.close()
+
+
+# =========================================================================
+# Dispatcher — kiest CSV- of Excel-loader op basis van de bestandsextensie
+# =========================================================================
+
+def load_source_file(file_path: Path, source_type: str) -> list[dict[str, Any]]:
+    """Lees en valideer een orders- of leveringen-bronbestand — CSV of
+    Excel (.xlsx/.xls), automatisch herkend aan de bestandsextensie van
+    ``file_path``. Voorkeursfunctie voor de GUI (ui_oeoverview.py); de
+    afzonderlijke load_csv()/load_xlsx() blijven ook rechtstreeks bruikbaar.
+    """
+    suffix = file_path.suffix.lower()
+    if suffix == ".csv":
+        return load_csv(file_path, source_type)
+    if suffix in (".xlsx", ".xls"):
+        return load_xlsx(file_path, source_type)
+    raise CsvLoadError(
+        f"Niet-ondersteund bestandstype: {file_path.name} "
+        f"(enkel .xlsx, .xls of .csv worden ondersteund)."
+    )
 
 
 def _split_fields(record: str) -> list[str]:
@@ -255,13 +461,33 @@ def _split_fields(record: str) -> list[str]:
     return cleaned
 
 
-def _validate_header(header: list[str], expected_columns: list[str], file_path: Path) -> None:
+def _validate_header(header: list[str], expected_columns: list[str], file_path: Path,
+                      source_type: str | None = None) -> None:
     missing = [c for c in expected_columns if c not in header]
-    if missing:
-        raise CsvLoadError(
-            f"Kan bestand niet inlezen: {file_path.name} "
-            f"(ontbrekende kolommen: {', '.join(missing)})."
-        )
+    if not missing:
+        return
+
+    # Slimme hint: bevat de header net wél alle kolommen van het ANDERE
+    # brontype? Dan is dit vermoedelijk een omgewisselde bestandskeuze
+    # (orders-bestand in het leveringen-vak, of omgekeerd) — een
+    # veelvoorkomende vergissing met 2 bijna-identieke bestandsnamen naast
+    # elkaar, zeker sinds "Bladeren..." elk bestand toelaat. Geef dan een
+    # gerichte melding i.p.v. een kale kolommenlijst.
+    other_type = _OTHER_SOURCE_TYPE.get(source_type) if source_type else None
+    if other_type:
+        other_columns = REQUIRED_COLUMNS[other_type]
+        if all(c in header for c in other_columns):
+            huidig = _SOURCE_TYPE_LABEL.get(source_type, source_type)
+            ander = _SOURCE_TYPE_LABEL.get(other_type, other_type)
+            raise CsvLoadError(
+                f"'{file_path.name}' lijkt een {ander}-bestand te zijn, maar is "
+                f"gekozen als {huidig}-bestand — wissel de 2 bestandskeuzes om."
+            )
+
+    raise CsvLoadError(
+        f"Kan bestand niet inlezen: {file_path.name} "
+        f"(ontbrekende kolommen: {', '.join(missing)})."
+    )
 
 
 def _convert_row(row: dict[str, str | None]) -> dict[str, Any]:
@@ -282,25 +508,56 @@ def _convert_row(row: dict[str, str | None]) -> dict[str, Any]:
     return converted
 
 
-def _to_int(value: str | None) -> int | None:
-    if value is None or value.strip() == "":
+def _to_int(value) -> int | None:
+    """Bron-onafhankelijk: ``value`` kan een CSV-string zijn óf een al
+    getypte Excel-celwaarde (int/float)."""
+    if value is None:
         return None
-    return int(float(value))  # float() vangt evt. "1.0"-achtige waarden op
-
-
-def _to_float(value: str | None) -> float | None:
-    if value is None or value.strip() == "":
-        return None
-    return float(value)
-
-
-def _to_date(value: str | None, column: str) -> datetime | None:
-    if value is None or value.strip() == "":
-        return None
+    if isinstance(value, str):
+        value = value.strip()
+        if value == "":
+            return None
     try:
-        return datetime.strptime(value, _DATE_FORMAT)
-    except ValueError as exc:
-        raise CsvLoadError(f"Ongeldige datum in kolom {column}: {value!r}.") from exc
+        return int(float(value))  # float() vangt evt. "1.0"-achtige waarden op
+    except (TypeError, ValueError):
+        return None
+
+
+def _to_float(value) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        value = value.strip()
+        if value == "":
+            return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _to_date(value, column: str) -> datetime | None:
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        # Excel geeft een datumcel al als datetime terug (openpyxl,
+        # data_only=True) — niets meer te parsen.
+        return value
+    if isinstance(value, str):
+        value = value.strip()
+        if value == "":
+            return None
+        for fmt in (_DATE_FORMAT, "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(value, fmt)
+            except ValueError:
+                continue
+        raise CsvLoadError(f"Ongeldige datum in kolom {column}: {value!r}.")
+    # Onverwacht type (bv. een datum die als kaal getal/serienummer
+    # binnenkomt, niet als datumcel geformatteerd) — niet betrouwbaar te
+    # onderscheiden van een gewoon getal, dus ongewijzigd doorgeven i.p.v.
+    # te gokken.
+    return value
 
 
 # =========================================================================

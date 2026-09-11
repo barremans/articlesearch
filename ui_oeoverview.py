@@ -2,8 +2,8 @@
 # ArticleSearch
 # File:    ui_oeoverview.py
 # Role:    "Open Elements overview" — venster (Export-menu, Finance-only):
-#          laat de gebruiker 2 lokale CSV-exports (openstaande orders/
-#          leveringen) kiezen uit een inputmap en genereert daarvan, per
+#          laat de gebruiker 2 lokale bronbestanden (openstaande orders/
+#          leveringen — CSV en/of Excel) kiezen en genereert daarvan, per
 #          verkoopmedewerker, een overzichtsbestand (xlsx en/of csv) in een
 #          outputmap. Geen live SAP-koppeling — pure lokale bestands-
 #          verwerking via `oeoverview_info.py`. Overgezet uit het reeds
@@ -12,8 +12,22 @@
 #          (geen i18n-laag, hardcoded Nederlandstalige labels, `Ctrl+Return`/
 #          `Esc`-sneltoetsen, QSettings voor laatst gebruikte mappen —
 #          analoog `ui_duepayment.py`).
-# Version: 1.1.0
+# Version: 1.2.0
 # Author:  Bart Bossuyt
+# Changes: 1.2.0 — Bestandsnaam-/mapherkenning is nooit meer blokkerend:
+#                   elk van de 2 bestandskeuzelijsten krijgt een eigen
+#                   "Bladeren..."-knop (_kies_bestand_manueel()) waarmee
+#                   ALTIJD een willekeurig bestand gekozen kan worden,
+#                   ongeacht bestandsnaam of gekozen inputmap — de
+#                   naampatroon-herkenning in _vernieuw_kandidaten() blijft
+#                   enkel een gemak (vooraf geselecteerde standaardkeuze),
+#                   nooit een harde vereiste. Daarnaast bleken de reële
+#                   bronbestanden .xlsx te zijn i.p.v. .csv: gebruikt nu
+#                   oeoverview_info.load_source_file() (i.p.v. het CSV-
+#                   specifieke load_csv()), dat op basis van de extensie
+#                   automatisch .xlsx/.xls of .csv leest — zie
+#                   oeoverview_info.py v1.1.0. Bestandsdialoog bij
+#                   "Bladeren..." filtert dan ook op beide formaten.
 # Changes: 1.1.0 — Standaardmap-instelling toegevoegd: bij het openen wordt
 #                   nu eerst de vaste standaard input-/outputmap uit
 #                   Instellingen gebruikt (settings.py's
@@ -106,7 +120,7 @@ class OeOverviewWindow(QWidget):
 
         map_row = QHBoxLayout()
         self._input_map_edit = QLineEdit()
-        self._input_map_edit.setPlaceholderText("Map met de OpenVKOorders/OpenVKOleveringen-CSV's")
+        self._input_map_edit.setPlaceholderText("Map met de OpenVKOorders/OpenVKOleveringen-bestanden (optioneel)")
         self._input_map_edit.editingFinished.connect(self._vernieuw_kandidaten)
         map_row.addWidget(self._input_map_edit)
         bladeren = QPushButton("Bladeren...")
@@ -115,10 +129,23 @@ class OeOverviewWindow(QWidget):
         layout.addLayout(map_row)
 
         form = QFormLayout()
+
+        orders_row = QHBoxLayout()
         self._orders_combo = QComboBox()
-        form.addRow("Orders-bestand:", self._orders_combo)
+        orders_row.addWidget(self._orders_combo, 1)
+        orders_bladeren = QPushButton("Bladeren...")
+        orders_bladeren.clicked.connect(lambda: self._kies_bestand_manueel(self._orders_combo))
+        orders_row.addWidget(orders_bladeren)
+        form.addRow("Orders-bestand:", orders_row)
+
+        leveringen_row = QHBoxLayout()
         self._leveringen_combo = QComboBox()
-        form.addRow("Leveringen-bestand:", self._leveringen_combo)
+        leveringen_row.addWidget(self._leveringen_combo, 1)
+        leveringen_bladeren = QPushButton("Bladeren...")
+        leveringen_bladeren.clicked.connect(lambda: self._kies_bestand_manueel(self._leveringen_combo))
+        leveringen_row.addWidget(leveringen_bladeren)
+        form.addRow("Leveringen-bestand:", leveringen_row)
+
         layout.addLayout(form)
 
         return group
@@ -207,6 +234,27 @@ class OeOverviewWindow(QWidget):
         for c in self._leveringen_candidates:
             self._leveringen_combo.addItem(c.display_name, c.path)
 
+    def _kies_bestand_manueel(self, combo: QComboBox) -> None:
+        """Laat de gebruiker ongeacht bestandsnaam of inputmap altijd zelf
+        een bronbestand kiezen — de naamherkenning in _vernieuw_kandidaten()
+        is enkel een gemak (vooraf geselecteerde standaardkeuze), nooit een
+        harde vereiste. Toegevoegd als extra item i.p.v. de bestaande
+        kandidatenlijst te vervangen."""
+        start_dir = self._input_map_edit.text() or str(Path.home())
+        gekozen, _ = QFileDialog.getOpenFileName(
+            self, "Kies bronbestand", start_dir,
+            "Excel- of CSV-bestanden (*.xlsx *.xls *.csv);;Alle bestanden (*)"
+        )
+        if not gekozen:
+            return
+
+        pad = Path(gekozen)
+        idx = combo.findData(pad)
+        if idx < 0:
+            combo.insertItem(0, pad.name, pad)
+            idx = 0
+        combo.setCurrentIndex(idx)
+
     # ------------------------------------------------------------------
     # Verwerking
     # ------------------------------------------------------------------
@@ -229,17 +277,17 @@ class OeOverviewWindow(QWidget):
             return
 
         if self._orders_combo.currentData() is None:
-            self._log_fout("Geen orders-bestand gevonden in de inputmap.")
+            self._log_fout("Kies of blader naar een orders-bestand.")
             return
         if self._leveringen_combo.currentData() is None:
-            self._log_fout("Geen leveringen-bestand gevonden in de inputmap.")
+            self._log_fout("Kies of blader naar een leveringen-bestand.")
             return
 
         self._log.appendPlainText("Verwerking gestart...")
         self._start_knop.setEnabled(False)
         try:
-            orders_rows = oe.load_csv(self._orders_combo.currentData(), oe.SOURCE_TYPE_ORDERS)
-            leveringen_rows = oe.load_csv(self._leveringen_combo.currentData(), oe.SOURCE_TYPE_LEVERINGEN)
+            orders_rows = oe.load_source_file(self._orders_combo.currentData(), oe.SOURCE_TYPE_ORDERS)
+            leveringen_rows = oe.load_source_file(self._leveringen_combo.currentData(), oe.SOURCE_TYPE_LEVERINGEN)
             resultaten = oe.process(orders_rows, leveringen_rows)
             output_map = Path(self._output_map_edit.text())
             geschreven = oe.export_all(resultaten, output_map, formaten)

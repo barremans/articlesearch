@@ -5,16 +5,19 @@
 ### ✨ Nieuw
 - 📑 **Open Elements overview** — nieuw scherm onder **Export → Open
   Elements overview...**, naast het bestaande "Open Elements". Splitst 2
-  lokaal aangeleverde CSV-exports van openstaande verkoopdocumenten
-  (orders/leveringen) op per verkoopmedewerker (Sales Owner, met Document
-  Owner als terugval) en genereert per medewerker een overzicht (enkel
-  orders ouder dan 6 maanden en leveringen ouder dan 1 maand), met een
-  extra kolom "Openstaand" en een totaalrij. Kies zelf de inputmap
-  (bestandskeuzelijst herkent de orders-/leveringen-CSV automatisch) en de
-  outputmap, en het gewenste formaat (**XLSX**, **CSV**, of beide) — de map
-  met de gegenereerde bestanden wordt na afloop automatisch geopend, en de
-  laatst gebruikte in-/outputmap wordt onthouden voor de volgende keer.
-  Geen live SAP-koppeling nodig voor dit scherm. Zelfde
+  lokaal aangeleverde bronbestanden van openstaande verkoopdocumenten
+  (orders/leveringen — **CSV en/of Excel**) op per verkoopmedewerker
+  (Sales Owner, met Document Owner als terugval) en genereert per
+  medewerker een overzicht (enkel orders ouder dan 6 maanden en
+  leveringen ouder dan 1 maand), met een extra kolom "Openstaand" en een
+  totaalrij. Kies optioneel een inputmap (bestandskeuzelijst herkent en
+  selecteert dan alvast het meest waarschijnlijke orders-/leveringen-
+  bestand) en kies de outputmap; via "Bladeren..." naast elk bestandsveld
+  kan altijd ook een ander bestand gekozen worden, ongeacht bestandsnaam
+  of map. Kies verder het gewenste formaat (**XLSX**, **CSV**, of beide)
+  — de map met de gegenereerde bestanden wordt na afloop automatisch
+  geopend, en de laatst gebruikte in-/outputmap wordt onthouden voor de
+  volgende keer. Geen live SAP-koppeling nodig voor dit scherm. Zelfde
   toegangsvoorwaarde als "Open Elements": enkel voor gebruikers in
   Azure AD-groep **"GPP_Finance"**, en niet beschikbaar in offline-modus.
   Optioneel kan via **Instellingen → Instellingen wijzigen...** een vaste
@@ -33,6 +36,14 @@
   zelf en pas dan effectief opgeslagen — voorheen gebeurde de normalisatie
   al wel correct maar onzichtbaar, het getoonde veld bleef ongewijzigd
   tot manueel op "Normaliseren" geklikt werd.
+
+### 🐞 Bugfix
+- 📑 **Open Elements overview**: een Excel-bronbestand met een voettekst-/
+  notitieregel na de eigenlijke tabel (bv. "Afgedrukt door: <naam>") liet
+  de import voorheen volledig falen ("Ongeldige datum in kolom ..."), ook
+  al bevatte de tabel zelf enkel geldige gegevens. Zo'n rij wordt nu
+  herkend (geen geldig documentnummer) en overgeslagen i.p.v. de hele
+  import te blokkeren.
 
 ### 🔒 Security
 - 🏭 **Datasets beheren... (Prod Stock Overview)**: "Eigenaar" wordt bij
