@@ -5,8 +5,19 @@
 # Role:    PyInstaller build-specificatie — bundelt main.py + assets/docs
 #          (incl. docs/pep_errors.json) tot de ArticleSearch-installer
 #          (via build_installer15.bat, Networkmap-patroon).
-# Version: 1.2.0
+# Version: 1.3.0
 # Author:  Bart Bossuyt
+# Changes: 1.3.0 — GitHub-token: controle vóór de build toegevoegd
+#                   (check_github_secret.py). De build stopt als
+#                   github_secret_local.py ontbreekt, leeg is, door GitHub
+#                   geweigerd wordt, of als er een token in een getrackt
+#                   bestand of een nog niet gepushte commit staat. Zo kan er
+#                   geen installer meer gebouwd worden waarin "Bug of
+#                   feature melden" niet werkt, en geen token meer per
+#                   ongeluk naar GitHub gaan. github_secret_local en
+#                   github_feedback_config expliciet toegevoegd aan
+#                   hiddenimports (worden ook automatisch gevonden via de
+#                   import in github_feedback.py; dit is een extra zekerheid).
 # Changes: 1.2.0 — pep_errors_datas-toevoeging (v1.1.0) teruggedraaid:
 #                   ui_peppol.py leest pep_errors.json voortaan uit
 #                   docs/pep_errors.json (v2.0.2) i.p.v. de root naast de
@@ -34,6 +45,15 @@
 import os
 from PyInstaller.utils.hooks import collect_all, collect_data_files
 from PyInstaller.building.datastruct import Tree
+
+# --- GitHub-token: controle vóór de build (v1.3.0) ---
+# SPECPATH = de map van dit .spec-bestand (door PyInstaller gezet).
+import subprocess
+import sys
+
+_secret_check = os.path.join(SPECPATH, "check_github_secret.py")
+if subprocess.call([sys.executable, _secret_check]) != 0:
+    raise SystemExit("[FOUT] Build gestopt: de controle van het GitHub-token is mislukt (zie hierboven).")
 
 # --- MSAL (Azure AD) ---
 msal_datas = collect_data_files("msal")
@@ -76,6 +96,8 @@ a = Analysis(
     hiddenimports=[
         *pandas_hidden,
         "upload_dialog",
+        "github_feedback_config",
+        "github_secret_local",
         "msal",
         # ❌ msal.extensions bestaat NIET als module
         "requests",

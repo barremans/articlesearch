@@ -2,14 +2,40 @@
 # ArticleSearch
 # File:    bug_report_dialog.py
 # Role:    BugDialog (QDialog) — laat de gebruiker een bug of feature-
-#          aanvraag melden; GitHubClient commit een bestand naar de repo
-#          en opent een Issue (bug) of Pull Request (feature) via de
-#          GitHub REST API. ⚠️ Bevat een hardcoded GitHub PAT — bewuste
-#          keuze (zelfde patroon als config.py/updater.py) zodat dit ook
-#          werkt op machines waar de app via de setup geïnstalleerd wordt,
-#          zonder per-machine configuratiestap (env var).
-# Version: 1.4.0
+#          aanvraag melden. Het verzenden zelf gebeurt door
+#          GitHubFeedbackClient (github_feedback.py): de melding wordt een
+#          GitHub Issue. Dit bestand bevat geen token en geen repo-naam
+#          meer en is identiek in elke app; app-specifieke zaken (repo,
+#          naam van de melder) komen uit github_feedback_config.py.
+# Version: 2.0.0
 # Author:  Bart Bossuyt
+# Changes: 2.0.0 — SECURITY/BUGFIX: hardcoded GitHub-token verwijderd.
+#                   Oorzaak van de terugkerende 401-fouten bleek GitHub
+#                   Secret Scanning: elk token dat in de (publieke) repo
+#                   gepusht werd, werd automatisch ingetrokken (bevestigd
+#                   via de security log van het GitHub-account, 2026-10-10).
+#                   Het token staat nu in het niet-getrackte bestand
+#                   github_secret_local.py en wordt gelezen door
+#                   github_feedback.py.
+#                   De klasse GitHubClient is uit dit bestand verdwenen en
+#                   vervangen door GitHubFeedbackClient (github_feedback.py).
+#                   GEWIJZIGD GEDRAG: een melding is voortaan altijd een
+#                   Issue — bug met label "bug", feature met label
+#                   "enhancement". Er wordt geen branch, .md-bestand of
+#                   Pull Request meer aangemaakt; de regel "Bestandsnaam"
+#                   is daarom uit de voorvertoning verdwenen. Reden: zo
+#                   heeft het token enkel het recht "Issues" nodig en geen
+#                   schrijfrechten op de code van de repo.
+#                   De naam van de melder komt nu via
+#                   github_feedback_config.get_reporter_name() (zelfde
+#                   gedrag als v1.4.0: AD-naam vooringevuld en read-only,
+#                   anders leeg en bewerkbaar).
+#                   Kleine verbeteringen: wachtcursor tijdens het verzenden,
+#                   en duidelijke Nederlandstalige foutmeldingen i.p.v. de
+#                   ruwe "401 Client Error ..."-tekst.
+#                   BugDialog(parent, initial_type, initial_description) is
+#                   ongewijzigd — bestaande aanroepen (ui_main.py,
+#                   ui_peppol.py) blijven werken zonder aanpassing.
 # Changes: 1.4.0 — Het "Je naam"-veld wordt nu automatisch voorgevuld met
 #                   de displayName van de ingelogde Azure AD-gebruiker
 #                   (`permissions_azure.get_current_user_display_name()`,
@@ -52,103 +78,19 @@
 #                   werken ongewijzigd — velden blijven dan leeg zoals
 #                   voorheen.
 # =============================================================================
-import requests
-import base64
-import uuid
-from datetime import datetime
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QTextEdit,
+    QApplication, QDialog, QVBoxLayout, QLabel, QTextEdit,
     QPushButton, QMessageBox, QLineEdit, QComboBox
 )
-from permissions_azure import get_current_user_display_name
 
-# GitHubClient klasse
-class GitHubClient:
-    def __init__(self):
-        self.token = "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"
-        self.owner = "barremans"
-        self.repo = "articlesearch"
-        self.base_branch = "main"
+import github_feedback_config
+from github_feedback import (
+    GitHubFeedbackClient, GitHubFeedbackError,
+    REPORT_TYPE_BUG, REPORT_TYPE_FEATURE, REPORT_TYPES,
+    build_title, build_body,
+)
 
-        self.api_base = f"https://api.github.com/repos/{self.owner}/{self.repo}"
-        self.headers = {
-            "Authorization": f"token {self.token}",
-            "Accept": "application/vnd.github+json"
-        }
-
-    def submit_report(self, reporter: str, description: str, report_type: str) -> str:
-        is_feature = report_type.lower() == "feature-aanvraag"
-        prefix = "feature" if is_feature else "bug"
-        label = "enhancement" if is_feature else "bug"
-        branch_name = f"{prefix}-{uuid.uuid4().hex[:8]}"
-        file_path = f"{prefix}s/{branch_name}.md"
-        commit_msg = f"{'✨ Feature-aanvraag' if is_feature else '🪲 Bugmelding'}: {description[:50]}"
-        pr_title = f"{'✨ Feature' if is_feature else '🐞 Bug'}: {description[:50]}"
-        date_str = datetime.now().strftime("%Y-%m-%d %H:%M")
-        body_text = (
-            f"Automatisch gegenereerde {report_type.lower()} door {reporter or 'onbekend'} op {date_str}:\n\n{description}"
-        )
-
-        # Commit melding als bestand in de repo
-        file_url = f"{self.api_base}/contents/{file_path}"
-        content = f"**Type:** {report_type}\n**Reporter:** {reporter or 'onbekend'}\n**Datum:** {date_str}\n\n**Beschrijving:**\n\n{description}"
-        encoded_content = base64.b64encode(content.encode("utf-8")).decode("utf-8")
-        commit_sha = self._get_commit_sha()
-        self._create_branch(branch_name, commit_sha)
-        file_data = {
-            "message": commit_msg,
-            "content": encoded_content,
-            "branch": branch_name
-        }
-        file_res = requests.put(file_url, json=file_data, headers=self.headers)
-        file_res.raise_for_status()
-
-        if is_feature:
-            # Maak Pull Request aan
-            pr_url = f"{self.api_base}/pulls"
-            pr_data = {
-                "title": pr_title,
-                "body": body_text,
-                "head": branch_name,
-                "base": self.base_branch
-            }
-            pr_res = requests.post(pr_url, json=pr_data, headers=self.headers)
-            pr_res.raise_for_status()
-
-            pr_number = pr_res.json()["number"]
-            label_url = f"{self.api_base}/issues/{pr_number}/labels"
-            label_data = {"labels": [label]}
-            label_res = requests.post(label_url, json=label_data, headers=self.headers)
-            label_res.raise_for_status()
-
-            return pr_res.json().get("html_url", "Pull Request aangemaakt maar geen URL ontvangen.")
-        else:
-            # Maak een Issue aan voor bugs
-            issue_url = f"{self.api_base}/issues"
-            issue_data = {
-                "title": pr_title,
-                "body": body_text,
-                "labels": [label]
-            }
-            issue_res = requests.post(issue_url, json=issue_data, headers=self.headers)
-            issue_res.raise_for_status()
-
-            return issue_res.json().get("html_url", "Issue succesvol aangemaakt maar geen URL ontvangen.")
-
-    def _get_commit_sha(self) -> str:
-        ref_url = f"{self.api_base}/git/ref/heads/{self.base_branch}"
-        ref_res = requests.get(ref_url, headers=self.headers)
-        ref_res.raise_for_status()
-        return ref_res.json()["object"]["sha"]
-
-    def _create_branch(self, branch_name: str, commit_sha: str):
-        create_ref_url = f"{self.api_base}/git/refs"
-        new_ref = {
-            "ref": f"refs/heads/{branch_name}",
-            "sha": commit_sha
-        }
-        create_res = requests.post(create_ref_url, json=new_ref, headers=self.headers)
-        create_res.raise_for_status()
 
 # BugDialog GUI
 class BugDialog(QDialog):
@@ -161,17 +103,16 @@ class BugDialog(QDialog):
 
         layout.addWidget(QLabel("Type melding:"))
         self.type_select = QComboBox()
-        self.type_select.addItems(["Bugmelding", "Feature-aanvraag"])
-        if initial_type in ("Bugmelding", "Feature-aanvraag"):
+        self.type_select.addItems([REPORT_TYPE_BUG, REPORT_TYPE_FEATURE])
+        if initial_type in REPORT_TYPES:
             self.type_select.setCurrentText(initial_type)
         layout.addWidget(self.type_select)
 
         layout.addWidget(QLabel("Je naam:"))
         self.name_input = QLineEdit()
-        # v1.4.0: automatisch voorvullen met de ingelogde AD-gebruiker +
-        # read-only maken, mét fallback (leeg/bewerkbaar) als er nog geen
-        # gecachede gebruikersnaam beschikbaar is.
-        current_user_name = get_current_user_display_name()
+        # Automatisch voorvullen met de ingelogde gebruiker + read-only
+        # maken, mét fallback (leeg/bewerkbaar) als er geen naam bekend is.
+        current_user_name = github_feedback_config.get_reporter_name()
         if current_user_name:
             self.name_input.setText(current_user_name)
             self.name_input.setReadOnly(True)
@@ -200,19 +141,10 @@ class BugDialog(QDialog):
             QMessageBox.warning(self, "Fout", "De beschrijving mag niet leeg zijn.")
             return
 
-        # Preview tonen
-        file_type = "features" if report_type == "Feature-aanvraag" else "bugs"
-        filename = f"{file_type}/{report_type.lower()}-{uuid.uuid4().hex[:8]}.md"
-        pr_title = f"{'✨ Feature' if report_type == 'Feature-aanvraag' else '🐞 Bug'}: {description[:50]}"
-        date_str = datetime.now().strftime("%Y-%m-%d %H:%M")
-        pr_body = (
-            f"Automatisch gegenereerde {report_type.lower()} door {reporter or 'onbekend'} op {date_str}:\n\n{description}"
-        )
-
+        # Preview tonen (zelfde titel/tekst als wat effectief verzonden wordt)
         preview_text = (
-            f"📄 Bestandsnaam: {filename}\n\n"
-            f"🔖 Titel: {pr_title}\n\n"
-            f"📝 Beschrijving:\n{pr_body}\n\n"
+            f"🔖 Titel: {build_title(description, report_type)}\n\n"
+            f"📝 Beschrijving:\n{build_body(reporter, description, report_type)}\n\n"
             f"Doorgaan met verzenden?"
         )
 
@@ -220,10 +152,20 @@ class BugDialog(QDialog):
         if reply != QMessageBox.Yes:
             return
 
+        QApplication.setOverrideCursor(Qt.WaitCursor)
         try:
-            gh = GitHubClient()
-            url = gh.submit_report(reporter, description, report_type)
-            QMessageBox.information(self, "Verzonden", f"{report_type} verzonden:\n{url}")
-            self.accept()
+            url = GitHubFeedbackClient().submit_report(reporter, description, report_type)
+            error = None
+        except GitHubFeedbackError as e:
+            url, error = None, str(e)
         except Exception as e:
-            QMessageBox.critical(self, "GitHub Fout", str(e))
+            url, error = None, f"Onverwachte fout bij het verzenden:\n{e}"
+        finally:
+            QApplication.restoreOverrideCursor()
+
+        if error:
+            QMessageBox.critical(self, "GitHub Fout", error)
+            return
+
+        QMessageBox.information(self, "Verzonden", f"{report_type} verzonden:\n{url}")
+        self.accept()

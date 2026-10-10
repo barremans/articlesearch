@@ -167,6 +167,9 @@ _Automatisch gegenereerd – niet handmatig aanpassen._
         - 📄 **/share/man/man1/isympy.1**
         - 📄 **/share/man/man1/ttx.1**
   - 📁 **temp/**
+    - 📄 **/temp/build_and_publish.ps1**
+    - 📄 **/temp/build_installer15.bat**
+    - 📄 **/temp/publish.ps1**
   - 📁 **translations/**
     - 📄 **/translations/en.py**
     - 📄 **/translations/nl.py**

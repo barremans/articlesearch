@@ -18,3 +18,7 @@ __pycache__/
 
 #build
 build/ 
+
+# Geheimen: het GitHub-token (github_secret_local.py) mag NOOIT in git.
+# GitHub trekt een token automatisch in zodra het in een publieke repo staat.
+*_secret_local.py

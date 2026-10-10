@@ -1,0 +1,357 @@
+@echo off
+chcp 65001 >nul
+setlocal EnableExtensions EnableDelayedExpansion
+
+rem Altijd uitvoeren vanuit de map waar dit .bat bestand staat
+cd /d "%~dp0"
+
+rem ================================================
+rem build_installer15.bat - Build + Inno Setup installer generator
+rem File:    build_installer15.bat
+rem Role:    Bouwt de PyInstaller-EXE en genereert/compileert het Inno
+rem          Setup installer-script (.iss), voor zowel interactief gebruik
+rem          als niet-interactieve aanroep vanuit build_and_publish.ps1
+rem          (via env vars AS_BUMP_PART, AS_MAKE_INSTALLER, AS_DO_SIGN).
+rem Version: 1.3.0
+rem Author:  Bart Bossuyt
+rem Changes: 1.3.0 - INTUNE-UPDATE-1: het gegenereerde installer-script
+rem                   sluit voortaan automatisch een reeds draaiende
+rem                   ArticleSearch.exe vóór het kopiëren van bestanden
+rem                   ([Setup]: CloseApplications=force,
+rem                   CloseApplicationsFilter=%PROJECT_NAME%.exe,
+rem                   RestartApplications=no - app wordt NIET automatisch
+rem                   herstart, want een Intune/SYSTEM-deployment mag geen
+rem                   GUI-app als SYSTEM opstarten). Dit lost het eigenlijke
+rem                   "update terwijl de app openstaat"-probleem op
+rem                   (gelockte exe/_internal-map bij overschrijven).
+rem                   Bijkomend, puur cosmetisch: nieuwe [Code]-sectie
+rem                   (IsUpgrade() + InitializeWizard()) toont in de
+rem                   welkomsttekst van de wizard "bijwerken naar versie
+rem                   X" i.p.v. de standaardtekst wanneer een vorige
+rem                   installatie (zelfde AppId) gedetecteerd wordt in het
+rem                   register - functioneel verandert er niets, enkel de
+rem                   getoonde tekst. Beide wijzigingen zijn silent-install-
+rem                   veilig (CloseApplications=force vraagt niets in
+rem                   /VERYSILENT-modus; WizardForm bestaat ook silent,
+rem                   wordt dan gewoon niet getoond) en dus compatibel met
+rem                   het huidige Intune/SYSTEM-deploymentpad
+rem                   (PrivilegesRequired=admin, silent via Intune Win32-app
+rem                   install-commando). Geen wijziging aan de rest van de
+rem                   build-flow (signing, versie-bump, assets-kopie, enz.).
+rem Changes: 1.2.0 - (voorheen ongedocumenteerd, zie context v22/v24)
+rem                   Signeren optioneel via certificaatstore (analoog
+rem                   Networkmap-patroon) i.p.v. los .pfx-bestand + plaintext
+rem                   wachtwoord; ondersteuning voor env vars AS_BUMP_PART/
+rem                   AS_MAKE_INSTALLER/AS_DO_SIGN voor niet-interactieve
+rem                   aanroep vanuit build_and_publish.ps1.
+rem Changes: 1.0.0 - Baseline: installeert altijd in C:\ArticleSearch,
+rem                   admin vereist (Intune SYSTEM-deployment), versie-bump
+rem                   via bump_version.py, PyInstaller-build via .spec,
+rem                   Inno Setup-script-generatie en -compilatie.
+rem ================================================
+
+rem 🧩 Basisconfig
+set "PROJECT_NAME=ArticleSearch"
+set "SPEC_FILE=SearchArticle.spec"
+set "DST_FOLDER=dist"
+set "LOGFILE=build_log.txt"
+set "TIMESTAMP_URL=http://timestamp.sectigo.com"
+rem Optioneel: exacte certificaat-subject om te forceren i.p.v. automatisch
+rem beste certificaat (/a). Leeg = automatisch.
+set "SIGN_SUBJECT="
+
+rem INTUNE-UPDATE-1: vaste AppId (zonder de Inno-escape "{{"), gebruikt om
+rem in het [Code]-blok te detecteren of er al een eerdere installatie
+rem (zelfde app) in het register staat - moet EXACT overeenkomen met de
+rem AppId hieronder bij [Setup] (daar WEL met "{{" geschreven, dat is de
+rem Inno-eigen manier om een letterlijke "{" te noteren in een directive-
+rem waarde). Wijzig je de AppId hieronder, wijzig dan ook APPGUID mee.
+set "APPGUID={A1B2C3D4-E5F6-47A8-9023-ABCDEF123456}"
+
+rem ---- Python uit .venv prefereren ----
+set "PYEXE="
+if exist ".venv\Scripts\python.exe" set "PYEXE=.venv\Scripts\python.exe"
+if not defined PYEXE if exist "Scripts\python.exe" set "PYEXE=Scripts\python.exe"
+if not defined PYEXE set "PYEXE=python"
+
+rem Alleen naar absolute path omzetten als het effectief een bestaand bestandspad is
+for %%I in ("%PYEXE%") do (
+  if exist "%%~fI" set "PYEXE=%%~fI"
+)
+
+echo [info] Python: %PYEXE%
+"%PYEXE%" -V >nul 2>&1 || (echo ❌ Geen werkende Python gevonden.& pause & exit /b 1)
+
+rem ================================================
+rem [S0] Signing - optioneel, default N (naar Networkmap-patroon)
+rem ================================================
+set "DO_SIGN=N"
+if defined AS_DO_SIGN set "DO_SIGN=%AS_DO_SIGN%"
+if defined AS_DO_SIGN echo [sign] Modus via parameter: %AS_DO_SIGN%
+if not defined AS_DO_SIGN set /p DO_SIGN=[S0] Binaries signen? [J/N] (standaard N): 
+if not defined DO_SIGN set "DO_SIGN=N"
+
+set "SIGNTOOL_EXE="
+if /I "%DO_SIGN%"=="J" call :FIND_SIGNTOOL
+if /I "%DO_SIGN%"=="J" if not defined SIGNTOOL_EXE echo [WAARSCHUWING] signtool.exe niet gevonden. Signing overgeslagen.
+if /I "%DO_SIGN%"=="J" if not defined SIGNTOOL_EXE set "DO_SIGN=N"
+if /I "%DO_SIGN%"=="J" if defined SIGNTOOL_EXE echo [sign] signtool: %SIGNTOOL_EXE%
+if /I "%DO_SIGN%"=="J" if defined SIGNTOOL_EXE echo [sign] Certificaatselectie: automatisch /a (certificaatstore, geen .pfx meer nodig)
+
+rem ---- Versie verhogen ----
+if defined AS_BUMP_PART (
+  set "PART_TO_BUMP=%AS_BUMP_PART%"
+  echo [0] 🔁 Versie-bump via parameter: %AS_BUMP_PART%
+) else (
+  set /p PART_TO_BUMP=Welke versie wil je verhogen? ^(patch/minor/major^) : 
+  if "%PART_TO_BUMP%"=="" set "PART_TO_BUMP=patch"
+)
+echo [0] 🔁 Versie verhogen via bump_version.py (%PART_TO_BUMP%)...
+"%PYEXE%" bump_version.py %PART_TO_BUMP% || (echo ❌ Versieverhoging mislukt.& pause & exit /b 1)
+
+rem ---- Versie robuust uitlezen uit version.py ----
+set "PY_READV=%TEMP%\__read_version_tmp.py"
+set "VER_TXT=%TEMP%\__version_out.txt"
+del /q "%PY_READV%" "%VER_TXT%" >nul 2>&1
+> "%PY_READV%" echo import importlib.util, io, os, re
+>>"%PY_READV%" echo p=os.path.abspath('version.py'); v="0.0.0"
+>>"%PY_READV%" echo try:
+>>"%PY_READV%" echo ^    spec=importlib.util.spec_from_file_location("ver",p)
+>>"%PY_READV%" echo ^    m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+>>"%PY_READV%" echo ^    v=str(getattr(m,"__version__","0.0.0"))
+>>"%PY_READV%" echo except Exception:
+>>"%PY_READV%" echo ^    t=io.open(p,'r',encoding='utf-8').read()
+>>"%PY_READV%" echo ^    m=re.search(r"__version__\s*=\s*['\^\"\s]*([0-9]+(?:\.[0-9]+){1,2})",t)
+>>"%PY_READV%" echo ^    v=m.group(1) if m else "0.0.0"
+>>"%PY_READV%" echo io.open(r'%VER_TXT%','w',encoding='utf-8').write(v.strip())
+"%PYEXE%" "%PY_READV%" || (echo ❌ Versie uitlezen faalde.& del /q "%PY_READV%" >nul & pause & exit /b 1)
+del /q "%PY_READV%" >nul 2>&1
+set "NEW_VERSION=" & set /p NEW_VERSION=<"%VER_TXT%"
+del /q "%VER_TXT%" >nul 2>&1
+if not defined NEW_VERSION (echo ❌ Kon versie niet lezen.& pause & exit /b 1)
+echo [1] 🔎 Versie: %NEW_VERSION%
+
+rem ---- Afgeleide paden ----
+set "BUILD_FOLDER=%PROJECT_NAME%_%NEW_VERSION%"
+set "ABS_BUILD_FOLDER=%CD%\%DST_FOLDER%\%BUILD_FOLDER%"
+set "INITIAL_EXE=%DST_FOLDER%\%PROJECT_NAME%\%PROJECT_NAME%.exe"
+set "ISS_FILE=%DST_FOLDER%\installer.iss"
+
+rem 🧹 Opschonen
+echo [2] 🧹 Opruimen...
+rmdir /s /q build 2>nul
+rmdir /s /q "%DST_FOLDER%" 2>nul
+del /q "%LOGFILE%" 2>nul
+
+rem 📦 Vereisten
+echo [3] 🔧 Pip ^& vereisten...
+"%PYEXE%" -m pip install --upgrade pip >nul
+if exist requirements.txt "%PYEXE%" -m pip install -r requirements.txt || (echo ❌ pip install -r faalde.& pause & exit /b 1)
+
+rem ⚙️ PyInstaller aanwezig?
+"%PYEXE%" -c "import PyInstaller" >nul 2>&1 || (
+  echo [3b] 📦 PyInstaller installeren...
+  "%PYEXE%" -m pip install "pyinstaller==6.11.1" "pyinstaller-hooks-contrib==2025.0" || (echo ❌ Installatie PyInstaller faalde.& pause & exit /b 1)
+)
+
+echo --- Build gestart op %DATE% %TIME% --- >> "%LOGFILE%"
+
+rem 🛠 Build (via SPEC)
+echo [4] 🛠 PyInstaller...
+"%PYEXE%" -m PyInstaller --clean --noconfirm "%SPEC_FILE%" || (echo ❌ PyInstaller build faalde.& pause & exit /b 1)
+if not exist "%INITIAL_EXE%" (echo ❌ EXE niet gevonden op "%INITIAL_EXE%".& pause & exit /b 1)
+
+rem 🔁 Hernoemen naar map met versie
+if exist "%DST_FOLDER%\%BUILD_FOLDER%" rmdir /S /Q "%DST_FOLDER%\%BUILD_FOLDER%"
+rename "%DST_FOLDER%\%PROJECT_NAME%" "%BUILD_FOLDER%" >nul 2>&1
+if errorlevel 1 (
+  echo [rename] Fallback via robocopy...
+  robocopy "%DST_FOLDER%\%PROJECT_NAME%" "%DST_FOLDER%\%BUILD_FOLDER%" /E /MOVE >nul
+  if errorlevel 8 (echo ❌ Fallback kopie mislukt.& pause & exit /b 1)
+  if exist "%DST_FOLDER%\%PROJECT_NAME%" rmdir /S /Q "%DST_FOLDER%\%PROJECT_NAME%"
+)
+if not exist "%DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe" (
+  echo ❌ %PROJECT_NAME%.exe ontbreekt in %DST_FOLDER%\%BUILD_FOLDER%.
+  pause & exit /b 1
+)
+
+rem 📁 Assets kopiëren
+echo [5] 📁 Assets kopiëren...
+for %%D in (assets logs label docs translations) do (
+  if exist "%%D" xcopy /E /I /Y "%%D" "%DST_FOLDER%\%BUILD_FOLDER%\%%D" >nul
+)
+for %%F in (requirements.txt help.md settings.json) do (
+  if exist "%%F" copy /Y "%%F" "%DST_FOLDER%\%BUILD_FOLDER%\" >nul
+)
+> "%DST_FOLDER%\%BUILD_FOLDER%\version.txt" echo %NEW_VERSION%
+
+rem [5b] 🔏 Signen van de BINNEN-EXE (optioneel, certificaatstore)
+if /I "%DO_SIGN%"=="J" (
+  echo [5b] 🔏 Signen van %DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe ...
+  call :SIGN_FILE "%DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe"
+  if errorlevel 1 echo [WAARSCHUWING] Signen van app-EXE faalde - build gaat wel verder ^(ongesigned^).
+) else (
+  echo [INFO] Signing overgeslagen ^(DO_SIGN=%DO_SIGN%^).
+)
+
+rem ❓ Inno Setup?
+if defined AS_MAKE_INSTALLER (
+  set "MAKE_INSTALLER=%AS_MAKE_INSTALLER%"
+  echo [6] 📦 Installer via parameter: %AS_MAKE_INSTALLER%
+) else (
+  set "MAKE_INSTALLER=J"
+  set /p MAKE_INSTALLER=Ook Inno Setup installer bouwen? [J/N] : 
+)
+set "DO_ISCC=1"
+if /I "%MAKE_INSTALLER%"=="N" set "DO_ISCC=0"
+if "%DO_ISCC%"=="0" goto SHOW_OUTPUT
+
+rem 📝 Inno script genereren
+if not exist "%DST_FOLDER%" mkdir "%DST_FOLDER%" >nul 2>&1
+del /q "%ISS_FILE%" >nul 2>&1
+echo [6b] 📝 Installer-script genereren...
+
+>>"%ISS_FILE%" echo ; --- Inno Setup script, automatisch gegenereerd ---
+>>"%ISS_FILE%" echo [Setup]
+>>"%ISS_FILE%" echo AppId={{A1B2C3D4-E5F6-47A8-9023-ABCDEF123456}
+>>"%ISS_FILE%" echo AppName=%PROJECT_NAME%
+>>"%ISS_FILE%" echo AppVersion=%NEW_VERSION%
+>>"%ISS_FILE%" echo AppVerName=%PROJECT_NAME% %NEW_VERSION%
+>>"%ISS_FILE%" echo DefaultDirName=C:\%PROJECT_NAME%
+>>"%ISS_FILE%" echo DisableDirPage=yes
+>>"%ISS_FILE%" echo UsePreviousAppDir=no
+>>"%ISS_FILE%" echo DefaultGroupName=%PROJECT_NAME%
+>>"%ISS_FILE%" echo DisableProgramGroupPage=yes
+>>"%ISS_FILE%" echo OutputDir=.
+>>"%ISS_FILE%" echo OutputBaseFilename=%PROJECT_NAME%Setup_%NEW_VERSION%
+>>"%ISS_FILE%" echo Compression=lzma
+>>"%ISS_FILE%" echo SolidCompression=yes
+>>"%ISS_FILE%" echo Uninstallable=yes
+>>"%ISS_FILE%" echo CreateAppDir=yes
+>>"%ISS_FILE%" echo PrivilegesRequired=admin
+>>"%ISS_FILE%" echo ArchitecturesInstallIn64BitMode=x64
+>>"%ISS_FILE%" echo DirExistsWarning=no
+>>"%ISS_FILE%" echo WizardStyle=modern
+>>"%ISS_FILE%" echo SetupIconFile="%ABS_BUILD_FOLDER%\assets\logo.ico"
+rem INTUNE-UPDATE-1: sluit een draaiende ArticleSearch.exe automatisch af
+rem vóór het kopiëren van bestanden (lost gelockte-exe-fouten bij updates
+rem op). "force" = geen prompt, ook niet interactief - vereist voor een
+rem probleemloze /VERYSILENT-run via Intune. RestartApplications=no: de
+rem app bewust NIET automatisch herstarten na install, want dat zou de
+rem GUI-app in de SYSTEM-context proberen op te starten (Intune draait de
+rem installer als SYSTEM, niet als de ingelogde gebruiker) - de gebruiker
+rem start ArticleSearch nadien zelf gewoon opnieuw op.
+>>"%ISS_FILE%" echo CloseApplicationsFilter=%PROJECT_NAME%.exe
+>>"%ISS_FILE%" echo CloseApplications=force
+>>"%ISS_FILE%" echo RestartApplications=no
+>>"%ISS_FILE%" echo.
+>>"%ISS_FILE%" echo [InstallDelete]
+>>"%ISS_FILE%" echo Type: filesandordirs; Name: "{app}\_internal"
+>>"%ISS_FILE%" echo Type: filesandordirs; Name: "{app}\__pycache__"
+>>"%ISS_FILE%" echo.
+>>"%ISS_FILE%" echo [Files]
+>>"%ISS_FILE%" echo Source: "%ABS_BUILD_FOLDER%\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+>>"%ISS_FILE%" echo.
+>>"%ISS_FILE%" echo [Icons]
+>>"%ISS_FILE%" echo Name: "{group}\%PROJECT_NAME%"; Filename: "{app}\%PROJECT_NAME%.exe"; WorkingDir: "{app}"; IconFilename: "{app}\assets\logo.ico"
+>>"%ISS_FILE%" echo Name: "{commondesktop}\%PROJECT_NAME%"; Filename: "{app}\%PROJECT_NAME%.exe"; WorkingDir: "{app}"; IconFilename: "{app}\assets\logo.ico"; Tasks: desktopicon
+>>"%ISS_FILE%" echo.
+>>"%ISS_FILE%" echo [Tasks]
+>>"%ISS_FILE%" echo Name: "desktopicon"; Description: "Maak een snelkoppeling op het bureaublad"; GroupDescription: "Extra opties:"
+>>"%ISS_FILE%" echo.
+>>"%ISS_FILE%" echo [Run]
+>>"%ISS_FILE%" echo Filename: "{app}\%PROJECT_NAME%.exe"; WorkingDir: "{app}"; Description: "Start %PROJECT_NAME%"; Flags: nowait postinstall skipifsilent
+>>"%ISS_FILE%" echo.
+rem INTUNE-UPDATE-1: puur cosmetisch - toont "bijwerken naar versie X" i.p.v.
+rem de standaard welkomsttekst wanneer een vorige installatie (zelfde
+rem AppId) al in het register staat. Werkt ook onder een silent/Intune-run
+rem (WizardForm bestaat dan gewoon, wordt alleen niet zichtbaar getoond) -
+rem geen enkele invloed op het effectieve installatiegedrag.
+>>"%ISS_FILE%" echo [Code]
+>>"%ISS_FILE%" echo function IsUpgrade: Boolean;
+>>"%ISS_FILE%" echo var sPrevPath: String;
+>>"%ISS_FILE%" echo begin
+>>"%ISS_FILE%" echo Result := RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\%APPGUID%_is1', 'InstallLocation', sPrevPath);
+>>"%ISS_FILE%" echo end;
+>>"%ISS_FILE%" echo.
+>>"%ISS_FILE%" echo procedure InitializeWizard();
+>>"%ISS_FILE%" echo begin
+>>"%ISS_FILE%" echo if IsUpgrade then WizardForm.WelcomeLabel2.Caption := 'Dit zal %PROJECT_NAME% bijwerken naar versie %NEW_VERSION%.' + #13#10#13#10 + 'Klik op Volgende om verder te gaan.';
+>>"%ISS_FILE%" echo end;
+
+rem 🔨 Inno Setup compileren
+echo [7] 🔨 Inno Setup compileren...
+set "ISCC_EXE="
+if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" set "ISCC_EXE=C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+if not defined ISCC_EXE if exist "C:\Program Files\Inno Setup 6\ISCC.exe" set "ISCC_EXE=C:\Program Files\Inno Setup 6\ISCC.exe"
+if not defined ISCC_EXE (
+  echo ⚠️  ISCC.exe niet gevonden. Installeer Inno Setup 6.
+  goto SHOW_OUTPUT
+)
+"%ISCC_EXE%" "%ISS_FILE%"
+if errorlevel 1 (
+  echo [FOUT] Inno Setup compile mislukt. Bekijk "%ISS_FILE%".
+  goto SHOW_OUTPUT
+)
+echo ✅ Installer aangemaakt: %DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe
+
+rem [7b] 🔏 Post-sign: de INSTALLER zelf ondertekenen (optioneel, certificaatstore)
+if /I "%DO_SIGN%"=="J" (
+  if exist "%DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe" (
+    echo [7b] 🔏 Signen van installer: %DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe ...
+    call :SIGN_FILE "%DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe"
+    if errorlevel 1 echo [WAARSCHUWING] Signen van installer faalde - installer blijft wel bruikbaar ^(ongesigned^).
+  )
+) else (
+  echo [INFO] Installer-signing overgeslagen ^(DO_SIGN=%DO_SIGN%^).
+)
+
+:SHOW_OUTPUT
+echo.
+echo 📂 Output-map: %DST_FOLDER%\%BUILD_FOLDER%
+echo 💡 Testen: "%DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe"
+echo 🧩 Installer (indien gebouwd): %DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe
+echo 🔏 Signing: %DO_SIGN%
+if not defined AS_BUMP_PART pause
+endlocal
+exit /b 0
+
+rem ================================================
+:FIND_SIGNTOOL
+set "SIGNTOOL_EXE="
+if exist "C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe" (
+  set "SIGNTOOL_EXE=C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe"
+  goto :eof
+)
+if exist "C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe" (
+  set "SIGNTOOL_EXE=C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe"
+  goto :eof
+)
+if exist "C:\Program Files\Windows Kits\10\bin\x64\signtool.exe" (
+  set "SIGNTOOL_EXE=C:\Program Files\Windows Kits\10\bin\x64\signtool.exe"
+  goto :eof
+)
+for /f "delims=" %%S in ('where signtool.exe 2^>nul') do (
+  set "SIGNTOOL_EXE=%%S"
+  goto :eof
+)
+goto :eof
+
+rem ================================================
+:SIGN_FILE
+if not exist "%~1" echo [FOUT] Bestand niet gevonden: %~1
+if not exist "%~1" exit /b 1
+if not defined SIGNTOOL_EXE (
+  echo [FOUT] signtool niet geconfigureerd.
+  exit /b 1
+)
+echo [sign] Bestand: %~1
+if defined SIGN_SUBJECT (
+  "%SIGNTOOL_EXE%" sign /fd SHA256 /td SHA256 /tr "%TIMESTAMP_URL%" /n "%SIGN_SUBJECT%" "%~1"
+) else (
+  "%SIGNTOOL_EXE%" sign /fd SHA256 /td SHA256 /tr "%TIMESTAMP_URL%" /a "%~1"
+)
+if errorlevel 1 echo [FOUT] signtool mislukt voor: %~1
+if errorlevel 1 exit /b 1
+echo [OK] Gesigned: %~1
+exit /b 0

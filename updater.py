@@ -4,8 +4,21 @@
 # Role:    Update-check tegen GitHub — leest version.txt (releases/latest/)
 #          voor de versievergelijking, en de release notes van de laatste
 #          GitHub Release via de Releases API voor "Wat is er nieuw?".
-# Version: 1.2.0
+# Version: 1.3.0
 # Author:  Bart Bossuyt
+# Changes: 1.3.0 — SECURITY: hardcoded GitHub-token (TOKEN) verwijderd. Het
+#                   was al sinds 2026-08-04 door GitHub ingetrokken (Secret
+#                   Scanning: het stond in de publieke repo) en werd enkel
+#                   nog meegestuurd bij de Contents API-fallback voor
+#                   version.txt. _headers_api() stuurt nu geen
+#                   Authorization-header meer mee: de repo is Public, dus
+#                   ook die fallback werkt anoniem. Voorheen zou die
+#                   fallback met het ingetrokken token altijd een 401 geven.
+#                   De gewone update-check (raw-URL) en "Wat is er nieuw?"
+#                   gebruikten al geen token en zijn ongewijzigd. Mocht de
+#                   repo ooit Private worden, dan is hier opnieuw een token
+#                   nodig — lees dat dan uit github_secret_local.py (zie
+#                   github_feedback.load_token()), nooit hardcoded.
 # Changes: 1.2.0 — BUGFIX: "Wat is er nieuw?" gaf 401 Bad credentials
 #                   (bevestigd via screenshot, 2026-08-06). Oorzaak: het
 #                   hardcoded PAT is verlopen/ingetrokken — zelfde onderlig-
@@ -52,24 +65,14 @@ CONTENTS_VERSION_URL = f"https://api.github.com/repos/{OWNER}/{REPO}/contents/{R
 # (niet-draft, niet-pre-release) Release terug, incl. release notes (body).
 RELEASES_API_LATEST = f"https://api.github.com/repos/{OWNER}/{REPO}/releases/latest"
 
-# ZET DIT IN: token met scope 'repo' (PAT classic)
-# LET OP (v1.2.0): dit token gaf op 2026-08-06 een 401 Bad credentials bij
-# de Releases API — vermoedelijk verlopen/ingetrokken. Wordt sinds v1.2.0
-# niet meer gebruikt voor fetch_release_notes() (zie _headers_releases_api),
-# maar staat nog wel achter _headers_api() (Contents API-fallback voor
-# version.txt bij een eventuele private repo). Aanbeveling blijft: via env
-# var beheren i.p.v. hardcoded, en tijdig vernieuwen op GitHub.
-TOKEN = "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"
-
 def _headers_raw():
     # raw github ondersteunt geen auth
     return {"Accept": "text/plain"}
 
 def _headers_api():
-    h = {"Accept": "application/vnd.github.v3.raw"}
-    if TOKEN:
-        h["Authorization"] = f"token {TOKEN}"
-    return h
+    # v1.3.0: geen token meer — de repo is Public, de Contents API werkt
+    # anoniem. "v3.raw" geeft de pure bestandsinhoud terug.
+    return {"Accept": "application/vnd.github.v3.raw"}
 
 
 # WHATSNEW-1: aparte header-set voor de Releases API — hier willen we het
@@ -82,7 +85,7 @@ def _headers_api():
 # altijd anoniem — een (kapot) token zou de hele request onnodig laten
 # falen met 401, ook al zou het zonder token gewoon lukken. Mocht de repo
 # ooit terug Private worden, moet hier weer een geldig token toegevoegd
-# worden (analoog aan _headers_api()).
+# worden (uit github_secret_local.py, nooit hardcoded).
 def _headers_releases_api():
     return {"Accept": "application/vnd.github+json"}
 
@@ -121,10 +124,10 @@ def _fetch_version_txt(timeout=8) -> str:
     except Exception as e:
         print(f"[update-check] raw exception: {e}")
 
-    # 2) Contents API (werkt ook voor private, mits TOKEN)
+    # 2) Contents API (fallback; anoniem, de repo is Public)
     r = requests.get(CONTENTS_VERSION_URL, headers=_headers_api(), timeout=timeout)
     if not r.ok:
-        # 404 bij private zonder juiste token is normaal
+        # 404 = bestand/repo niet (publiek) bereikbaar
         raise requests.HTTPError(f"{r.status_code} for {CONTENTS_VERSION_URL}: {r.text[:200]}")
     return r.text  # met Accept: v3.raw = pure file-inhoud
 

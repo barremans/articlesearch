@@ -1,10 +1,30 @@
 # =============================================================================
 # ArticleSearch
 # File:    github_cases.py
-# Role:    show_github_cases() — toont open Issues + Pull Requests uit de
-#          repo (GitHubCasesClient) via Help-menu → GitHub Cases.
-# Version: 1.3.0
+# Role:    show_github_cases() — toont de open bugmeldingen en feature-
+#          aanvragen uit de repo, opgehaald door GitHubFeedbackClient
+#          (github_feedback.py). Dit bestand bevat geen token en geen
+#          repo-naam meer en is identiek in elke app.
+# Version: 2.0.0
 # Author:  Bart Bossuyt
+# Changes: 2.0.0 — SECURITY/BUGFIX: hardcoded GitHub-token verwijderd
+#                   (zelfde oorzaak en aanpak als bug_report_dialog.py
+#                   v2.0.0: GitHub Secret Scanning trok elk gepusht token
+#                   in). De klasse GitHubCasesClient is verdwenen en
+#                   vervangen door GitHubFeedbackClient (github_feedback.py).
+#                   GEWIJZIGD GEDRAG: de twee rubrieken heten nu "Open
+#                   bugmeldingen" en "Open feature-aanvragen" (was: "Open
+#                   Issues" / "Open Pull Requests"), omdat een feature
+#                   voortaan ook een Issue is. Oude, nog openstaande
+#                   feature-Pull Requests blijven gewoon zichtbaar onder
+#                   "Open feature-aanvragen".
+#                   ROBUUSTER: is het token ongeldig geworden, dan wordt de
+#                   (publieke) repo zonder token gelezen — dit scherm blijft
+#                   dus werken, ook bij een ingetrokken token.
+#                   De tekst van een melding wordt nu ge-escaped vóór ze als
+#                   HTML getoond wordt (tekens als < en > in bv. een ruwe
+#                   Peppol-boodschap braken voorheen de weergave).
+#                   show_github_cases(parent) is ongewijzigd qua aanroep.
 # Changes: 1.3.0 — BUGFIX: hardcoded token gaf op 2026-08-31 een bevestigde
 #                   401 Unauthorized (gemeld via "Meld via GitHub",
 #                   screenshot — zelfde onderliggende oorzaak als bij
@@ -49,32 +69,15 @@
 #                   (Teruggedraaid in v1.1.0, zie hierboven.)
 # =============================================================================
 
-import requests
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QTextBrowser, QPushButton, QMessageBox
+import html
 
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QApplication, QDialog, QVBoxLayout, QTextBrowser, QPushButton, QMessageBox
+)
 
-class GitHubCasesClient:
-    def __init__(self):
-        self.token = "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"
-        self.owner = "barremans"
-        self.repo = "articlesearch"
-        self.api_base = f"https://api.github.com/repos/{self.owner}/{self.repo}"
-        self.headers = {
-            "Authorization": f"token {self.token}",
-            "Accept": "application/vnd.github+json"
-        }
+from github_feedback import GitHubFeedbackClient, GitHubFeedbackError
 
-    def get_open_issues(self):
-        url = f"{self.api_base}/issues?state=open"
-        resp = requests.get(url, headers=self.headers, timeout=10)
-        resp.raise_for_status()
-        return [issue for issue in resp.json() if "pull_request" not in issue]
-
-    def get_open_prs(self):
-        url = f"{self.api_base}/pulls?state=open"
-        resp = requests.get(url, headers=self.headers, timeout=10)
-        resp.raise_for_status()
-        return resp.json()
 
 def clean_body_text(body: str) -> str:
     """
@@ -88,44 +91,52 @@ def clean_body_text(body: str) -> str:
         return parts[1].strip()
     return body.strip()
 
+
+def _items_to_html(items: list, empty_text: str) -> str:
+    if not items:
+        return f"{empty_text}<br>"
+    text = ""
+    for item in items:
+        cleaned = clean_body_text(item.get("body") or "")
+        if not cleaned:
+            cleaned = (item.get("title") or "").strip()
+        cleaned = html.escape(cleaned).replace("\n", "<br>")
+        text += f"- {cleaned}<br><br>"
+    return text
+
+
 def show_github_cases(parent):
+    QApplication.setOverrideCursor(Qt.WaitCursor)
     try:
-        client = GitHubCasesClient()
-        issues = client.get_open_issues()
-        prs = client.get_open_prs()
-
-        text = "<b><u>📄 Open Issues</u></b><br><br>"
-        if issues:
-            for issue in issues:
-                cleaned = clean_body_text(issue.get("body", ""))
-                cleaned = cleaned.replace("\n", "<br>")
-                text += f"- {cleaned}<br><br>"
-        else:
-            text += "Geen open issues.<br>"
-
-        text += "<br><b><u>🔀 Open Pull Requests</u></b><br><br>"
-        if prs:
-            for pr in prs:
-                cleaned = clean_body_text(pr.get("body", ""))
-                cleaned = cleaned.replace("\n", "<br>")
-                text += f"- {cleaned}<br><br>"
-        else:
-            text += "Geen open pull requests.<br>"
-
-        dialog = QDialog(parent)
-        dialog.setWindowTitle("Open GitHub Cases")
-        dialog.resize(800, 800)
-
-        layout = QVBoxLayout(dialog)
-        browser = QTextBrowser()
-        browser.setHtml(text)  # HTML voor bold en underline
-        layout.addWidget(browser)
-
-        close_btn = QPushButton("Sluiten")
-        close_btn.clicked.connect(dialog.accept)
-        layout.addWidget(close_btn)
-
-        dialog.exec()
-
+        reports = GitHubFeedbackClient().get_open_reports()
+        error = None
+    except GitHubFeedbackError as e:
+        reports, error = None, str(e)
     except Exception as e:
-        QMessageBox.critical(parent, "GitHub Fout", f"Kon open cases niet ophalen:\n{e}")
+        reports, error = None, str(e)
+    finally:
+        QApplication.restoreOverrideCursor()
+
+    if error:
+        QMessageBox.critical(parent, "GitHub Fout", f"Kon open cases niet ophalen:\n{error}")
+        return
+
+    text = "<b><u>🐞 Open bugmeldingen</u></b><br><br>"
+    text += _items_to_html(reports["bugs"], "Geen open bugmeldingen.")
+    text += "<br><b><u>✨ Open feature-aanvragen</u></b><br><br>"
+    text += _items_to_html(reports["features"], "Geen open feature-aanvragen.")
+
+    dialog = QDialog(parent)
+    dialog.setWindowTitle("Open GitHub Cases")
+    dialog.resize(800, 800)
+
+    layout = QVBoxLayout(dialog)
+    browser = QTextBrowser()
+    browser.setHtml(text)  # HTML voor bold en underline
+    layout.addWidget(browser)
+
+    close_btn = QPushButton("Sluiten")
+    close_btn.clicked.connect(dialog.accept)
+    layout.addWidget(close_btn)
+
+    dialog.exec()

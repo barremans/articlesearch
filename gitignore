@@ -1,0 +1,24 @@
+# Virtuele omgevingen
+venv/
+Lib/
+*.dll
+
+# Build output
+dist/
+*.exe
+*.zip
+
+# __pycache__ en tijdelijke Python-bestanden
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE-specifiek (optioneel, maar handig als je met VS Code werkt)
+#.vscode/
+
+#build
+build/ 
+
+# Geheimen: het GitHub-token (github_secret_local.py) mag NOOIT in git.
+# GitHub trekt een token automatisch in zodra het in een publieke repo staat.
+*_secret_local.py

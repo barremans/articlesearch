@@ -12,7 +12,7 @@ rem Role:    Bouwt de PyInstaller-EXE en genereert/compileert het Inno
 rem          Setup installer-script (.iss), voor zowel interactief gebruik
 rem          als niet-interactieve aanroep vanuit build_and_publish.ps1
 rem          (via env vars AS_BUMP_PART, AS_MAKE_INSTALLER, AS_DO_SIGN).
-rem Version: 1.3.0
+rem Version: 1.4.0
 rem Author:  Bart Bossuyt
 rem Changes: 1.3.0 - INTUNE-UPDATE-1: het gegenereerde installer-script
 rem                   sluit voortaan automatisch een reeds draaiende
@@ -59,6 +59,9 @@ set "TIMESTAMP_URL=http://timestamp.sectigo.com"
 rem Optioneel: exacte certificaat-subject om te forceren i.p.v. automatisch
 rem beste certificaat (/a). Leeg = automatisch.
 set "SIGN_SUBJECT="
+rem Indien build_and_publish.ps1 een geldig certificaat vooraf controleerde,
+rem wordt de exacte thumbprint via AS_SIGN_THUMBPRINT doorgegeven.
+set "SIGN_THUMBPRINT=%AS_SIGN_THUMBPRINT%"
 
 rem INTUNE-UPDATE-1: vaste AppId (zonder de Inno-escape "{{"), gebruikt om
 rem in het [Code]-blok te detecteren of er al een eerdere installatie
@@ -189,7 +192,10 @@ rem [5b] 🔏 Signen van de BINNEN-EXE (optioneel, certificaatstore)
 if /I "%DO_SIGN%"=="J" (
   echo [5b] 🔏 Signen van %DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe ...
   call :SIGN_FILE "%DST_FOLDER%\%BUILD_FOLDER%\%PROJECT_NAME%.exe"
-  if errorlevel 1 echo [WAARSCHUWING] Signen van app-EXE faalde - build gaat wel verder ^(ongesigned^).
+  if errorlevel 1 (
+    echo [FOUT] Signen/verifieren van app-EXE faalde. Build wordt gestopt.
+    exit /b 1
+  )
 ) else (
   echo [INFO] Signing overgeslagen ^(DO_SIGN=%DO_SIGN%^).
 )
@@ -285,13 +291,13 @@ set "ISCC_EXE="
 if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" set "ISCC_EXE=C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
 if not defined ISCC_EXE if exist "C:\Program Files\Inno Setup 6\ISCC.exe" set "ISCC_EXE=C:\Program Files\Inno Setup 6\ISCC.exe"
 if not defined ISCC_EXE (
-  echo ⚠️  ISCC.exe niet gevonden. Installeer Inno Setup 6.
-  goto SHOW_OUTPUT
+  echo [FOUT] ISCC.exe niet gevonden. Installeer Inno Setup 6.
+  exit /b 1
 )
 "%ISCC_EXE%" "%ISS_FILE%"
 if errorlevel 1 (
   echo [FOUT] Inno Setup compile mislukt. Bekijk "%ISS_FILE%".
-  goto SHOW_OUTPUT
+  exit /b 1
 )
 echo ✅ Installer aangemaakt: %DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe
 
@@ -300,7 +306,10 @@ if /I "%DO_SIGN%"=="J" (
   if exist "%DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe" (
     echo [7b] 🔏 Signen van installer: %DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe ...
     call :SIGN_FILE "%DST_FOLDER%\%PROJECT_NAME%Setup_%NEW_VERSION%.exe"
-    if errorlevel 1 echo [WAARSCHUWING] Signen van installer faalde - installer blijft wel bruikbaar ^(ongesigned^).
+    if errorlevel 1 (
+      echo [FOUT] Signen/verifieren van installer faalde. Build wordt gestopt.
+      exit /b 1
+    )
   )
 ) else (
   echo [INFO] Installer-signing overgeslagen ^(DO_SIGN=%DO_SIGN%^).
@@ -346,12 +355,25 @@ if not defined SIGNTOOL_EXE (
   exit /b 1
 )
 echo [sign] Bestand: %~1
-if defined SIGN_SUBJECT (
+if defined SIGN_THUMBPRINT (
+  echo [sign] Certificaat-thumbprint: %SIGN_THUMBPRINT%
+  "%SIGNTOOL_EXE%" sign /fd SHA256 /td SHA256 /tr "%TIMESTAMP_URL%" /sha1 "%SIGN_THUMBPRINT%" "%~1"
+) else if defined SIGN_SUBJECT (
   "%SIGNTOOL_EXE%" sign /fd SHA256 /td SHA256 /tr "%TIMESTAMP_URL%" /n "%SIGN_SUBJECT%" "%~1"
 ) else (
   "%SIGNTOOL_EXE%" sign /fd SHA256 /td SHA256 /tr "%TIMESTAMP_URL%" /a "%~1"
 )
-if errorlevel 1 echo [FOUT] signtool mislukt voor: %~1
-if errorlevel 1 exit /b 1
-echo [OK] Gesigned: %~1
+if errorlevel 1 (
+  echo [FOUT] signtool mislukt voor: %~1
+  exit /b 1
+)
+
+echo [verify] Authenticode-handtekening controleren...
+"%SIGNTOOL_EXE%" verify /pa /v "%~1"
+if errorlevel 1 (
+  echo [FOUT] Handtekening kon niet geldig geverifieerd worden: %~1
+  exit /b 1
+)
+
+echo [OK] Gesigned en geverifieerd: %~1
 exit /b 0

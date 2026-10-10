@@ -1,4 +1,4 @@
-# publish.ps1 - ArticleSearch (release + asset + version.txt)
+﻿# publish.ps1 - ArticleSearch (release + asset + version.txt)
 # Run vanuit de repo root (C:\searcharticle_code):  .\publish.ps1
 # Vereist: gh (ingelogd) + git
 #
@@ -51,6 +51,22 @@ Write-Host "[INFO] Asset: $assetPath"
 if (-not (Test-Path $assetPath)) {
     throw "Installer niet gevonden: $assetPath`nRun eerst build_installer15.bat en maak de installer."
 }
+
+# 2b) RELEASE-GATE: publiceer nooit een ongesigneerde/ongeldige installer.
+Write-Host "[CHECK] Authenticode-handtekening van installer controleren..."
+$sig = Get-AuthenticodeSignature -FilePath $assetPath
+
+if ($sig.Status -ne [System.Management.Automation.SignatureStatus]::Valid) {
+    throw "PUBLICATIE GEBLOKKEERD: installer heeft geen geldige Authenticode-handtekening. Status: $($sig.Status). Bestand: $assetPath"
+}
+if (-not $sig.SignerCertificate) {
+    throw "PUBLICATIE GEBLOKKEERD: geen SignerCertificate gevonden op installer: $assetPath"
+}
+
+Write-Host "[OK] Geldige Authenticode-handtekening:"
+Write-Host "  Subject    : $($sig.SignerCertificate.Subject)"
+Write-Host "  Thumbprint : $($sig.SignerCertificate.Thumbprint)"
+Write-Host "  Geldig tot : $($sig.SignerCertificate.NotAfter)"
 
 # 3) Release bestaat? Anders maken. ("release not found" mag NIET crashen)
 $releaseExists = $false

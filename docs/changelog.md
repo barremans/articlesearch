@@ -1,5 +1,33 @@
 # 📝 Changelog
 
+## [15.6.0] - 2026-10-10
+
+### 🛠 Verbeterd
+- 🐞 **Bug of feature melden**: een feature-aanvraag wordt voortaan, net
+  als een bugmelding, als "Issue" geregistreerd op GitHub (voorheen als
+  "Pull Request"). Aan het invullen verandert niets; de voorvertoning
+  toont enkel nog de titel en de beschrijving. Elke melding vermeldt nu
+  automatisch met welke versie van ArticleSearch ze verzonden is.
+- 📋 **Show open cases**: de lijst is ingedeeld in **"Open
+  bugmeldingen"** en **"Open feature-aanvragen"** (voorheen "Open
+  Issues" / "Open Pull Requests"). Oudere, nog openstaande
+  feature-aanvragen blijven gewoon zichtbaar.
+- 💬 Gaat er iets mis bij het verzenden of ophalen, dan verschijnt een
+  duidelijke Nederlandstalige melding in plaats van een technische
+  foutcode.
+
+### 🐞 Bugfix
+- 🐞 **Bug of feature melden**: verzenden mislukte met "401 Client Error:
+  Unauthorized". Oorzaak: de toegangssleutel voor GitHub werd telkens
+  automatisch ongeldig gemaakt. Structureel opgelost (zie Security).
+- 📋 **Show open cases**: een melding met tekens zoals `<` of `>` in de
+  tekst (bv. een ruwe Peppol-foutboodschap) werd onvolledig getoond.
+
+### 🔒 Security
+- 🔑 **GitHub-integratie**: de toegangssleutel staat niet langer in de
+  broncode en is beperkt tot één taak: meldingen aanmaken en lezen. De
+  update-controle gebruikt geen sleutel meer.
+
 ## [15.4.0] - 2026-09-11
 
 ### ✨ Nieuw

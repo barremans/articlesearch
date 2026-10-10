@@ -1,4 +1,4 @@
-# build_and_publish.ps1 - ArticleSearch
+﻿# build_and_publish.ps1 - ArticleSearch
 # Vraagt alle build-parameters vooraf, voert build_installer15.bat niet-
 # interactief uit (via AS_*-env vars, zelfde patroon als Networkmap_Creator),
 # en publiceert daarna via publish.ps1 naar GitHub.
@@ -46,12 +46,11 @@ while ($makeInstaller -notin @("J", "N", "j", "n")) {
 $makeInstaller = $makeInstaller.ToUpper()
 Write-Host "[OK] Installer: $makeInstaller"
 
-# Signing (default N - MS Intune blokkeert soms signtool/folder-toegang;
-# expliciet moet je "J" kiezen, net als bij Networkmap_Creator)
+# Signing: voor een publiceerbare ArticleSearch-release standaard AAN.
 $doSign = ""
 while ($doSign -notin @("J", "N", "j", "n")) {
-    $doSign = Read-Host "Binaries signen (certificaatstore)? [J/N] (Enter = N)"
-    if ($doSign -eq "") { $doSign = "N" }
+    $doSign = Read-Host "Binaries signen (certificaatstore)? [J/N] (Enter = J)"
+    if ($doSign -eq "") { $doSign = "J" }
 }
 $doSign = $doSign.ToUpper()
 Write-Host "[OK] Signing: $doSign"
@@ -80,6 +79,64 @@ if ($bevestig.ToUpper() -ne "J") {
 }
 
 # ============================================================
+# Signing preflight
+# ============================================================
+
+function Get-ArticleSearchSigningCertificate {
+    param(
+        [string]$Subject = "CN=CGK Local Signing"
+    )
+
+    $now = Get-Date
+    $stores = @(
+        "Cert:\CurrentUser\My",
+        "Cert:\LocalMachine\My"
+    )
+
+    $certs = foreach ($store in $stores) {
+        if (Test-Path $store) {
+            Get-ChildItem $store -ErrorAction SilentlyContinue |
+                Where-Object {
+                    $_.HasPrivateKey -and
+                    $_.Subject -eq $Subject -and
+                    $_.NotBefore -le $now -and
+                    $_.NotAfter -gt $now
+                }
+        }
+    }
+
+    $certs | Sort-Object NotAfter -Descending | Select-Object -First 1
+}
+
+if ($doPublish -eq "J" -and $doSign -ne "J") {
+    throw "Publiceren is geblokkeerd: een ArticleSearch-release moet gesigned worden. Kies Signing = J."
+}
+
+if ($doSign -eq "J") {
+    $signingCert = Get-ArticleSearchSigningCertificate
+
+    if (-not $signingCert) {
+        throw "Geen GELDIG certificaat met private key gevonden voor 'CN=CGK Local Signing' in CurrentUser\My of LocalMachine\My. Build/release gestopt."
+    }
+
+    $daysLeft = ($signingCert.NotAfter - (Get-Date)).TotalDays
+
+    Write-Host ""
+    Write-Host "[SIGNING] Certificaat gevonden:"
+    Write-Host "  Subject    : $($signingCert.Subject)"
+    Write-Host "  Thumbprint : $($signingCert.Thumbprint)"
+    Write-Host "  Geldig tot : $($signingCert.NotAfter)"
+    Write-Host ("  Resterend  : {0:N1} dagen" -f $daysLeft)
+
+    if ($daysLeft -le 30) {
+        Write-Warning ("Signingcertificaat verloopt binnen {0:N1} dagen ({1}). Regel een vervangend certificaat vóór de volgende release." -f $daysLeft, $signingCert.NotAfter)
+    }
+
+    # Laat signtool exact dit gecontroleerde certificaat gebruiken.
+    $env:AS_SIGN_THUMBPRINT = $signingCert.Thumbprint
+}
+
+# ============================================================
 # [STEP 1/2] Build uitvoeren via omgevingsvariabelen
 # ============================================================
 
@@ -94,6 +151,9 @@ $wrapperContent = "@echo off`r`n"
 $wrapperContent += "set AS_BUMP_PART=$bumpPart`r`n"
 $wrapperContent += "set AS_MAKE_INSTALLER=$makeInstaller`r`n"
 $wrapperContent += "set AS_DO_SIGN=$doSign`r`n"
+if ($env:AS_SIGN_THUMBPRINT) {
+    $wrapperContent += "set AS_SIGN_THUMBPRINT=$($env:AS_SIGN_THUMBPRINT)`r`n"
+}
 $wrapperContent += "call `"$buildBat`"`r`n"
 $wrapperContent += "exit /b %ERRORLEVEL%`r`n"
 [System.IO.File]::WriteAllText($wrapperPath, $wrapperContent, [System.Text.Encoding]::ASCII)
@@ -112,6 +172,7 @@ Remove-Item $wrapperPath -ErrorAction SilentlyContinue
 Remove-Item Env:\AS_BUMP_PART      -ErrorAction SilentlyContinue
 Remove-Item Env:\AS_MAKE_INSTALLER -ErrorAction SilentlyContinue
 Remove-Item Env:\AS_DO_SIGN        -ErrorAction SilentlyContinue
+Remove-Item Env:\AS_SIGN_THUMBPRINT -ErrorAction SilentlyContinue
 
 if ($buildExitCode -ne 0) {
     throw "Build faalde (exitcode $buildExitCode). Zie output hierboven."
